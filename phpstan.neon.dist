@@ -1,0 +1,24 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon
+    - phar://vendor/phpstan/phpstan/phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+    strictRules:
+        booleansInConditions: false
+
+    level: max
+
+    paths:
+        - bin
+        - src
+        - tests
+
+    tmpDir: build/phpStan
+
+    ignoreErrors:
+        -
+            identifier: property.onlyWritten
+            path: src/Builder/AssertBuilder.php
+

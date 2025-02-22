@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Structura\Attributes\TestDox;
+use Structura\Testing\TestBuilder;
+
+class {{ class }} extends TestBuilder
+{
+    #[TestDox('Asserts architecture rules')]
+    public function test(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromDir('/* path */')
+            ->that($this->that(...))
+            ->should($this->should(...));
+    }
+
+    private function that(Expr $expr): void
+    {
+        // TODO: Implement that() method.
+    }
+
+    private function should(Expr $expr): void
+    {
+        // TODO: Implement that() method.
+    }
+}
