@@ -30,16 +30,16 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Dependencies tests
-      run: bin/composer-dependency-analyser
+      run: vendor/bin/composer-dependency-analyser
 
     - name: Coding standards
-      run: bin/php-cs-fixer fix --ansi --dry-run --using-cache=no -v --diff
+      run: vendor/bin/php-cs-fixer fix --ansi --dry-run --using-cache=no -v --diff
 
     - name: Static analysis
-      run: bin/phpstan --memory-limit=1G analyse
+      run: vendor/bin/phpstan --memory-limit=1G analyse
 
     - name: Unit tests
-      run: bin/phpunit ${{ matrix.coverage }}
+      run: vendor/bin/phpunit ${{ matrix.coverage }}
 
     - name: Refactoring
-      run: bin/rector --dry-run
+      run: vendor/bin/rector --dry-run
