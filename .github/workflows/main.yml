@@ -1,0 +1,45 @@
+name: PHP Composer
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Tests PHP ${{ matrix.php }}
+    runs-on: ${{ matrix.php-version }}
+    strategy:
+      matrix:
+        php-version: [8.2, 8.3, 8.4]
+
+    steps:
+    - name: Pull repository
+      uses: actions/checkout@v4
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies with Composer
+      run: composer install --prefer-dist --no-progress
+
+    - name: Dependencies tests
+      run: bin/composer-dependency-analyser
+
+    - name: Coding standards
+      run: bin/php-cs-fixer fix --ansi --dry-run --using-cache=no -v --diff
+
+    - name: Static analysis
+      run: bin/phpstan --memory-limit=1G analyse
+
+    - name: Unit tests
+      run: bin/phpunit ${{ matrix.coverage }}
+
+    - name: Refactoring
+      run: bin/rector --dry-run
