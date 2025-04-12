@@ -9,10 +9,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Asserts\ToBeEnums;
 use Structura\Asserts\ToBeFinal;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeFinal::class)]
 class ToBeFinalTest extends TestCase

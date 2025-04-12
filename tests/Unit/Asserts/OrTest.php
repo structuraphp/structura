@@ -11,7 +11,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 class OrTest extends TestCase
 {

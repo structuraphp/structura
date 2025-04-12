@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeAbstractTest::class)]
 class ToBeAbstractTest extends TestCase

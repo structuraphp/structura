@@ -10,7 +10,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 class ToImplementTest extends TestCase
 {

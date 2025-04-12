@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Testing;
+namespace Structura\Tests\Helper;
 
 use PHPUnit\Framework\Assert;
 use Structura\Builder\AllClasses;

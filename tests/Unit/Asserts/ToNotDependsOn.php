@@ -9,7 +9,7 @@ use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 class ToNotDependsOn extends TestCase
 {

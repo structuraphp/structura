@@ -9,8 +9,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
 use Structura\Tests\Fixture\Concerns\HasFactory;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 class ToUseTest extends TestCase
 {
