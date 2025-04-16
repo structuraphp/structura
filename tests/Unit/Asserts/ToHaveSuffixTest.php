@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToHaveSuffixTest extends TestCase
+#[CoversClass(ToHaveSuffixTest::class)]
+#[CoversMethod(Expr::class, 'toHaveSuffix')]
+final class ToHaveSuffixTest extends TestCase
 {
     use ArchitectureAsserts;
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +14,9 @@ use Structura\Expr;
 use Structura\Tests\Fixture\Concerns\HasFactory;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToOnlyUseTest extends TestCase
+#[CoversClass(ToOnlyUseTest::class)]
+#[CoversMethod(Expr::class, 'toOnlyUse')]
+final class ToOnlyUseTest extends TestCase
 {
     use ArchitectureAsserts;
 

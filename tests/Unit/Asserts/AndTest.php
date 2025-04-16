@@ -6,12 +6,14 @@ namespace Structura\Tests\Unit\Asserts;
 
 use ArrayAccess;
 use Iterator;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class AndTest extends TestCase
+#[CoversMethod(Expr::class, 'and')]
+final class AndTest extends TestCase
 {
     use ArchitectureAsserts;
 

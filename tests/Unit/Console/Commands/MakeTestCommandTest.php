@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Unit\Console\Commands;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Structura\Console\Commands\MakeTestCommand;
 use Structura\Console\Kernel;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class MakeTestCommandTest extends TestCase
+#[CoversClass(MakeTestCommand::class)]
+final class MakeTestCommandTest extends TestCase
 {
     protected function tearDown(): void
     {
@@ -24,7 +27,7 @@ class MakeTestCommandTest extends TestCase
     {
         $application = new Kernel();
 
-        $command = $application->find('make');
+        $command = $application->find(MakeTestCommand::getDefaultName() ?? '');
         $commandTester = new CommandTester($command);
 
         $commandTester->setInputs(['yes']);

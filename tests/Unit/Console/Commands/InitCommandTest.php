@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Unit\Console\Commands;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Structura\Console\Commands\InitCommand;
 use Structura\Console\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class InitCommandTest extends TestCase
+#[CoversClass(InitCommand::class)]
+final class InitCommandTest extends TestCase
 {
     private const CONFIG_PATH = __DIR__ . '/structura.php';
 

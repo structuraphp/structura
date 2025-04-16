@@ -8,12 +8,14 @@ use AppendIterator;
 use ArrayIterator;
 use Exception;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class OrTest extends TestCase
+#[CoversMethod(Expr::class, 'or')]
+final class OrTest extends TestCase
 {
     use ArchitectureAsserts;
 

@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Unit\Asserts;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToUseStrictTypesTest extends TestCase
+#[CoversClass(Expr::class)]
+#[CoversMethod(Expr::class, 'toUseStrictTypes')]
+final class ToUseStrictTypesTest extends TestCase
 {
     use ArchitectureAsserts;
 

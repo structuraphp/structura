@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Structura\Asserts\ToHaveMethod;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToHavePrefixTest extends TestCase
+#[CoversClass(ToHaveMethod::class)]
+#[CoversMethod(Expr::class, 'toHavePrefix')]
+final class ToHavePrefixTest extends TestCase
 {
     use ArchitectureAsserts;
 

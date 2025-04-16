@@ -6,12 +6,16 @@ namespace Structura\Tests\Unit\Asserts;
 
 use Exception;
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToNotDependsOn extends TestCase
+#[CoversClass(ToNotDependsOn::class)]
+#[CoversMethod(Expr::class, 'toNotDependsOn')]
+final class ToNotDependsOn extends TestCase
 {
     use ArchitectureAsserts;
 

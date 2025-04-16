@@ -6,6 +6,7 @@ namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +15,8 @@ use Structura\Expr;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeEnums::class)]
-class ToBeEnumsTest extends TestCase
+#[CoversMethod(Expr::class, 'toBeEnums')]
+final class ToBeEnumsTest extends TestCase
 {
     use ArchitectureAsserts;
 
