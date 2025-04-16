@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToImplementTest extends TestCase
+#[CoversClass(ToImplementTest::class)]
+#[CoversMethod(Expr::class, 'toImplement')]
+final class ToImplementTest extends TestCase
 {
     use ArchitectureAsserts;
 

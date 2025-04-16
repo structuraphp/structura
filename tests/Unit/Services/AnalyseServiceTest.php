@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Unit\Services;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Structura\Configs\StructuraConfig;
 use Structura\Services\AnalyseService;
 
-class AnalyseServiceTest extends TestCase
+#[CoversClass(AnalyseService::class)]
+final class AnalyseServiceTest extends TestCase
 {
     public function testAnalyseService(): void
     {

@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Structura\Asserts\ToExtendNothing;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToExtendNothingTest extends TestCase
+#[CoversClass(ToExtendNothing::class)]
+#[CoversMethod(Expr::class, 'toExtendsNothing')]
+final class ToExtendNothingTest extends TestCase
 {
     use ArchitectureAsserts;
 

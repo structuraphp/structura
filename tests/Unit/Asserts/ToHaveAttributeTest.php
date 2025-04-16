@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Structura\Asserts\ToHaveAttribute;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
-class ToHaveAttributeTest extends TestCase
+#[CoversClass(ToHaveAttribute::class)]
+#[CoversMethod(Expr::class, 'toHaveAttribute')]
+final class ToHaveAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
 

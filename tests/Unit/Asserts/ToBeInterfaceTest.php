@@ -6,16 +6,17 @@ namespace Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Asserts\ToBeFinal;
 use Structura\Asserts\ToBeInterfaces;
 use Structura\Expr;
-use Structura\Testing\ArchitectureAsserts;
+use Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeInterfaces::class)]
-class ToBeInterfaceTest extends TestCase
+#[CoversMethod(Expr::class, 'toBeInterfaces')]
+final class ToBeInterfaceTest extends TestCase
 {
     use ArchitectureAsserts;
 
