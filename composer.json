@@ -36,5 +36,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false
         }
-    }
+    },
+    "bin": [
+        "bin/structura"
+    ]
 }
