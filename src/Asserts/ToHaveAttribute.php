@@ -10,6 +10,9 @@ use Structura\ValueObjects\ViolationValueObject;
 
 class ToHaveAttribute implements ExprInterface
 {
+    /**
+     * @param class-string $name
+     */
     public function __construct(
         private readonly string $name,
         private readonly string $message = '',

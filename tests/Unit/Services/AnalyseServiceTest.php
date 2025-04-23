@@ -25,7 +25,7 @@ final class AnalyseServiceTest extends TestCase
         $result = $service->analyse();
 
         self::assertSame(4, $result->countViolation);
-        self::assertSame(11, $result->countPass);
+        self::assertSame(12, $result->countPass);
 
         $expected = <<<'EOF'
         <violation> ERROR </violation> Asserts architecture rules in Structura\Tests\Feature\TestAssert
@@ -40,7 +40,7 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <green>✔</green> to have prefix <promote>To</promote>
          <green>✔</green> to extend nothing
-         <fire>✘</fire> to use nothing <fire>1 error(s)</fire>
+         <fire>✘</fire> to use nothing <fire>3 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
 
         <violation> ERROR </violation> Controllers architecture rules in Structura\Tests\Feature\TestController
@@ -53,6 +53,7 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
+         <green>✔</green> depends only on these namespaces <promote>Structura\Tests\Fixture\Concerns\HasFactory, Structura\Tests\Fixture\Http\Controller\RoleController, Structura\Tests\Fixture\Contract\ShouldQueueInterface, [2+]</promote>
 
         <pass> PASS </pass> Exceptions architecture rules in Structura\Tests\Feature\TestException
         2 classes from
@@ -65,7 +66,6 @@ final class AnalyseServiceTest extends TestCase
 
         EOF;
 
-        self::assertSame($expected, implode(PHP_EOL, $result->prints));
         self::assertSame($expected, implode(PHP_EOL, $result->prints));
     }
 }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Feature;
 
-use Stringable;
+use Structura\Asserts\DependsOnlyOn;
 use Structura\Asserts\ToBeAbstract;
+use Structura\Asserts\ToHavePrefix;
 use Structura\Asserts\ToNotDependsOn;
 use Structura\Attributes\TestDox;
 use Structura\Contracts\ExprInterface;
@@ -51,6 +52,7 @@ class TestAssert extends TestBuilder
     {
         $except
             ->byRule(ToBeAbstract::class, ToNotDependsOn::class)
+            ->byRule(DependsOnlyOn::class, ToHavePrefix::class)
         ;
     }
 }

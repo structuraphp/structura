@@ -12,7 +12,6 @@ use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Trait_;
-use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 use Structura\Enums\ClassType;
 use Structura\ValueObjects\ClassDescription;
@@ -68,8 +67,6 @@ class ClassDescriptionVisitor extends NodeVisitorAbstract
                 methods: $node->getMethods(),
                 declare: $this->declare,
             );
-
-            return NodeVisitor::DONT_TRAVERSE_CURRENT_AND_CHILDREN;
         }
 
         return null;
