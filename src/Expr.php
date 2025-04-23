@@ -7,6 +7,7 @@ namespace Structura;
 use Closure;
 use Generator;
 use IteratorAggregate;
+use Structura\Asserts\DependsOnlyOn;
 use Structura\Asserts\ToBeAbstract;
 use Structura\Asserts\ToBeAnonymousClasses;
 use Structura\Asserts\ToBeClasses;
@@ -15,7 +16,6 @@ use Structura\Asserts\ToBeFinal;
 use Structura\Asserts\ToBeInterfaces;
 use Structura\Asserts\ToBeReadonly;
 use Structura\Asserts\ToBeTraits;
-use Structura\Asserts\ToDependsOn;
 use Structura\Asserts\ToExtend;
 use Structura\Asserts\ToExtendNothing;
 use Structura\Asserts\ToHaveAttribute;
@@ -44,6 +44,9 @@ class Expr implements IteratorAggregate
 {
     /** @var array<int,ExprInterface|Expr> */
     private array $asserts;
+
+    /** @var array<int,array<int,class-string>> */
+    private array $hiddenDependencies = [];
 
     public function __construct(
         private readonly ExprType $exprType = ExprType::And,
@@ -142,9 +145,13 @@ class Expr implements IteratorAggregate
     /**
      * @param array<int,class-string>|class-string $names
      */
-    public function toDependsOn(string|array $names): self
+    public function dependsOnlyOn(string|array $names): self
     {
-        return $this->addExpr(new ToDependsOn((array) $names));
+        return $this->addExpr(
+            new DependsOnlyOn(
+                array_unique(array_merge((array) $names, ...$this->hiddenDependencies)),
+            ),
+        );
     }
 
     /**
@@ -160,6 +167,8 @@ class Expr implements IteratorAggregate
      */
     public function toExtend(string $name, string $message = ''): self
     {
+        $this->hiddenDependencies[] = [$name];
+
         return $this->addExpr(new ToExtend($name, $message));
     }
 
@@ -168,6 +177,8 @@ class Expr implements IteratorAggregate
      */
     public function toImplement(array|string $names, string $message = ''): self
     {
+        $this->hiddenDependencies[] = (array) $names;
+
         return $this->addExpr(new ToImplement($names, $message));
     }
 
@@ -176,8 +187,13 @@ class Expr implements IteratorAggregate
         return $this->addExpr(new ToImplementNothing($message));
     }
 
+    /**
+     * @param class-string $name
+     */
     public function toHaveAttribute(string $name, string $message = ''): self
     {
+        $this->hiddenDependencies[] = [$name];
+
         return $this->addExpr(new ToHaveAttribute($name, $message));
     }
 
@@ -196,6 +212,8 @@ class Expr implements IteratorAggregate
      */
     public function toOnlyImplement(string $name, string $message = ''): self
     {
+        $this->hiddenDependencies[] = [$name];
+
         return $this->addExpr(new ToOnlyImplement($name, $message));
     }
 
@@ -204,6 +222,8 @@ class Expr implements IteratorAggregate
      */
     public function toOnlyUse(string $name, string $message = ''): self
     {
+        $this->hiddenDependencies[] = [$name];
+
         return $this->addExpr(new ToOnlyUse($name, $message));
     }
 
@@ -212,6 +232,8 @@ class Expr implements IteratorAggregate
      */
     public function toUse(array|string $names, string $message = ''): self
     {
+        $this->hiddenDependencies[] = (array) $names;
+
         return $this->addExpr(new ToUse($names, $message));
     }
 

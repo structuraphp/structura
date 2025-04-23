@@ -7,7 +7,11 @@ namespace Structura\Tests\Feature;
 use Structura\Attributes\TestDox;
 use Structura\Expr;
 use Structura\Testing\TestBuilder;
+use Structura\Tests\Fixture\Concerns\HasFactory;
+use Structura\Tests\Fixture\Contract\ShouldQueueInterface;
+use Structura\Tests\Fixture\Http\Controller\RoleController;
 use Structura\Tests\Fixture\Http\ControllerBase;
+use Structura\Tests\Fixture\Models\User;
 
 class TestController extends TestBuilder
 {
@@ -24,7 +28,13 @@ class TestController extends TestBuilder
                     ->toUseNothing()
                     ->toHaveSuffix('Controller')
                     ->toExtend(ControllerBase::class)
-                    ->toHaveConstructor(),
+                    ->toHaveConstructor()
+                    ->dependsOnlyOn([
+                        HasFactory::class,
+                        RoleController::class,
+                        ShouldQueueInterface::class,
+                        User::class,
+                    ]),
             );
     }
 }

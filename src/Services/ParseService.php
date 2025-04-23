@@ -73,7 +73,7 @@ final readonly class ParseService
 
         yield $class
             ->setDependencies(
-                array_unique($this->namespaceVisitor->getDependencies()),
+                array_keys($this->namespaceVisitor->getDependencies()),
             )
             ->setFilePathname($pathname);
     }
