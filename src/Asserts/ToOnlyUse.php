@@ -44,5 +44,4 @@ class ToOnlyUse implements ExprInterface
             $this->message,
         );
     }
-
 }

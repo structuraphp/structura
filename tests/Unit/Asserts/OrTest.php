@@ -25,9 +25,9 @@ final class OrTest extends TestCase
             ->allClasses()
             ->fromDir('tests/Fixture/Exceptions')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->or(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toExtend(InvalidArgumentException::class)
                             ->toExtend(Exception::class),
                     ),
@@ -44,9 +44,9 @@ final class OrTest extends TestCase
             ->allClasses()
             ->fromDir('tests/Fixture/Exceptions')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->or(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toExtend(ArrayIterator::class)
                             ->toExtend(AppendIterator::class),
                     ),

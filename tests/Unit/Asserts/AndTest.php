@@ -23,9 +23,9 @@ final class AndTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo implements \ArrayAccess, \Iterator {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->and(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toImplement(ArrayAccess::class)
                             ->toImplement(Iterator::class),
                     ),
@@ -42,9 +42,9 @@ final class AndTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo implements \ArrayAccess {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->and(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toImplement(ArrayAccess::class)
                             ->toImplement(Iterator::class),
                     ),

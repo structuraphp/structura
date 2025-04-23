@@ -42,7 +42,7 @@ use Traversable;
  */
 class Expr implements IteratorAggregate
 {
-    /** @var array<int,ExprInterface|Expr> */
+    /** @var array<int,Expr|ExprInterface> */
     private array $asserts;
 
     /** @var array<int,array<int,class-string>> */
@@ -145,7 +145,7 @@ class Expr implements IteratorAggregate
     /**
      * @param array<int,class-string>|class-string $names
      */
-    public function dependsOnlyOn(string|array $names): self
+    public function dependsOnlyOn(array|string $names): self
     {
         return $this->addExpr(
             new DependsOnlyOn(
@@ -157,7 +157,7 @@ class Expr implements IteratorAggregate
     /**
      * @param array<int,class-string>|class-string $names
      */
-    public function toNotDependsOn(string|array $names): self
+    public function toNotDependsOn(array|string $names): self
     {
         return $this->addExpr(new ToNotDependsOn((array) $names));
     }
@@ -268,7 +268,7 @@ class Expr implements IteratorAggregate
     }
 
     /**
-     * @return Generator<ExprInterface|Expr>
+     * @return Generator<Expr|ExprInterface>
      */
     public function getIterator(): Traversable
     {

@@ -38,7 +38,7 @@ class InitCommand extends Command
                 $dto->configPath,
             ),
             'yes',
-            static fn(string $value): bool => \in_array($value, ['y', 'yes'], true),
+            static fn (string $value): bool => \in_array($value, ['y', 'yes'], true),
         );
 
         if (!$response) {
@@ -61,7 +61,7 @@ class InitCommand extends Command
         /** @var array<string,scalar> $data */
         $data = array_filter(
             array: $input->getOptions(),
-            callback: static fn(mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );

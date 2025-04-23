@@ -33,7 +33,7 @@ class ToUseNothing implements ExprInterface
         if ($this->expect instanceof ExpectValueObject) {
             return $this->first(
                 $this->expect->classes,
-                static fn(string $value): bool => $class->name === $value,
+                static fn (string $value): bool => $class->name === $value,
             );
         }
 

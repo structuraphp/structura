@@ -25,7 +25,7 @@ final class ToBeAbstractTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php abstract class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeAbstract(),
+                static fn (Expr $assert): Expr => $assert->toBeAbstract(),
             );
 
         self::assertRules($rules);
@@ -46,7 +46,7 @@ final class ToBeAbstractTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeAbstract(),
+                static fn (Expr $assert): Expr => $assert->toBeAbstract(),
             );
 
         self::assertRules($rules);
@@ -55,9 +55,13 @@ final class ToBeAbstractTest extends TestCase
     public static function getClassLikeNonAbstract(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

@@ -21,13 +21,13 @@ class TestException extends TestBuilder
             ->allClasses()
             ->fromDir('tests/Fixture/Exceptions')
             ->should(
-                static fn(Expr $expr): Expr => $expr
+                static fn (Expr $expr): Expr => $expr
                     ->or(
-                        static fn(Expr $expr): Expr => $expr
+                        static fn (Expr $expr): Expr => $expr
                             ->toExtend(InvalidArgumentException::class)
                             ->toExtend(Exception::class)
                             ->and(
-                                static fn(Expr $expr): Expr => $expr
+                                static fn (Expr $expr): Expr => $expr
                                     ->toExtend(DomainException::class)
                                     ->toExtend(BadMethodCallException::class),
                             ),

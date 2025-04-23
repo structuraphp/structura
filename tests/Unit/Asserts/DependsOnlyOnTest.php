@@ -30,7 +30,7 @@ class DependsOnlyOnTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->dependsOnlyOn([
                         ArrayAccess::class,
                         Exception::class,
@@ -58,13 +58,12 @@ class DependsOnlyOnTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->dependsOnlyOn([]),
             );
 
         self::assertRules($rules);
     }
-
 
     public static function getClassLikeWithDependsProvider(): Generator
     {

@@ -27,7 +27,7 @@ final class ToImplementTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toImplement(Stringable::class),
             );
 
@@ -50,7 +50,7 @@ final class ToImplementTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toImplement(Stringable::class),
             );
 
@@ -60,15 +60,20 @@ final class ToImplementTest extends TestCase
     public static function getClassLikeWithImplement(): Generator
     {
         yield 'anonymous class' => ['<?php new class implements \Stringable {};'];
+
         yield 'class' => ['<?php class Foo implements \Stringable {}'];
+
         yield 'enum' => ['<?php enum Foo implements \Stringable {};'];
     }
 
     public static function getClassLikeWithoutImplement(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
     }
 }

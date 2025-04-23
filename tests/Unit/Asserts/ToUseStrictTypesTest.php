@@ -23,7 +23,7 @@ final class ToUseStrictTypesTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php declare(strict_types=1); class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toUseStrictTypes(),
             );
 
@@ -41,7 +41,7 @@ final class ToUseStrictTypesTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toUseStrictTypes(),
             );
 

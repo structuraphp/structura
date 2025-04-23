@@ -26,7 +26,7 @@ final class ToBeAnonymousClassesTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php new class {};')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toBeAnonymousClasses(),
             );
 
@@ -45,7 +45,7 @@ final class ToBeAnonymousClassesTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toBeAnonymousClasses(),
             );
 
@@ -55,8 +55,11 @@ final class ToBeAnonymousClassesTest extends TestCase
     public static function getClassLikeNonAnonymousClasses(): Generator
     {
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

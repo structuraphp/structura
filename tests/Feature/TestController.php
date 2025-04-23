@@ -22,7 +22,7 @@ class TestController extends TestBuilder
             ->allClasses()
             ->fromDir('tests/Fixture/Http/Controller')
             ->should(
-                static fn(Expr $expr): Expr => $expr
+                static fn (Expr $expr): Expr => $expr
                     ->toBeClasses()
                     ->toUseDeclare('strict_types', '1')
                     ->toUseNothing()

@@ -27,7 +27,7 @@ final class ToUseNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toUseNothing(),
             );
 
@@ -40,9 +40,9 @@ final class ToUseNothingTest extends TestCase
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
-            ->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
+            ->that(static fn (Expr $expr): Expr => $expr->toBeClasses())
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toUseNothing(new ExpectValueObject(['Foo'])),
             );
 
@@ -64,7 +64,7 @@ final class ToUseNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toUseNothing(),
             );
 
@@ -74,16 +74,22 @@ final class ToUseNothingTest extends TestCase
     public static function getClassLikeWithTrait(): Generator
     {
         yield 'anonymous class' => ['<?php new class { use \HasFactory; };', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo { use \HasFactory; }'];
+
         yield 'enum' => ['<?php enum Foo { use \HasFactory; };'];
+
         yield 'interface' => ['<?php interface Foo { use \HasFactory; }'];
     }
 
     public static function getClassLikeWithoutTrait(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
     }
 }

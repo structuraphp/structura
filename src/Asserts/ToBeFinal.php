@@ -42,5 +42,4 @@ class ToBeFinal implements ExprInterface
             $this->message,
         );
     }
-
 }

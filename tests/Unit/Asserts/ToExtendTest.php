@@ -28,7 +28,7 @@ final class ToExtendTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toExtend(Exception::class),
             );
 
@@ -50,7 +50,7 @@ final class ToExtendTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toExtend(Exception::class),
             );
 
@@ -60,12 +60,14 @@ final class ToExtendTest extends TestCase
     public static function getClassLikeExtendsNothing(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
     }
 
     public static function getClassLikeExtends(): Generator
     {
         yield 'anonymous class' => ['<?php new class extends \Exception {};'];
+
         yield 'class' => ['<?php class Foo extends \Exception {}'];
     }
 }

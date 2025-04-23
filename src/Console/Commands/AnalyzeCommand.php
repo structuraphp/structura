@@ -34,6 +34,20 @@ class AnalyzeCommand extends Command
     /** @var array<int,string> */
     private array $prints = [];
 
+    public function styleCustom(OutputInterface $output): OutputInterface
+    {
+        foreach (StyleCustom::cases() as $style) {
+            $output
+                ->getFormatter()
+                ->setStyle(
+                    $style->value,
+                    $style->getOutputFormatterStyle(),
+                );
+        }
+
+        return $output;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -76,7 +90,7 @@ class AnalyzeCommand extends Command
         /** @var array<string,scalar> $data */
         $data = array_filter(
             array: $input->getOptions(),
-            callback: static fn(mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );
@@ -148,7 +162,7 @@ class AnalyzeCommand extends Command
         $this->prints[] = \sprintf(
             'Duration: %s, Memory: %d MB',
             substr($now->format('i:s.u'), 0, -3),
-            (memory_get_peak_usage(true) / 1024 / 1024),
+            memory_get_peak_usage(true) / 1024 / 1024,
         );
     }
 
@@ -162,20 +176,5 @@ class AnalyzeCommand extends Command
         return $now === false
             ? throw new Exception()
             : $now;
-    }
-
-
-    public function styleCustom(OutputInterface $output): OutputInterface
-    {
-        foreach (StyleCustom::cases() as $style) {
-            $output
-                ->getFormatter()
-                ->setStyle(
-                    $style->value,
-                    $style->getOutputFormatterStyle(),
-                );
-        }
-
-        return $output;
     }
 }

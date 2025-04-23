@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace Structura\Builder;
 
-use Generator;
-use InvalidArgumentException;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
 use Structura\Except;
 use Structura\Expr;
-use Structura\Services\ParseService;
-use Structura\ValueObjects\ClassDescription;
 use Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 

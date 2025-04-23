@@ -27,7 +27,7 @@ final class ToExtendNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toExtendsNothing(),
+                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
             );
 
         self::assertRules($rules);
@@ -45,7 +45,7 @@ final class ToExtendNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toExtendsNothing(),
+                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
             );
 
         self::assertRules($rules);
@@ -54,12 +54,14 @@ final class ToExtendNothingTest extends TestCase
     public static function getClassLikeExtendsNothing(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};'];
+
         yield 'class' => ['<?php class Foo {}'];
     }
 
     public static function getClassLikeExtends(): Generator
     {
         yield 'anonymous class' => ['<?php new class extends \Exception {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo extends \Exception {}'];
     }
 }

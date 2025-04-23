@@ -26,7 +26,7 @@ final class ToBeFinalTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php final class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeFinal(),
+                static fn (Expr $assert): Expr => $assert->toBeFinal(),
             );
 
         self::assertRules($rules);
@@ -44,7 +44,7 @@ final class ToBeFinalTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeFinal(),
+                static fn (Expr $assert): Expr => $assert->toBeFinal(),
             );
 
         self::assertRules($rules);
@@ -53,11 +53,17 @@ final class ToBeFinalTest extends TestCase
     public static function getClassLikeNonFinal(): Generator
     {
         yield 'abstract class' => ['<?php abstract class Foo {}'];
+
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'readonly class' => ['<?php readonly class Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

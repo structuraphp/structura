@@ -7,7 +7,7 @@ use Structura\Configs\StructuraConfig;
 return static function (StructuraConfig $archiConfig): void {
     $archiConfig
         ->archiRootNamespace(
-            'Structura\\Tests\\Architecture',
+            'Structura\Tests\Architecture',
             'tests/Architecture',
         );
 };

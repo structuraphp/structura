@@ -26,7 +26,7 @@ final class ToBeClassesTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeClasses(),
+                static fn (Expr $assert): Expr => $assert->toBeClasses(),
             );
 
         self::assertRules($rules);
@@ -44,7 +44,7 @@ final class ToBeClassesTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeClasses(),
+                static fn (Expr $assert): Expr => $assert->toBeClasses(),
             );
 
         self::assertRules($rules);
@@ -53,8 +53,11 @@ final class ToBeClassesTest extends TestCase
     public static function getClassLikeNonClasses(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

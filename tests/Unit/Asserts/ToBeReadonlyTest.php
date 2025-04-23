@@ -26,7 +26,7 @@ final class ToBeReadonlyTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php readonly class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeReadonly(),
+                static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
         self::assertRules($rules);
@@ -47,7 +47,7 @@ final class ToBeReadonlyTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeReadonly(),
+                static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
         self::assertRules($rules);
@@ -56,10 +56,15 @@ final class ToBeReadonlyTest extends TestCase
     public static function getClassLikeNonReadonly(): Generator
     {
         yield 'abstract class' => ['<?php abstract class Foo {}'];
+
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

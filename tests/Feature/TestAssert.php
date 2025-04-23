@@ -52,7 +52,6 @@ class TestAssert extends TestBuilder
     {
         $except
             ->byRule(ToBeAbstract::class, ToNotDependsOn::class)
-            ->byRule(DependsOnlyOn::class, ToHavePrefix::class)
-        ;
+            ->byRule(DependsOnlyOn::class, ToHavePrefix::class);
     }
 }

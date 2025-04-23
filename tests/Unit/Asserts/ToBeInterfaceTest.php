@@ -26,7 +26,7 @@ final class ToBeInterfaceTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php interface Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeInterfaces(),
+                static fn (Expr $assert): Expr => $assert->toBeInterfaces(),
             );
 
         self::assertRules($rules);
@@ -44,7 +44,7 @@ final class ToBeInterfaceTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeInterfaces(),
+                static fn (Expr $assert): Expr => $assert->toBeInterfaces(),
             );
 
         self::assertRules($rules);
@@ -53,8 +53,11 @@ final class ToBeInterfaceTest extends TestCase
     public static function getClassLikeNonEnums(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

@@ -21,11 +21,11 @@ class ClassDescription
 
     /**
      * @param array<array-key, AttributeGroup> $attrGroups
-     * @param Identifier|null $scalarType enum type
+     * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
-     * @param array<Name>|Name|null $extends
+     * @param null|array<Name>|Name $extends
      * @param array<TraitUse> $traits
-     * @param array<ClassMethod>|null $methods
+     * @param null|array<ClassMethod> $methods
      */
     public function __construct(
         public readonly ?string $name,
@@ -34,7 +34,7 @@ class ClassDescription
         public readonly ?string $namespace,
         public readonly ?Identifier $scalarType,
         public readonly ?array $interfaces,
-        public readonly array|Name|null $extends,
+        public readonly null|array|Name $extends,
         public readonly array $traits,
         public readonly ?int $flags,
         public readonly ClassType $classType,

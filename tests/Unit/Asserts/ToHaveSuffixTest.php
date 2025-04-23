@@ -26,7 +26,7 @@ final class ToHaveSuffixTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveSuffix('Controller'),
             );
 
@@ -48,7 +48,7 @@ final class ToHaveSuffixTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveSuffix('Controller'),
             );
 
@@ -58,17 +58,24 @@ final class ToHaveSuffixTest extends TestCase
     public static function getClassLikeWithSuffixProvider(): Generator
     {
         yield 'class' => ['<?php class FooController {}'];
+
         yield 'enum' => ['<?php enum FooController {}'];
+
         yield 'interface' => ['<?php interface FooController {}'];
+
         yield 'trait' => ['<?php trait FooController {}'];
     }
 
     public static function getClassLikeWithoutSuffixProvider(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

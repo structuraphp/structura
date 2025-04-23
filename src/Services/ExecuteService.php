@@ -43,7 +43,7 @@ class ExecuteService
      */
     protected function execute(Generator $classes, Expr $assertions): void
     {
-        /** @var ExprInterface|Expr $assert */
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             $this->builder->addPass((string) $assert);
         }
@@ -81,7 +81,7 @@ class ExecuteService
         Expr $assertions,
         ClassDescription $class,
     ): void {
-        /** @var ExprInterface|Expr $assert */
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             if ($assert instanceof ExprInterface) {
                 $predicate = $assert->assert($class);
@@ -105,7 +105,8 @@ class ExecuteService
         ClassDescription $class,
     ): bool {
         $isPass = true;
-        /** @var ExprInterface|Expr $assert */
+
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $key => $assert) {
             if ($assert instanceof ExprInterface) {
                 $predicate = $assert->assert($class);

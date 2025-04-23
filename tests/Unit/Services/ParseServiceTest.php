@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Structura\Tests\Unit\Services;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Structura\Services\ParseService;
 
+#[CoversClass(ParseService::class)]
 class ParseServiceTest extends TestCase
 {
     private ParseService $parseService;

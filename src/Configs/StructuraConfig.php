@@ -64,7 +64,7 @@ class StructuraConfig
     }
 
     /**
-     * @return  array<int,class-string<TestBuilder>>
+     * @return array<int,class-string<TestBuilder>>
      */
     public function getRules(): array
     {

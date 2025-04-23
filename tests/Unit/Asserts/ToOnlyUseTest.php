@@ -27,7 +27,7 @@ final class ToOnlyUseTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toOnlyUse(HasFactory::class),
             );
 
@@ -50,7 +50,7 @@ final class ToOnlyUseTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toOnlyUse(HasFactory::class),
             );
 
@@ -60,16 +60,22 @@ final class ToOnlyUseTest extends TestCase
     public static function getClassLikeWithTrait(): Generator
     {
         yield 'anonymous class' => ['<?php new class { use \Structura\Tests\Fixture\Concerns\HasFactory; };'];
+
         yield 'class' => ['<?php class Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; }'];
+
         yield 'enum' => ['<?php enum Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; };'];
+
         yield 'interface' => ['<?php interface Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; }'];
     }
 
     public static function getClassLikeWithoutTrait(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
     }
 }

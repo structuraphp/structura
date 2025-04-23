@@ -48,7 +48,7 @@ class AssertBuilder
 
     public function addViolation(
         string $key,
-        ExprInterface|Expr $assert,
+        Expr|ExprInterface $assert,
         ClassDescription $class,
     ): self {
         $this->pass[$key] = 0;

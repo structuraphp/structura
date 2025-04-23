@@ -27,7 +27,7 @@ final class ToHaveAttributeTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveAttribute('Attribute'),
             );
 
@@ -49,7 +49,7 @@ final class ToHaveAttributeTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveAttribute('Attribute'),
             );
 
@@ -59,16 +59,22 @@ final class ToHaveAttributeTest extends TestCase
     public static function getClassLikeWithAttribute(): Generator
     {
         yield 'class' => ['<?php #[Attribute] class Foo {}'];
+
         yield 'enum' => ['<?php #[Attribute] enum Foo {}'];
+
         yield 'interface' => ['<?php #[Attribute] interface Foo {}'];
+
         yield 'trait' => ['<?php #[Attribute] trait Foo {}'];
     }
 
     public static function getClassLikeWithoutAttribute(): Generator
     {
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

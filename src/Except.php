@@ -8,7 +8,7 @@ use Structura\Contracts\ExprInterface;
 
 class Except
 {
-    /** @var array<class-string, array<int, class-string<ExprInterface>>>  */
+    /** @var array<class-string, array<int, class-string<ExprInterface>>> */
     private array $expects;
 
     /**
@@ -23,8 +23,8 @@ class Except
     }
 
     /**
-     * @param string|null $className if anonymous class then null
-     * @param class-string<ExprInterface|Expr> $expr
+     * @param null|string $className if anonymous class then null
+     * @param class-string<Expr|ExprInterface> $expr
      */
     public function isExcept(?string $className, string $expr): bool
     {

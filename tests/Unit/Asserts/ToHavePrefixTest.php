@@ -27,7 +27,7 @@ final class ToHavePrefixTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHavePrefix('Controller'),
             );
 
@@ -49,7 +49,7 @@ final class ToHavePrefixTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHavePrefix('Controller'),
             );
 
@@ -59,17 +59,24 @@ final class ToHavePrefixTest extends TestCase
     public static function getClassLikeWithPrefixProvider(): Generator
     {
         yield 'class' => ['<?php class ControllerFoo {}'];
+
         yield 'enum' => ['<?php enum ControllerFoo {}'];
+
         yield 'interface' => ['<?php interface ControllerFoo {}'];
+
         yield 'trait' => ['<?php trait ControllerFoo {}'];
     }
 
     public static function getClassLikeWithoutPrefixProvider(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

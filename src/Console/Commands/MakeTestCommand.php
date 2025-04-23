@@ -88,7 +88,7 @@ class MakeTestCommand extends Command
         /** @var array<string,scalar> $data */
         $data = array_filter(
             array: $input->getOptions() + $input->getArguments(),
-            callback: static fn(mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );

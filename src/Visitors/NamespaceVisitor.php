@@ -49,7 +49,7 @@ class NamespaceVisitor extends NodeVisitorAbstract
     private array $namespace = [];
 
     /**
-     * @return  array<string,int>
+     * @return array<string,int>
      */
     public function getDependencies(): array
     {
@@ -62,6 +62,7 @@ class NamespaceVisitor extends NodeVisitorAbstract
                     && !\in_array($namespace, $dependencies, true)
                 ) {
                     unset($this->namespace[$namespace]);
+
                     break;
                 }
             }
@@ -116,7 +117,7 @@ class NamespaceVisitor extends NodeVisitorAbstract
             $this->addNamespace(
                 $use->name->getLine(),
                 $node->prefix->toString()
-                . "\\"
+                . '\\'
                 . $use->name->toString(),
             );
         }
@@ -176,7 +177,7 @@ class NamespaceVisitor extends NodeVisitorAbstract
         }
     }
 
-    private function addMethodDependency(ClassMethod|ArrowFunction|Closure $node): void
+    private function addMethodDependency(ArrowFunction|ClassMethod|Closure $node): void
     {
         $returnType = $node->returnType;
 
@@ -185,7 +186,7 @@ class NamespaceVisitor extends NodeVisitorAbstract
         }
     }
 
-    private function addParamDependency(Property|Param $node): void
+    private function addParamDependency(Param|Property $node): void
     {
         $type = $node->type;
 

@@ -27,7 +27,7 @@ final class ToHaveMethodTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveMethod('bar'),
             );
 
@@ -49,7 +49,7 @@ final class ToHaveMethodTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toHaveMethod('bar'),
             );
 
@@ -59,18 +59,26 @@ final class ToHaveMethodTest extends TestCase
     public static function getClassLikeWithoutMethod(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 
     public static function getClassLikeWithMethod(): Generator
     {
         yield 'anonymous class' => ['<?php new class { public function bar() {} };'];
+
         yield 'class' => ['<?php class Foo { public function bar() {} }'];
+
         yield 'enum' => ['<?php enum Foo { public function bar() {} }'];
+
         yield 'interface' => ['<?php interface Foo { public function bar(); }'];
+
         yield 'trait' => ['<?php trait Foo { public function bar() {} }'];
     }
 }

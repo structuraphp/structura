@@ -12,7 +12,6 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
-use PhpParser\PhpVersion;
 use Structura\ValueObjects\ClassDescription;
 use Structura\Visitors\ClassDescriptionVisitor;
 use Structura\Visitors\NamespaceVisitor;

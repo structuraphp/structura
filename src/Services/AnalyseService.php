@@ -75,7 +75,6 @@ class AnalyseService
         }
     }
 
-
     private function executeAssertions(
         TestBuilder $instance,
         string $testDox,

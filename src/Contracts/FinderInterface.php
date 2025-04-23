@@ -11,7 +11,7 @@ interface FinderInterface
 {
     /**
      * @param array<int,string>|string $dirs
-     * @param Closure(Finder): ?Finder|null $closure
+     * @param null|Closure(Finder): ?Finder $closure
      */
     public function fromDir(array|string $dirs, ?Closure $closure): ThatInterface;
 

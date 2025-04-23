@@ -31,7 +31,7 @@ class ToNotDependsOnTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toNotDependsOn([
                         JsonSerializable::class,
                     ]),
@@ -57,7 +57,7 @@ class ToNotDependsOnTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toNotDependsOn([
                         ArrayAccess::class,
                         Exception::class,

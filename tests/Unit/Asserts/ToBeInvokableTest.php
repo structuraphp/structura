@@ -26,7 +26,7 @@ final class ToBeInvokableTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo { public function __invoke() {} }')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeInvokable(),
+                static fn (Expr $assert): Expr => $assert->toBeInvokable(),
             );
 
         self::assertRules($rules);
@@ -47,7 +47,7 @@ final class ToBeInvokableTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toBeInvokable(),
             );
 
@@ -57,8 +57,11 @@ final class ToBeInvokableTest extends TestCase
     public static function getClassLikeNonInvokable(): Generator
     {
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

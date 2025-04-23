@@ -26,7 +26,7 @@ final class ToImplementNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toImplementNothing(),
             );
 
@@ -48,7 +48,7 @@ final class ToImplementNothingTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toImplementNothing(),
             );
 
@@ -58,14 +58,18 @@ final class ToImplementNothingTest extends TestCase
     public static function getClassLikeImplementsNothing(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
     }
 
     public static function getClassLikeImplements(): Generator
     {
         yield 'anonymous class' => ['<?php new class implements BarInterface {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo implements BarInterface {}'];
+
         yield 'enum' => ['<?php enum Foo implements BarInterface {}'];
     }
 }

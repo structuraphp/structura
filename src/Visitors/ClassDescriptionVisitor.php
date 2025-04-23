@@ -44,7 +44,6 @@ class ClassDescriptionVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof ClassLike && !$this->class instanceof ClassDescription) {
-
             $this->class = new ClassDescription(
                 name: $node->name?->name,
                 attrGroups: $node->attrGroups,

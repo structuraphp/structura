@@ -26,7 +26,7 @@ final class ToBeEnumsTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php enum Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeEnums(),
+                static fn (Expr $assert): Expr => $assert->toBeEnums(),
             );
 
         self::assertRules($rules);
@@ -44,7 +44,7 @@ final class ToBeEnumsTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeEnums(),
+                static fn (Expr $assert): Expr => $assert->toBeEnums(),
             );
 
         self::assertRules($rules);
@@ -53,8 +53,11 @@ final class ToBeEnumsTest extends TestCase
     public static function getClassLikeNonEnums(): Generator
     {
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }
