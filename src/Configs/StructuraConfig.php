@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Structura\Configs;
 
+use Closure;
+use Structura\Builder\SutBuilder;
 use Structura\Testing\TestBuilder;
 use Structura\ValueObjects\RootNamespaceValueObject;
 use Symfony\Component\Finder\Finder;
@@ -15,6 +17,9 @@ class StructuraConfig
 
     /** @var array<int,string> */
     private array $extensions;
+
+    /** @var array<int,SutBuilder>|null */
+    private ?array $sutBuilder = null;
 
     private ?RootNamespaceValueObject $archiRootNamespace = null;
 
@@ -53,6 +58,16 @@ class StructuraConfig
         return $this;
     }
 
+    public function sut(Closure $callback): self
+    {
+        $builder = new SutBuilder();
+        $callback($builder);
+
+        $this->sutBuilder[] = $builder;
+
+        return $this;
+    }
+
     public function archiRootNamespace(string $namespace, string $directory): self
     {
         $this->archiRootNamespace = new RootNamespaceValueObject(
@@ -84,6 +99,14 @@ class StructuraConfig
     public function getExtensions(): array
     {
         return $this->extensions;
+    }
+
+    /**
+     * @return array<int,SutBuilder>|null
+     */
+    public function getSutBuilders(): ?array
+    {
+        return $this->sutBuilder;
     }
 
     private function setRulesByRootNamespace(): void
