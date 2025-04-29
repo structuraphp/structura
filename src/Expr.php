@@ -43,7 +43,7 @@ use Traversable;
 class Expr implements IteratorAggregate
 {
     /** @var array<int,Expr|ExprInterface> */
-    private array $asserts;
+    private array $asserts = [];
 
     /** @var array<int,array<int,class-string>> */
     private array $hiddenDependencies = [];

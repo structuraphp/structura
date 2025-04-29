@@ -64,6 +64,12 @@ final class AnalyseServiceTest extends TestCase
            | to extend <promote>DomainException</promote>
              & to extend <promote>BadMethodCallException</promote>
 
+        <pass> PASS </pass> Asserts architecture rules in Structura\Tests\Feature\TestVoid
+        66 classes from
+         - dirs
+        That
+        Should
+
         EOF;
 
         self::assertSame($expected, implode(PHP_EOL, $result->prints));

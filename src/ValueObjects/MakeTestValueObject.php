@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Dtos;
+namespace Structura\ValueObjects;
 
 use ArrayAccess;
 use InvalidArgumentException;
 
-final readonly class MakeTestDto
+final readonly class MakeTestValueObject
 {
     public function __construct(
-        public string $configPath,
+        public string $testClassName,
+        public string $path = 'src',
     ) {}
 
     /**
@@ -19,9 +20,12 @@ final readonly class MakeTestDto
     public static function fromArray(array|ArrayAccess $data): self
     {
         return new self(
-            configPath: \is_string($data['config'])
-                ? $data['config']
+            testClassName: \is_string($data['name'])
+                ? $data['name']
                 : throw new InvalidArgumentException(),
+            path: isset($data['path']) && \is_string($data['path'])
+                ? $data['path']
+                : 'src',
         );
     }
 }
