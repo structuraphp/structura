@@ -7,11 +7,11 @@ namespace Structura\ValueObjects;
 use ArrayAccess;
 use InvalidArgumentException;
 
-class MakeTestValueObject
+final readonly class MakeTestValueObject
 {
     public function __construct(
-        public readonly string $testClassName,
-        public readonly string $path = 'src',
+        public string $testClassName,
+        public string $path = 'src',
     ) {}
 
     /**

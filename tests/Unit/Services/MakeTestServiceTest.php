@@ -11,7 +11,7 @@ use Structura\Services\MakeTestService;
 use Structura\ValueObjects\MakeTestValueObject;
 
 #[CoversClass(MakeTestService::class)]
-class MakeTestServiceTest extends TestCase
+final class MakeTestServiceTest extends TestCase
 {
     public function testAnalyseService(): void
     {
