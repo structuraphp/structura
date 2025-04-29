@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Structura\Console\Commands;
 
 use Closure;
+use Exception;
 use InvalidArgumentException;
 use Structura\Configs\StructuraConfig;
 use Structura\Console\Dtos\MakeTestDto;
-use Structura\ValueObjects\RootNamespaceValueObject;
+use Structura\Services\MakeTestService;
+use Structura\ValueObjects\MakeTestValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
     name: 'make',
@@ -32,55 +32,50 @@ class MakeTestCommand extends Command
             return self::INVALID;
         }
 
+        $nameResponse = $io->ask('Test name');
+        if (!is_string($nameResponse) || $nameResponse === '') {
+            $io->error('Test name is required');
+
+            return self::INVALID;
+        }
+
+        $pathResponse = $io->ask('Path', 'src');
+        if (!is_string($pathResponse) || $pathResponse === '') {
+            $io->error('Path is required');
+
+            return self::INVALID;
+        }
+
         $archiConfig = $this->getStructuraConfig($dto->configPath);
 
         $io->writeln(\sprintf('Runtime: %-5s PHP %s', '', PHP_VERSION));
         $io->writeln(\sprintf('Configuration: %s', $dto->configPath));
 
-        $rootNamespace = $archiConfig->getArchiRootNamespace();
-        if (!$rootNamespace instanceof RootNamespaceValueObject) {
-            $io->error('Vous devez définir le root namespace');
+        $makeService = new MakeTestService($archiConfig);
+
+        try {
+            $makeValueObject = $makeService->make(
+                new MakeTestValueObject(
+                    testClassName: $nameResponse,
+                    path: $pathResponse,
+                ),
+            );
+
+            $makeService->generate($makeValueObject);
+        } catch (Exception $exception) {
+            $io->error($exception->getMessage());
 
             return self::FAILURE;
         }
 
-        $className = rtrim($dto->testClassName, 'Test') . 'Test';
-
-        $configContents = str_replace(
-            [
-                '{{ namespace }}',
-                '{{ class }}',
-            ],
-            [
-                $rootNamespace->namespace,
-                $className,
-            ],
-            (string) file_get_contents(
-                \sprintf('%s/Stubs/test.php.dist', \dirname(__DIR__)),
-            ),
-        );
-
-        (new Filesystem())->dumpFile(
+        $io->info(
             \sprintf(
-                '%s/%s/%s.php',
-                getcwd(),
-                $rootNamespace->directory,
-                $className,
+                'Test file %s is added now. Run composer dump-autoload',
+                $makeValueObject->className,
             ),
-            $configContents,
-        );
-
-        $io->writeln(
-            \sprintf('<info>Test file %s is added now</info>', $className),
         );
 
         return self::SUCCESS;
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('name', InputArgument::REQUIRED, 'Test class name');
     }
 
     private function getDto(InputInterface $input): MakeTestDto
