@@ -94,7 +94,7 @@ final class MakeTestCommandTest extends TestCase
 
         self::assertStringContainsString(
             sprintf('[ERROR] File %s already exists', $this->filename),
-            $display,
+            str_replace([' ', PHP_EOL], [' ', ' '], $display),
         );
         self::assertSame(Command::FAILURE, $statusCode);
     }
