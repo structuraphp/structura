@@ -10,13 +10,14 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Structura\Asserts\ToOnlyUseTrait;
 use Structura\Expr;
 use Structura\Tests\Fixture\Concerns\HasFactory;
 use Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToOnlyUseTest::class)]
-#[CoversMethod(Expr::class, 'toOnlyUse')]
-final class ToOnlyUseTest extends TestCase
+#[CoversClass(ToOnlyUseTrait::class)]
+#[CoversMethod(Expr::class, 'toOnlyUseTrait')]
+final class ToOnlyUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -28,7 +29,7 @@ final class ToOnlyUseTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toOnlyUse(HasFactory::class),
+                    ->toOnlyUseTrait(HasFactory::class),
             );
 
         self::assertRules($rules);
@@ -51,7 +52,7 @@ final class ToOnlyUseTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toOnlyUse(HasFactory::class),
+                    ->toOnlyUseTrait(HasFactory::class),
             );
 
         self::assertRules($rules);

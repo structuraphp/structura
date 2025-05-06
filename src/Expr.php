@@ -25,15 +25,14 @@ use Structura\Asserts\ToHaveSuffix;
 use Structura\Asserts\ToImplement;
 use Structura\Asserts\ToImplementNothing;
 use Structura\Asserts\ToNotDependsOn;
+use Structura\Asserts\ToNotUseTrait;
 use Structura\Asserts\ToOnlyImplement;
-use Structura\Asserts\ToOnlyUse;
-use Structura\Asserts\ToUse;
+use Structura\Asserts\ToOnlyUseTrait;
 use Structura\Asserts\ToUseDeclare;
-use Structura\Asserts\ToUseNothing;
+use Structura\Asserts\ToUseTrait;
 use Structura\Contracts\ExprInterface;
 use Structura\Enums\ExprType;
 use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ExpectValueObject;
 use Structura\ValueObjects\ViolationValueObject;
 use Traversable;
 
@@ -220,26 +219,26 @@ class Expr implements IteratorAggregate
     /**
      * @param class-string $name
      */
-    public function toOnlyUse(string $name, string $message = ''): self
+    public function toOnlyUseTrait(string $name, string $message = ''): self
     {
         $this->hiddenDependencies[] = [$name];
 
-        return $this->addExpr(new ToOnlyUse($name, $message));
+        return $this->addExpr(new ToOnlyUseTrait($name, $message));
     }
 
     /**
      * @param array<int,class-string>|class-string $names
      */
-    public function toUse(array|string $names, string $message = ''): self
+    public function toUseTrait(array|string $names, string $message = ''): self
     {
         $this->hiddenDependencies[] = (array) $names;
 
-        return $this->addExpr(new ToUse($names, $message));
+        return $this->addExpr(new ToUseTrait($names, $message));
     }
 
-    public function toUseNothing(?ExpectValueObject $expect = null, string $message = ''): self
+    public function toNotUseTrait(string $message = ''): self
     {
-        return $this->addExpr(new ToUseNothing($message, $expect));
+        return $this->addExpr(new ToNotUseTrait($message));
     }
 
     public function toUseStrictTypes(string $message = ''): self

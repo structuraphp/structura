@@ -40,7 +40,7 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <green>✔</green> to have prefix <promote>To</promote>
          <green>✔</green> to extend nothing
-         <fire>✘</fire> to use nothing <fire>3 error(s)</fire>
+         <fire>✘</fire> to not use trait <fire>3 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
 
         <violation> ERROR </violation> Controllers architecture rules in Structura\Tests\Feature\TestController
@@ -49,7 +49,7 @@ final class AnalyseServiceTest extends TestCase
         Should
          <green>✔</green> to be classes
          <green>✔</green> to use declare <promote>strict_types=1</promote>
-         <fire>✘</fire> to use nothing <fire>1 error(s)</fire>
+         <fire>✘</fire> to not use trait <fire>1 error(s)</fire>
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
@@ -65,7 +65,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in Structura\Tests\Feature\TestVoid
-        66 classes from
+        65 classes from
          - dirs
         That
         Should

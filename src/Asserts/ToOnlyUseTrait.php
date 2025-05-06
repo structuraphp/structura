@@ -4,53 +4,42 @@ declare(strict_types=1);
 
 namespace Structura\Asserts;
 
-use Structura\Concerns\Arr;
 use Structura\Contracts\ExprInterface;
 use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ExpectValueObject;
 use Structura\ValueObjects\ViolationValueObject;
 
-class ToUseNothing implements ExprInterface
+class ToOnlyUseTrait implements ExprInterface
 {
-    use Arr;
-
+    /**
+     * @param class-string $name
+     */
     public function __construct(
+        private readonly string $name,
         private readonly string $message,
-        private readonly ?ExpectValueObject $expect = null,
     ) {}
 
     public function __toString(): string
     {
-        return 'to use nothing';
+        return \sprintf('to only use trait <promote>%s</promote>', $this->name);
     }
 
     public function assert(ClassDescription $class): bool
     {
-        if ($class->traits === []) {
-            return true;
-        }
-
-        if ($this->expect instanceof ExpectValueObject) {
-            return $this->first(
-                $this->expect->classes,
-                static fn (string $value): bool => $class->name === $value,
-            );
-        }
-
-        return false;
+        return $class->hasTrait($this->name);
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must not use a trait',
+                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
+                $this->name,
             ),
             $this::class,
-            $class->traits[0]->getLine(),
+            $class->lines,
             $class->getFileBasename(),
             $this->message,
         );

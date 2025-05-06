@@ -25,7 +25,7 @@ class TestController extends TestBuilder
                 static fn (Expr $expr): Expr => $expr
                     ->toBeClasses()
                     ->toUseDeclare('strict_types', '1')
-                    ->toUseNothing()
+                    ->toNotUseTrait()
                     ->toHaveSuffix('Controller')
                     ->toExtend(ControllerBase::class)
                     ->toHaveConstructor()
