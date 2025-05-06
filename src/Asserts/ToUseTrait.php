@@ -8,35 +8,43 @@ use Structura\Contracts\ExprInterface;
 use Structura\ValueObjects\ClassDescription;
 use Structura\ValueObjects\ViolationValueObject;
 
-class ToOnlyUse implements ExprInterface
+class ToUseTrait implements ExprInterface
 {
+    /** @var array<int,class-string> */
+    private readonly array $names;
+
     /**
-     * @param class-string $name
+     * @param array<int,class-string>|class-string $names
      */
     public function __construct(
-        private readonly string $name,
+        array|string $names,
         private readonly string $message,
-    ) {}
+    ) {
+        $this->names = (array) $names;
+    }
 
     public function __toString(): string
     {
-        return \sprintf('to only use <promote>%s</promote>', $this->name);
+        return \sprintf(
+            'to use trait <promote>%s</promote>',
+            implode(', ', $this->names),
+        );
     }
 
     public function assert(ClassDescription $class): bool
     {
-        return $class->hasTrait($this->name);
+        return array_diff($this->names, $class->getTraitNames()) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
-                $this->name,
+                implode(', ', $this->names),
             ),
             $this::class,
             $class->lines,

@@ -4,50 +4,40 @@ declare(strict_types=1);
 
 namespace Structura\Asserts;
 
+use Structura\Concerns\Arr;
 use Structura\Contracts\ExprInterface;
 use Structura\ValueObjects\ClassDescription;
 use Structura\ValueObjects\ViolationValueObject;
 
-class ToUse implements ExprInterface
+class ToNotUseTrait implements ExprInterface
 {
-    /** @var array<int,class-string> */
-    private readonly array $names;
+    use Arr;
 
-    /**
-     * @param array<int,class-string>|class-string $names
-     */
     public function __construct(
-        array|string $names,
         private readonly string $message,
-    ) {
-        $this->names = (array) $names;
-    }
+    ) {}
 
     public function __toString(): string
     {
-        return \sprintf(
-            'to use <promote>%s</promote>',
-            implode(', ', $this->names),
-        );
+        return 'to not use trait';
     }
 
     public function assert(ClassDescription $class): bool
     {
-        return array_diff($this->names, $class->getTraitNames()) === [];
+        return $class->traits === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
+                'Resource <promote>%s</promote> must not use a trait',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
-                implode(', ', $this->names),
             ),
             $this::class,
-            $class->lines,
+            $class->traits[0]->getLine(),
             $class->getFileBasename(),
             $this->message,
         );

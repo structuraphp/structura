@@ -10,62 +10,50 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use Structura\Asserts\ToUseTrait;
 use Structura\Expr;
+use Structura\Tests\Fixture\Concerns\HasFactory;
 use Structura\Tests\Helper\ArchitectureAsserts;
-use Structura\ValueObjects\ExpectValueObject;
 
-#[CoversClass(ToUseNothingTest::class)]
-#[CoversMethod(Expr::class, 'toUseNothing')]
-final class ToUseNothingTest extends TestCase
+#[CoversClass(ToUseTrait::class)]
+#[CoversMethod(Expr::class, 'toUseTrait')]
+final class ToUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
 
+    #[DataProvider('getClassLikeWithTrait')]
+    public function testToExtend(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toUseTrait(HasFactory::class),
+            );
+
+        self::assertRules($rules);
+    }
+
     #[DataProvider('getClassLikeWithoutTrait')]
-    public function testToUseNothing(string $raw): void
-    {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->should(
-                static fn (Expr $assert): Expr => $assert
-                    ->toUseNothing(),
-            );
-
-        self::assertRules($rules);
-    }
-
-    #[DataProvider('getClassLikeWithTrait')]
-    public function testToUseNothingWithExpect(string $raw): void
-    {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->that(static fn (Expr $expr): Expr => $expr->toBeClasses())
-            ->should(
-                static fn (Expr $assert): Expr => $assert
-                    ->toUseNothing(new ExpectValueObject(['Foo'])),
-            );
-
-        self::assertRules($rules);
-    }
-
-    #[DataProvider('getClassLikeWithTrait')]
-    public function testShouldFailToUseNothing(string $raw, string $exceptName = 'Foo'): void
-    {
+    public function testShouldFailToExtendsWithInterface(
+        string $raw,
+        string $exceptName = 'Foo',
+    ): void {
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
             \sprintf(
-                'Resource <promote>%s</promote> must not use a trait',
+                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
                 $exceptName,
+                HasFactory::class,
             ),
         );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toUseNothing(),
+                    ->toUseTrait(HasFactory::class),
             );
 
         self::assertRules($rules);
@@ -73,18 +61,18 @@ final class ToUseNothingTest extends TestCase
 
     public static function getClassLikeWithTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class { use \HasFactory; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php new class { use \Structura\Tests\Fixture\Concerns\HasFactory; };'];
 
-        yield 'class' => ['<?php class Foo { use \HasFactory; }'];
+        yield 'class' => ['<?php class Foo { use Structura\Tests\Fixture\Concerns\HasFactory; }'];
 
-        yield 'enum' => ['<?php enum Foo { use \HasFactory; };'];
+        yield 'enum' => ['<?php enum Foo { use Structura\Tests\Fixture\Concerns\HasFactory; };'];
 
-        yield 'interface' => ['<?php interface Foo { use \HasFactory; }'];
+        yield 'interface' => ['<?php interface Foo { use Structura\Tests\Fixture\Concerns\HasFactory; }'];
     }
 
     public static function getClassLikeWithoutTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 
