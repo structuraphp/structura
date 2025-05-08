@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Concerns\Arr;
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 class DependsOnlyOn implements ExprInterface
 {

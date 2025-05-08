@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Console\Commands;
+namespace StructuraPhp\Structura\Tests\Unit\Console\Commands;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Console\Commands\MakeTestCommand;
-use Structura\Console\Kernel;
+use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
+use StructuraPhp\Structura\Console\Kernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 

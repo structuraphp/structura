@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
-use Structura\Except;
-use Structura\Expr;
-use Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
 class RuleBuilder

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use RuntimeException;
-use Structura\Configs\StructuraConfig;
-use Structura\ValueObjects\GenerateTestValueObject;
-use Structura\ValueObjects\MakeTestValueObject;
-use Structura\ValueObjects\RootNamespaceValueObject;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\ValueObjects\GenerateTestValueObject;
+use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
+use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 use Symfony\Component\Filesystem\Filesystem;
 
 class MakeTestService

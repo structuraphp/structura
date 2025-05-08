@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Contracts;
+namespace StructuraPhp\Structura\Contracts;
 
 use Closure;
 use Symfony\Component\Finder\Finder;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Visitors;
+namespace StructuraPhp\Structura\Visitors;
 
 use InvalidArgumentException;
 use PhpParser\Node;
@@ -13,8 +13,8 @@ use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\NodeVisitorAbstract;
-use Structura\Enums\ClassType;
-use Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 class ClassDescriptionVisitor extends NodeVisitorAbstract
 {

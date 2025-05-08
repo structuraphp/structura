@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Commands;
+namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
-use Structura\Configs\StructuraConfig;
-use Structura\Console\Dtos\AnalyzeDto;
-use Structura\Console\Enums\StyleCustom;
-use Structura\Services\AnalyseService;
-use Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
+use StructuraPhp\Structura\Console\Enums\StyleCustom;
+use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;

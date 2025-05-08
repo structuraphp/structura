@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Http\Controller;
+namespace StructuraPhp\Structura\Tests\Fixture\Http\Controller;
 
-use Structura\Tests\Fixture\Concerns;
-use Structura\Tests\Fixture\Contract;
-use Structura\Tests\Fixture\Http\ControllerBase;
-use Structura\Tests\Fixture\Models\User;
+use StructuraPhp\Structura\Tests\Fixture\Concerns;
+use StructuraPhp\Structura\Tests\Fixture\Contract;
+use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
+use StructuraPhp\Structura\Tests\Fixture\Models\User;
 
 class PermissionController extends ControllerBase implements Contract\ShouldQueueInterface
 {

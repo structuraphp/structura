@@ -2,38 +2,38 @@
 
 declare(strict_types=1);
 
-namespace Structura;
+namespace StructuraPhp\Structura;
 
 use Closure;
 use Generator;
 use IteratorAggregate;
-use Structura\Asserts\DependsOnlyOn;
-use Structura\Asserts\ToBeAbstract;
-use Structura\Asserts\ToBeAnonymousClasses;
-use Structura\Asserts\ToBeClasses;
-use Structura\Asserts\ToBeEnums;
-use Structura\Asserts\ToBeFinal;
-use Structura\Asserts\ToBeInterfaces;
-use Structura\Asserts\ToBeReadonly;
-use Structura\Asserts\ToBeTraits;
-use Structura\Asserts\ToExtend;
-use Structura\Asserts\ToExtendNothing;
-use Structura\Asserts\ToHaveAttribute;
-use Structura\Asserts\ToHaveMethod;
-use Structura\Asserts\ToHavePrefix;
-use Structura\Asserts\ToHaveSuffix;
-use Structura\Asserts\ToImplement;
-use Structura\Asserts\ToImplementNothing;
-use Structura\Asserts\ToNotDependsOn;
-use Structura\Asserts\ToNotUseTrait;
-use Structura\Asserts\ToOnlyImplement;
-use Structura\Asserts\ToOnlyUseTrait;
-use Structura\Asserts\ToUseDeclare;
-use Structura\Asserts\ToUseTrait;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Asserts\ToBeAbstract;
+use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Asserts\ToBeClasses;
+use StructuraPhp\Structura\Asserts\ToBeEnums;
+use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Asserts\ToBeInterfaces;
+use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Asserts\ToExtendNothing;
+use StructuraPhp\Structura\Asserts\ToHaveAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHavePrefix;
+use StructuraPhp\Structura\Asserts\ToHaveSuffix;
+use StructuraPhp\Structura\Asserts\ToImplement;
+use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyImplement;
+use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
+use StructuraPhp\Structura\Asserts\ToUseDeclare;
+use StructuraPhp\Structura\Asserts\ToUseTrait;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Traversable;
 
 /**

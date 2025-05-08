@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Contract;
+namespace StructuraPhp\Structura\Tests\Fixture\Contract;
 
 interface ShouldQueueInterface {}

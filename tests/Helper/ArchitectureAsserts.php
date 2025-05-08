@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Helper;
+namespace StructuraPhp\Structura\Tests\Helper;
 
 use PHPUnit\Framework\Assert;
-use Structura\Builder\AllClasses;
-use Structura\Builder\RuleBuilder;
-use Structura\Services\ExecuteService;
+use StructuraPhp\Structura\Builder\AllClasses;
+use StructuraPhp\Structura\Builder\RuleBuilder;
+use StructuraPhp\Structura\Services\ExecuteService;
 
 trait ArchitectureAsserts
 {

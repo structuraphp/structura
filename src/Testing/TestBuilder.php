@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura\Testing;
+namespace StructuraPhp\Structura\Testing;
 
-use Structura\Builder\AllClasses;
+use StructuraPhp\Structura\Builder\AllClasses;
 
 abstract class TestBuilder
 {

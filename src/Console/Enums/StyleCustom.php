@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Enums;
+namespace StructuraPhp\Structura\Console\Enums;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 

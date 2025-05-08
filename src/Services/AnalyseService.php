@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
-use Structura\Attributes\TestDox;
-use Structura\Builder\AssertBuilder;
-use Structura\Configs\StructuraConfig;
-use Structura\Expr;
-use Structura\Testing\TestBuilder;
-use Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Finder\Finder;
 
 /**

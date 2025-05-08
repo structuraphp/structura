@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Visitors;
+namespace StructuraPhp\Structura\Visitors;
 
 use PhpParser\Node;
 use PhpParser\Node\Attribute;

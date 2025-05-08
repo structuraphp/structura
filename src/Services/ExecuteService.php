@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use Generator;
 use InvalidArgumentException;
-use Structura\Builder\AssertBuilder;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
-use Structura\Expr;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
 class ExecuteService
