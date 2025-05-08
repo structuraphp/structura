@@ -152,9 +152,9 @@ class Expr implements IteratorAggregate
     ): self {
         return $this->addExpr(
             new DependsOnlyOn(
-                array_unique(array_merge((array)$names, ...$this->hiddenDependencies)),
-                (array)$patterns,
-                $message
+                array_unique(array_merge((array) $names, ...$this->hiddenDependencies)),
+                (array) $patterns,
+                $message,
             ),
         );
     }
@@ -169,7 +169,7 @@ class Expr implements IteratorAggregate
         string $message = '',
     ): self {
         return $this->addExpr(
-            new ToNotDependsOn((array)$names, (array)$patterns, $message)
+            new ToNotDependsOn((array) $names, (array) $patterns, $message),
         );
     }
 

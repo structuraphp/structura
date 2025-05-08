@@ -211,14 +211,13 @@ class ClassDescription
         return false;
     }
 
-
     /**
      * @param array<int,string> $patterns
+     *
      * @return array<int,string>
      */
     public function pregGrepAll(array $patterns): array
     {
-        var_dump($patterns);exit();
         $matches = [];
         if ($patterns === []) {
             return [];
