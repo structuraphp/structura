@@ -31,11 +31,17 @@ class DependsOnlyOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOn([
-                        ArrayAccess::class,
-                        Exception::class,
-                        Stringable::class,
-                    ]),
+                    ->dependsOnlyOn(
+                        names: [
+                            ArrayAccess::class,
+                            Exception::class,
+                            Stringable::class,
+                        ],
+                        patterns: [
+                            'Depend\(Bar|Baz)',
+                            'Stri.+',
+                        ],
+                    ),
             );
 
         self::assertRules($rules);
@@ -47,10 +53,10 @@ class DependsOnlyOnTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
             \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s, %s, %s',
+                'Resource <promote>Foo</promote> must depends only on these namespaces %s, %s, %s, [1+]',
                 ArrayAccess::class,
+                'Depend\Bar',
                 Exception::class,
-                Stringable::class,
             ),
         );
 
@@ -59,7 +65,7 @@ class DependsOnlyOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOn([]),
+                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
             );
 
         self::assertRules($rules);
@@ -72,6 +78,8 @@ class DependsOnlyOnTest extends TestCase
             <?php
             
             use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
             
             class Foo implements \Stringable {
                 public function __construct(ArrayAccess $arrayAccess) {

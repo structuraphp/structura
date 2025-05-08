@@ -143,22 +143,34 @@ class Expr implements IteratorAggregate
 
     /**
      * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns to match class names against
      */
-    public function dependsOnlyOn(array|string $names): self
-    {
+    public function dependsOnlyOn(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
         return $this->addExpr(
             new DependsOnlyOn(
-                array_unique(array_merge((array) $names, ...$this->hiddenDependencies)),
+                array_unique(array_merge((array)$names, ...$this->hiddenDependencies)),
+                (array)$patterns,
+                $message
             ),
         );
     }
 
     /**
      * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function toNotDependsOn(array|string $names): self
-    {
-        return $this->addExpr(new ToNotDependsOn((array) $names));
+    public function toNotDependsOn(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new ToNotDependsOn((array)$names, (array)$patterns, $message)
+        );
     }
 
     /**

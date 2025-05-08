@@ -15,27 +15,39 @@ class ToNotDependsOn implements ExprInterface
 
     /**
      * @param array<int,class-string> $names
+     * @param array<int,string> $patterns
      */
     public function __construct(
         private readonly array $names,
+        private readonly array $patterns,
+        private readonly string $message = '',
     ) {}
 
     public function __toString(): string
     {
         return \sprintf(
-            'to not depends on these namespaces <promote>%s</promote>',
-            $this->implodeMore($this->names),
+            'to not depend on these namespaces <promote>%s</promote>',
+            $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
 
     public function assert(ClassDescription $class): bool
     {
-        return array_intersect($class->getDependencies(), $this->names) === [];
+        $dependencies = array_merge(
+            $this->names,
+            $class->pregGrepAll($this->patterns),
+        );
+
+        return array_intersect($class->getDependencies(), $dependencies) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
-        $dependencies = array_intersect($class->getDependencies(), $this->names);
+        $dependencies = array_merge(
+            $this->names,
+            $class->pregGrepAll($this->patterns),
+        );
+        $dependencies = array_intersect($class->getDependencies(), $dependencies);
         sort($dependencies);
 
         return new ViolationValueObject(
@@ -49,7 +61,7 @@ class ToNotDependsOn implements ExprInterface
             $this::class,
             $class->lines,
             $class->getFileBasename(),
-            '',
+            $this->message,
         );
     }
 }

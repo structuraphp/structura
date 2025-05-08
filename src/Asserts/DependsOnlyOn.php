@@ -15,27 +15,39 @@ class DependsOnlyOn implements ExprInterface
 
     /**
      * @param array<int,class-string> $names
+     * @param array<int,string> $patterns
      */
     public function __construct(
         private readonly array $names,
+        private readonly array $patterns,
+        private readonly string $message = '',
     ) {}
 
     public function __toString(): string
     {
         return \sprintf(
             'depends only on these namespaces <promote>%s</promote>',
-            $this->implodeMore($this->names),
+            $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
 
     public function assert(ClassDescription $class): bool
     {
-        return array_diff($class->getDependencies(), $this->names) === [];
+        $dependencies = array_merge(
+            $this->names,
+            $class->pregGrepAll($this->patterns),
+        );
+
+        return array_diff($class->getDependencies(), array_unique($dependencies)) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
-        $dependencies = array_diff($class->getDependencies(), $this->names);
+        $dependencies = array_merge(
+            $this->names,
+            $class->pregGrepAll($this->patterns),
+        );
+        $dependencies = array_diff($class->getDependencies(), $dependencies);
         sort($dependencies);
 
         return new ViolationValueObject(
@@ -49,7 +61,7 @@ class DependsOnlyOn implements ExprInterface
             $this::class,
             $class->lines,
             $class->getFileBasename(),
-            '',
+            $this->message,
         );
     }
 }

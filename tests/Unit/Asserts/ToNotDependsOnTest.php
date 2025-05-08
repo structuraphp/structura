@@ -32,9 +32,10 @@ class ToNotDependsOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOn([
-                        JsonSerializable::class,
-                    ]),
+                    ->toNotDependsOn(
+                        names: [JsonSerializable::class],
+                        patterns: ['Depend\(Bar|Baz)'],
+                    ),
             );
 
         self::assertRules($rules);
@@ -46,10 +47,10 @@ class ToNotDependsOnTest extends TestCase
         $this->expectException(ExpectationFailedException::class);
         $this->expectExceptionMessage(
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s',
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s, [1+]',
                 ArrayAccess::class,
+                'Depend\Bar',
                 Exception::class,
-                Stringable::class,
             ),
         );
 
@@ -58,11 +59,14 @@ class ToNotDependsOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOn([
-                        ArrayAccess::class,
-                        Exception::class,
-                        Stringable::class,
-                    ]),
+                    ->toNotDependsOn(
+                        names: [
+                            ArrayAccess::class,
+                            Exception::class,
+                            Stringable::class,
+                        ],
+                        patterns: ['Depend\(Bar|Baz)'],
+                    ),
             );
 
         self::assertRules($rules);
@@ -75,6 +79,8 @@ class ToNotDependsOnTest extends TestCase
             <?php
             
             use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
             
             class Foo implements \Stringable {
                 public function __construct(ArrayAccess $arrayAccess) {
