@@ -34,7 +34,7 @@ class ToNotDependsOnTest extends TestCase
                 static fn (Expr $assert): Expr => $assert
                     ->toNotDependsOn(
                         names: [JsonSerializable::class],
-                        patterns: ['Depend\(Bar|Baz)'],
+                        patterns: ['Depend\Baz'],
                     ),
             );
 

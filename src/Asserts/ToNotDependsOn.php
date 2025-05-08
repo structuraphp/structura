@@ -26,7 +26,7 @@ class ToNotDependsOn implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to not depend on these namespaces <promote>%s</promote>',
+            'to not depends on these namespaces <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }

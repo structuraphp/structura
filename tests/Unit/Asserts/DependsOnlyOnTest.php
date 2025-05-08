@@ -38,7 +38,7 @@ class DependsOnlyOnTest extends TestCase
                             Stringable::class,
                         ],
                         patterns: [
-                            'Depend\(Bar|Baz)',
+                            'Depend\(Bar|Bap)',
                             'Stri.+',
                         ],
                     ),
