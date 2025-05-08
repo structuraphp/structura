@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
 use Closure;
-use Structura\Contracts\ShouldInterface;
-use Structura\Except;
-use Structura\Expr;
+use StructuraPhp\Structura\Contracts\ShouldInterface;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
 
 class ThatBuilder implements ShouldInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Attributes;
+namespace StructuraPhp\Structura\Attributes;
 
 use Attribute;
 

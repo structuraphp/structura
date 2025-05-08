@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Concerns;
+namespace StructuraPhp\Structura\Concerns;
 
 use Closure;
 

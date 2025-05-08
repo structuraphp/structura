@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Feature;
+namespace StructuraPhp\Structura\Tests\Feature;
 
 use BadMethodCallException;
 use DomainException;
 use Exception;
 use InvalidArgumentException;
-use Structura\Attributes\TestDox;
-use Structura\Expr;
-use Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Testing\TestBuilder;
 
 class TestException extends TestBuilder
 {

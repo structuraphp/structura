@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Services;
+namespace StructuraPhp\Structura\Tests\Unit\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Configs\StructuraConfig;
-use Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Services\AnalyseService;
 
 #[CoversClass(AnalyseService::class)]
 final class AnalyseServiceTest extends TestCase
@@ -17,7 +17,7 @@ final class AnalyseServiceTest extends TestCase
         $service = new AnalyseService(
             StructuraConfig::make()
                 ->archiRootNamespace(
-                    'Structura\Tests\Feature',
+                    'StructuraPhp\Structura\Tests\Feature',
                     'tests/Feature',
                 ),
         );
@@ -28,14 +28,14 @@ final class AnalyseServiceTest extends TestCase
         self::assertSame(12, $result->countPass);
 
         $expected = <<<'EOF'
-        <violation> ERROR </violation> Asserts architecture rules in Structura\Tests\Feature\TestAssert
+        <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
         24 classes from
          - dirs
         That
-         - to implement <promote>Structura\Contracts\ExprInterface</promote>
+         - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
         Should
          <green>✔</green> to be classes
-         <fire>✘</fire> to not depends on these namespaces <promote>Structura\ValueObjects\ClassDescription</promote> <fire>23 error(s)</fire>
+         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>23 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <green>✔</green> to have prefix <promote>To</promote>
@@ -43,7 +43,7 @@ final class AnalyseServiceTest extends TestCase
          <fire>✘</fire> to not use trait <fire>3 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
 
-        <violation> ERROR </violation> Controllers architecture rules in Structura\Tests\Feature\TestController
+        <violation> ERROR </violation> Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
         3 classes from
          - dirs
         Should
@@ -51,11 +51,11 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <fire>✘</fire> to not use trait <fire>1 error(s)</fire>
          <green>✔</green> to have suffix <promote>Controller</promote>
-         <green>✔</green> to extend <promote>Structura\Tests\Fixture\Http\ControllerBase</promote>
+         <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
-         <green>✔</green> depends only on these namespaces <promote>Structura\Tests\Fixture\Concerns\HasFactory, Structura\Tests\Fixture\Http\Controller\RoleController, Structura\Tests\Fixture\Contract\ShouldQueueInterface, [2+]</promote>
+         <green>✔</green> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [2+]</promote>
 
-        <pass> PASS </pass> Exceptions architecture rules in Structura\Tests\Feature\TestException
+        <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
         2 classes from
          - dirs
         Should
@@ -64,7 +64,7 @@ final class AnalyseServiceTest extends TestCase
            | to extend <promote>DomainException</promote>
              & to extend <promote>BadMethodCallException</promote>
 
-        <pass> PASS </pass> Asserts architecture rules in Structura\Tests\Feature\TestVoid
+        <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
         65 classes from
          - dirs
         That

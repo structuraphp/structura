@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Commands;
+namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
 use Exception;
 use InvalidArgumentException;
-use Structura\Configs\StructuraConfig;
-use Structura\Console\Dtos\MakeTestDto;
-use Structura\Services\MakeTestService;
-use Structura\ValueObjects\MakeTestValueObject;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Console\Dtos\MakeTestDto;
+use StructuraPhp\Structura\Services\MakeTestService;
+use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\ValueObjects;
+namespace StructuraPhp\Structura\ValueObjects;
 
 use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Identifier;
@@ -10,7 +10,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
-use Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\ClassType;
 
 class ClassDescription
 {

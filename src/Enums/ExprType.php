@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Enums;
+namespace StructuraPhp\Structura\Enums;
 
 enum ExprType
 {

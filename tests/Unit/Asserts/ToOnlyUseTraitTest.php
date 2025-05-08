@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -10,10 +10,10 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Asserts\ToOnlyUseTrait;
-use Structura\Expr;
-use Structura\Tests\Fixture\Concerns\HasFactory;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToOnlyUseTrait::class)]
 #[CoversMethod(Expr::class, 'toOnlyUseTrait')]
@@ -60,13 +60,21 @@ final class ToOnlyUseTraitTest extends TestCase
 
     public static function getClassLikeWithTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class { use \Structura\Tests\Fixture\Concerns\HasFactory; };'];
+        yield 'anonymous class' => [
+            '<?php new class { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
+        ];
 
-        yield 'class' => ['<?php class Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; }'];
+        yield 'class' => [
+            '<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
+        ];
 
-        yield 'enum' => ['<?php enum Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; };'];
+        yield 'enum' => [
+            '<?php enum Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
+        ];
 
-        yield 'interface' => ['<?php interface Foo { use \Structura\Tests\Fixture\Concerns\HasFactory; }'];
+        yield 'interface' => [
+            '<?php interface Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
+        ];
     }
 
     public static function getClassLikeWithoutTrait(): Generator

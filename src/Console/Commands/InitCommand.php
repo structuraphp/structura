@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Commands;
+namespace StructuraPhp\Structura\Console\Commands;
 
-use Structura\Console\Dtos\InitDto;
+use StructuraPhp\Structura\Console\Dtos\InitDto;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

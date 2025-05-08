@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Dto;
+namespace StructuraPhp\Structura\Tests\Fixture\Dto;
 
 final readonly class UserDto
 {

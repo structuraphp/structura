@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Feature;
+namespace StructuraPhp\Structura\Tests\Feature;
 
-use Structura\Attributes\TestDox;
-use Structura\Except;
-use Structura\Expr;
-use Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Testing\TestBuilder;
 
 final class TestVoid extends TestBuilder
 {

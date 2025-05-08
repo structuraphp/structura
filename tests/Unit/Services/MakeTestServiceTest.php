@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Services;
+namespace StructuraPhp\Structura\Tests\Unit\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Configs\StructuraConfig;
-use Structura\Services\MakeTestService;
-use Structura\ValueObjects\MakeTestValueObject;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Services\MakeTestService;
+use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 
 #[CoversClass(MakeTestService::class)]
 final class MakeTestServiceTest extends TestCase
@@ -18,7 +18,7 @@ final class MakeTestServiceTest extends TestCase
         $service = new MakeTestService(
             StructuraConfig::make()
                 ->archiRootNamespace(
-                    'Structura\Tests\Feature',
+                    'StructuraPhp\Structura\Tests\Feature',
                     'tests/Feature',
                 ),
         );

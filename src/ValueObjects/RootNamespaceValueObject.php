@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\ValueObjects;
+namespace StructuraPhp\Structura\ValueObjects;
 
 final readonly class RootNamespaceValueObject
 {

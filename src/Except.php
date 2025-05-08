@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura;
+namespace StructuraPhp\Structura;
 
-use Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprInterface;
 
 class Except
 {

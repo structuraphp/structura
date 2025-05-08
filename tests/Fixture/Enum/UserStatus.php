@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Enum;
+namespace StructuraPhp\Structura\Tests\Fixture\Enum;
 
 enum UserStatus: int
 {

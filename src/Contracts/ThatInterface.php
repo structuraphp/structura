@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Structura\Contracts;
+namespace StructuraPhp\Structura\Contracts;
 
 use Closure;
-use Structura\Expr;
+use StructuraPhp\Structura\Expr;
 
 interface ThatInterface extends ShouldInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use Error;
 use Generator;
@@ -12,9 +12,9 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
-use Structura\ValueObjects\ClassDescription;
-use Structura\Visitors\ClassDescriptionVisitor;
-use Structura\Visitors\NamespaceVisitor;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\Visitors\ClassDescriptionVisitor;
+use StructuraPhp\Structura\Visitors\NamespaceVisitor;
 use Symfony\Component\Finder\Finder;
 
 final readonly class ParseService

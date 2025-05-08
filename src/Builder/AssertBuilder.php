@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
-use Structura\Contracts\ExprInterface;
-use Structura\Expr;
-use Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
  */
 class AssertBuilder
 {

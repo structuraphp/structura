@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Dtos;
+namespace StructuraPhp\Structura\Console\Dtos;
 
 use ArrayAccess;
 use InvalidArgumentException;
