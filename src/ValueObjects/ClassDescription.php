@@ -210,4 +210,46 @@ class ClassDescription
 
         return false;
     }
+
+    /**
+     * @param array<int,string> $patterns
+     *
+     * @return array<int,string>
+     */
+    public function getDependenciesByPatterns(array $patterns): array
+    {
+        $matches = [];
+        if ($patterns === []) {
+            return [];
+        }
+
+        $pattern = implode('|', $patterns);
+
+        /** @var array<int,string>|false $match */
+        $match = preg_grep(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->getDependencies(),
+        );
+
+        if ($match !== false) {
+            return array_merge($matches, $match);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * @param array<int,string> $allowedCharacters
+     */
+    private function customPregQuote(
+        string $subject,
+        array $allowedCharacters = ['^', '$', '\\'],
+    ): string {
+        $mapping = [];
+        foreach ($allowedCharacters as $char) {
+            $mapping[$char] = '\\' . $char;
+        }
+
+        return strtr($subject, $mapping);
+    }
 }
