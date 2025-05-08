@@ -15,7 +15,7 @@ use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
  */
 class AnalyseService
 {

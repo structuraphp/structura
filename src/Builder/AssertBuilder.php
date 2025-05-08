@@ -9,7 +9,7 @@ use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
  */
 class AssertBuilder
 {

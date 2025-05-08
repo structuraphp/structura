@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
  */
 #[AsCommand(
     name: 'analyze',
