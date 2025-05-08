@@ -35,7 +35,7 @@ class ToNotDependsOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->pregGrepAll($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns),
         );
 
         return array_intersect($class->getDependencies(), $dependencies) === [];
@@ -45,7 +45,7 @@ class ToNotDependsOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->pregGrepAll($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns),
         );
         $dependencies = array_intersect($class->getDependencies(), $dependencies);
         sort($dependencies);

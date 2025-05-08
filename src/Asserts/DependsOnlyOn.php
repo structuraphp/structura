@@ -35,7 +35,7 @@ class DependsOnlyOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->pregGrepAll($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns),
         );
 
         return array_diff($class->getDependencies(), array_unique($dependencies)) === [];
@@ -45,7 +45,7 @@ class DependsOnlyOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->pregGrepAll($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns),
         );
         $dependencies = array_diff($class->getDependencies(), $dependencies);
         sort($dependencies);

@@ -216,7 +216,7 @@ class ClassDescription
      *
      * @return array<int,string>
      */
-    public function pregGrepAll(array $patterns): array
+    public function getDependenciesByPatterns(array $patterns): array
     {
         $matches = [];
         if ($patterns === []) {
