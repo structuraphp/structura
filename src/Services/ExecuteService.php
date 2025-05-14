@@ -89,9 +89,14 @@ class ExecuteService
                 $predicate = $this->assertGroup($assert, $class);
             }
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class) && !$predicate) {
-                $this->builder->addExcept($class->namespace, (string) $assert);
-                $predicate = true;
+            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+                if (!$predicate) {
+                    $this->builder->addExcept($class->namespace, (string) $assert);
+
+                    continue;
+                }
+
+                $this->builder->addWarning($class->namespace, (string) $assert);
             }
 
             if (!$predicate) {
@@ -114,9 +119,14 @@ class ExecuteService
                 $predicate = $this->assertGroup($assert, $class);
             }
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class) && !$predicate) {
-                $this->builder->addExcept($class->namespace, (string) $assert);
-                $predicate = true;
+            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+                if (!$predicate) {
+                    $this->builder->addExcept($class->namespace, (string) $assert);
+
+                    continue;
+                }
+
+                $this->builder->addWarning($class->namespace, (string) $assert);
             }
 
             if ($key === 0) {

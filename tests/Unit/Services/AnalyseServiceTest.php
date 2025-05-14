@@ -25,7 +25,8 @@ final class AnalyseServiceTest extends TestCase
         $result = $service->analyse();
 
         self::assertSame(4, $result->countViolation);
-        self::assertSame(12, $result->countPass);
+        self::assertSame(11, $result->countPass);
+        self::assertSame(1, $result->countWarning);
 
         $expected = <<<'EOF'
         <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
@@ -38,7 +39,7 @@ final class AnalyseServiceTest extends TestCase
          <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>23 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
-         <green>✔</green> to have prefix <promote>To</promote>
+         <green>✔</green> to have prefix <promote>To</promote> <warning>1 warning(s)</warning>
          <green>✔</green> to extend nothing
          <fire>✘</fire> to not use trait <fire>3 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
