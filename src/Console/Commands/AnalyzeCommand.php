@@ -135,22 +135,24 @@ class AnalyzeCommand extends Command
 
     private function assertionsResumeOutput(AnalyseValueObject $analyseDto): void
     {
-        if ($analyseDto->countPass > 0 && $analyseDto->countViolation === 0) {
-            $this->prints[] = \sprintf(
-                '%-9s <green>%d passed</green> (%d assertion)',
-                'Tests:',
-                $analyseDto->countPass,
-                $analyseDto->countPass,
-            );
-        } elseif ($analyseDto->countViolation !== 0) {
-            $this->prints[] = \sprintf(
-                '%-9s <fire>%d failed</fire>, <green>%d passed</green> (%d assertion)',
-                'Tests:',
-                $analyseDto->countViolation,
-                $analyseDto->countPass,
-                $analyseDto->countPass + $analyseDto->countViolation,
-            );
-        }
+        $data = [
+            '<green>%d passed</green>' => $analyseDto->countPass,
+            '<fire>%d failed</fire>' => $analyseDto->countViolation,
+            '<warning>%d warning</warning>' => $analyseDto->countWarning,
+        ];
+
+        $data = array_filter($data, fn (int $value): bool => $value > 0);
+
+        $print = sprintf(
+            '%-9s ' . implode(', ', array_keys($data)),
+            'Tests:',
+            ...array_values($data),
+        );
+        $print .= sprintf(
+            ' (%d assertion)',
+            $analyseDto->countPass + $analyseDto->countViolation + $analyseDto->countWarning,
+        );
+        $this->prints[] = $print;
     }
 
     private function durationAndTimeOutput(float $time_start): void

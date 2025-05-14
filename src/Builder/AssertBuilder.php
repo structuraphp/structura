@@ -22,13 +22,8 @@ class AssertBuilder
     /** @var array<string, array<int, string>> */
     private array $exceptions = [];
 
-    /**
-     * @return array<string,int>
-     */
-    public function getPass(): array
-    {
-        return $this->pass;
-    }
+    /** @var array<string, array<int, string>> */
+    private array $warnings = [];
 
     public function addExcept(?string $classname, string $expr): self
     {
@@ -61,22 +56,24 @@ class AssertBuilder
         return $this;
     }
 
+    public function addWarning(?string $classname, string $key): self
+    {
+        $this->pass[$key] = 2;
+        if (\is_string($classname)) {
+            $this->warnings[$key][] = $classname;
+        }
+
+        return $this;
+    }
+
     public function countViolation(string $key): int
     {
         return \count($this->violations[$key] ?? []);
     }
 
-    public function countViolations(): int
+    public function countWarning(string $key): int
     {
-        $count = 0;
-        array_walk_recursive(
-            $this->violations,
-            static function () use (&$count): void {
-                $count++;
-            },
-        );
-
-        return $count;
+        return \count($this->warnings[$key] ?? []);
     }
 
     public function countAssertsSuccess(): int
@@ -89,11 +86,32 @@ class AssertBuilder
         return array_count_values($this->pass)[0] ?? 0;
     }
 
+    public function countAssertsWarning(): int
+    {
+        return array_count_values($this->pass)[2] ?? 0;
+    }
+
+    /**
+     * @return array<string,int>
+     */
+    public function getPass(): array
+    {
+        return $this->pass;
+    }
+
     /**
      * @return ViolationsByTest
      */
     public function getViolations(): array
     {
         return $this->violations;
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    public function getWarnings(): array
+    {
+        return $this->warnings;
     }
 }

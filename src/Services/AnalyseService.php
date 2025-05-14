@@ -23,6 +23,8 @@ class AnalyseService
 
     private int $countViolation = 0;
 
+    private int $countWarning = 0;
+
     /** @var array<int,string> */
     private array $prints = [];
 
@@ -43,6 +45,7 @@ class AnalyseService
         return new AnalyseValueObject(
             countPass: $this->countPass,
             countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
             violationsByTests: $this->violationsByTests,
             prints: $this->prints,
         );
@@ -87,6 +90,7 @@ class AnalyseService
 
             $this->countPass += $assertBuilder->countAssertsSuccess();
             $this->countViolation += $assertBuilder->countAssertsFailure();
+            $this->countWarning += $assertBuilder->countAssertsWarning();
 
             $this->prints[] = \sprintf(
                 '%s %s in %s',
@@ -140,13 +144,24 @@ class AnalyseService
         $this->prints[] = 'Should';
 
         foreach ($assertBuilder->getPass() as $message => $isPass) {
-            $this->prints[] = $isPass === 1
-                ? (' <green>✔</green> ' . $message)
-                : \sprintf(
+            if ($isPass === 0) {
+                $this->prints[] = \sprintf(
                     ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
                     $message,
                     $assertBuilder->countViolation($message),
                 );
+            } else {
+                $countWarning = $assertBuilder->countWarning($message);
+                $warning = $countWarning !== 0
+                    ? sprintf(' <warning>%d warning(s)</warning>', $countWarning)
+                    : '';
+
+                $this->prints[] = \sprintf(
+                    ' <green>✔</green> %s%s',
+                    $message,
+                    $warning,
+                );
+            }
         }
     }
 }

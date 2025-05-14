@@ -47,7 +47,7 @@ final class ToNotUseTraitTest extends TestCase
             ->that(static fn (Expr $expr): Expr => $expr->toBeClasses())
             ->except(
                 static fn (Except $except): Except => $except
-                    ->byRule($exceptName, ToNotUseTrait::class),
+                    ->byClassname($exceptName, ToNotUseTrait::class),
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert

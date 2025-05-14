@@ -16,6 +16,7 @@ final readonly class AnalyseValueObject
     public function __construct(
         public int $countPass,
         public int $countViolation,
+        public int $countWarning,
         public array $violationsByTests,
         public array $prints = [],
     ) {}

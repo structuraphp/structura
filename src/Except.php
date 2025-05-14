@@ -12,12 +12,18 @@ class Except
     private array $expects;
 
     /**
-     * @param class-string $className
-     * @param class-string<ExprInterface> $expr
+     * @param array<int, class-string>|class-string $className
+     * @param class-string<ExprInterface> $expression
      */
-    public function byRule(string $className, string $expr): self
-    {
-        $this->expects[$className][] = $expr;
+    public function byClassname(
+        array|string $className,
+        string $expression,
+    ): self {
+        $classNames = \is_array($className) ? $className : [$className];
+
+        foreach ($classNames as $class) {
+            $this->expects[$class][] = $expression;
+        }
 
         return $this;
     }
