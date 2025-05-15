@@ -5,7 +5,8 @@
 
 ## About
 
-Structura is an architectural testing tool for PHP, designed to help developers maintain a clean and consistent code structure.
+Structura is an architectural testing tool for PHP, designed to help developers maintain a clean and
+consistent code structure.
 
 ## Requirements
 
@@ -47,7 +48,8 @@ return static function (StructuraConfig $config): void {
 
 ## Make test
 
-After creating and completing your configuration file, you can use the command to create architecture tests:
+After creating and completing your configuration file, you can use the command to create
+architecture tests:
 
 ```shell
 php bin/structura make
@@ -56,9 +58,11 @@ php bin/structura make
 Here's a simple example of architecture testing for your DTOs:
 
 ```php
+use StructuraPhp\Structura\Asserts\ToExtendNothing;
 use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Testing\TestBuilder;
+use Symfony\Component\Finder\Finder;
 
 final class TestDto extends TestBuilder
 {
@@ -67,14 +71,37 @@ final class TestDto extends TestBuilder
     {
         $this
             ->allClasses()
-            ->fromDir('src/Dto')
+            ->fromDir(
+                'app/Dto',
+                fn(Finder $finder) => $finder->depth('== 0')
+            )
+            ->that($this->conditionThat(...))
+            ->except($this->exception(...))
             ->should($this->should(...));
+    }
+
+    private function that(Expr $expr): void
+    {
+        // The rules will only apply to classes (ignore traits, enums, interfaces, etc.)
+        $expr->toBeClasses();
+    }
+
+    private function exception(Except $except): void
+    {
+        // These classes will be ignored in the tests
+        $except
+            ->byClassname(
+                className: [
+                    FooDto::class,
+                    BarDto::class,
+                ],
+                expression: ToExtendNothing::class
+            );
     }
 
     private function should(Expr $expr): void
     {
         $expr
-            ->toBeClasses()
             ->toBeFinal()
             ->toBeReadonly()
             ->toHaveSuffix('Dto')
@@ -83,6 +110,76 @@ final class TestDto extends TestBuilder
             ->toImplement(\JsonSerializable::class);
     }
 }
+```
+
+### fromDir() and fromRaw()
+
+Start with the `fromDir()` method, which takes the path of the files to be analysed.
+It can take a second closure parameter
+to [customise the finder](https://symfony.com/doc/current/components/finder.html):
+
+```php
+->fromDir(
+    'src/Dto',
+    static fn(Finder $finder): Finder => $finder->depth('== 0')
+)
+```
+
+`fromRaw()` method can be used to test PHP code in the form of a string:
+
+```php
+->fromRaw('<?php
+            
+    use ArrayAccess;
+    use Depend\Bap;
+    use Depend\Bar;
+            
+    class Foo implements \Stringable {
+        public function __construct(ArrayAccess $arrayAccess) {}
+
+    public function __toString(): string {
+        return $this->arrayAccess['foo'] ?? throw new \Exception();
+    }
+}')
+```
+
+### that()
+
+Specifies rules for targeting class analysis, optional functionality:
+
+```php
+->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
+```
+
+### except()
+
+Ignores class rules, can be used as a baseline, optional functionality:
+
+```php
+->except(static fn(Except $except): Except => $except
+    ->byClassname(
+        className: [
+            FooDto::class,
+            BarDto::class,
+        ],
+        expression: ToExtendNothing::class
+    )
+)
+```
+
+### should()
+
+List of architecture rules, required functionality:
+
+```php
+->should(static fn(Expr $expr): Expr => $expr
+    ->toBeFinal()
+    ->toBeReadonly()
+    ->toHaveSuffix('Dto')
+    ->toExtendsNothing()
+    ->toHaveMethod('fromArray')
+    ->toImplement(\JsonSerializable::class)
+)
 ```
 
 ## First run
@@ -96,38 +193,41 @@ php bin/structura analyze
 ## Assertions
 
 - 🧬 [Types](#types)
-  - [toBeAbstract()](#tobeabstract)
-  - [toBeAnonymousClasses()](#tobeanonymousclasses)
-  - [toBeClasses()](#tobeclasses)
-  - [toBeEnums()](#tobeenums)
-  - [toBeFinal()](#tobefinal)
-  - [toBeInterfaces()](#tobeinterfaces)
-  - [toBeInvokable()](#tobeinvokable)
-  - [toBeReadonly()](#tobereadonly)
-  - [toBeTraits()](#tobetraits)
-- 🔗 [Dependencies](#Dependencies
-  - [dependsOnlyOn()](#dependsonlyon)
-  - [toNotDependsOn()](#tonotdependson)
+    - [toBeAbstract()](#tobeabstract)
+    - [toBeAnonymousClasses()](#tobeanonymousclasses)
+    - [toBeClasses()](#tobeclasses)
+    - [toBeEnums()](#tobeenums)
+    - [toBeFinal()](#tobefinal)
+    - [toBeInterfaces()](#tobeinterfaces)
+    - [toBeInvokable()](#tobeinvokable)
+    - [toBeReadonly()](#tobereadonly)
+    - [toBeTraits()](#tobetraits)
+- 🔗 [Dependencies](#dependencies)
+    - [dependsOnlyOn()](#dependsonlyon)
+    - [toNotDependsOn()](#tonotdependson)
 - 🧲 [Relation](#relation)
-  - [toExtend()](#toextend)
-  - [toExtendsNothing()](#toextendsnothing)
-  - [toImplement()](#toimplement)
-  - [toImplementNothing()](#toimplementnothing)
-  - [toOnlyImplement()](#toonlyimplement)
-  - [toUse()](#touse)
-  - [toNotUseTrait()](#tonotusetrait)
-  - [toOnlyUse()](#toonlyuse)
+    - [toExtend()](#toextend)
+    - [toExtendsNothing()](#toextendsnothing)
+    - [toImplement()](#toimplement)
+    - [toImplementNothing()](#toimplementnothing)
+    - [toOnlyImplement()](#toonlyimplement)
+    - [toUseTrait()](#tousetrait)
+    - [toNotUseTrait()](#tonotusetrait)
+    - [toOnlyUseTrait()](#toonlyusetrait)
 - 🔌 [Method](#method)
-  - [toHaveMethod()](#tohavemethod)
-  - [toHaveConstructor()](#tohaveconstructor)
-  - [toHaveDestructor()](#tohavedestructor)
+    - [toHaveMethod()](#tohavemethod)
+    - [toHaveConstructor()](#tohaveconstructor)
+    - [toHaveDestructor()](#tohavedestructor)
 - 🕶️ [Naming](#naming)
-  - [toHavePrefix()](#tohaveprefix)
-  - [toHaveSuffix()](#tohavesuffix)
+    - [toHavePrefix()](#tohaveprefix)
+    - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ [Other](#other)
-  - [toUseStrictTypes()](#tousestricttypes)
-  - [toUseDeclare()](#tousedeclare)
-  - [toHaveAttribute()](#tohaveattribute)
+    - [toUseStrictTypes()](#tousestricttypes)
+    - [toUseDeclare()](#tousedeclare)
+    - [toHaveAttribute()](#tohaveattribute)
+- 🗜️ [Operators](#operators)
+    - [and()](#and)
+    - [or()](#or)
 
 ## Types
 
@@ -245,6 +345,13 @@ $this
   );
 ```
 
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
+dependencies
+
+If you use the rule
+classes ([toExtend()](#toextend), [toImplement()](#toimplement), [toOnlyImplement()](#toonlyimplement), [toHaveAttribute()](#tohaveattribute), [toOnlyUseTrait()](#toonlyusetrait), [toUseTrait()](#tousetrait)),
+they are included by default in the permitted dependencies.
+
 ### toNotDependsOn()
 
 ```php
@@ -257,6 +364,9 @@ $this
     )
   );
 ```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
+dependencies
 
 ## Relation
 
@@ -407,3 +517,12 @@ $this
   ->fromRaw('<?php  #[\Deprecated] class Foo {}')
   ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
 ```
+
+## Operators
+
+## and()
+
+## or()
+
+## With PHPUnit
+
