@@ -8,6 +8,15 @@
 Structura is an architectural testing tool for PHP, designed to help developers maintain a clean and
 consistent code structure.
 
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Make test](#make-test)
+- [First run](#first-run)
+- [Assertions](#assertions)
+- [Custom assert](#custom-assert)
+- [With PHPUnit](#with-phpunit)
+
 ## Requirements
 
 ### PHP version
@@ -192,44 +201,42 @@ php bin/structura analyze
 
 ## Assertions
 
-- 🧬 [Types](#types)
-    - [toBeAbstract()](#tobeabstract)
-    - [toBeAnonymousClasses()](#tobeanonymousclasses)
-    - [toBeClasses()](#tobeclasses)
-    - [toBeEnums()](#tobeenums)
-    - [toBeFinal()](#tobefinal)
-    - [toBeInterfaces()](#tobeinterfaces)
-    - [toBeInvokable()](#tobeinvokable)
-    - [toBeReadonly()](#tobereadonly)
-    - [toBeTraits()](#tobetraits)
-- 🔗 [Dependencies](#dependencies)
-    - [dependsOnlyOn()](#dependsonlyon)
-    - [toNotDependsOn()](#tonotdependson)
-- 🧲 [Relation](#relation)
-    - [toExtend()](#toextend)
-    - [toExtendsNothing()](#toextendsnothing)
-    - [toImplement()](#toimplement)
-    - [toImplementNothing()](#toimplementnothing)
-    - [toOnlyImplement()](#toonlyimplement)
-    - [toUseTrait()](#tousetrait)
-    - [toNotUseTrait()](#tonotusetrait)
-    - [toOnlyUseTrait()](#toonlyusetrait)
-- 🔌 [Method](#method)
-    - [toHaveMethod()](#tohavemethod)
-    - [toHaveConstructor()](#tohaveconstructor)
-    - [toHaveDestructor()](#tohavedestructor)
-- 🕶️ [Naming](#naming)
-    - [toHavePrefix()](#tohaveprefix)
-    - [toHaveSuffix()](#tohavesuffix)
-- 🕹️ [Other](#other)
-    - [toUseStrictTypes()](#tousestricttypes)
-    - [toUseDeclare()](#tousedeclare)
-    - [toHaveAttribute()](#tohaveattribute)
-- 🗜️ [Operators](#operators)
-    - [and()](#and)
-    - [or()](#or)
-
-## Types
+- 🧬 Types
+  - [toBeAbstract()](#tobeabstract)
+  - [toBeAnonymousClasses()](#tobeanonymousclasses)
+  - [toBeClasses()](#tobeclasses)
+  - [toBeEnums()](#tobeenums)
+  - [toBeFinal()](#tobefinal)
+  - [toBeInterfaces()](#tobeinterfaces)
+  - [toBeInvokable()](#tobeinvokable)
+  - [toBeReadonly()](#tobereadonly)
+  - [toBeTraits()](#tobetraits)
+- 🔗 Dependencies
+  - [dependsOnlyOn()](#dependsonlyon)
+  - [toNotDependsOn()](#tonotdependson)
+- 🧲 Relation
+  - [toExtend()](#toextend)
+  - [toExtendsNothing()](#toextendsnothing)
+  - [toImplement()](#toimplement)
+  - [toImplementNothing()](#toimplementnothing)
+  - [toOnlyImplement()](#toonlyimplement)
+  - [toUseTrait()](#tousetrait)
+  - [toNotUseTrait()](#tonotusetrait)
+  - [toOnlyUseTrait()](#toonlyusetrait)
+- 🔌 Method
+  - [toHaveMethod()](#tohavemethod)
+  - [toHaveConstructor()](#tohaveconstructor)
+  - [toHaveDestructor()](#tohavedestructor)
+- 🕶️ Naming
+  - [toHavePrefix()](#tohaveprefix)
+  - [toHaveSuffix()](#tohavesuffix)
+- 🕹️ Other
+  - [toUseStrictTypes()](#tousestricttypes)
+  - [toUseDeclare()](#tousedeclare)
+  - [toHaveAttribute()](#tohaveattribute)
+- 🗜️ Operators
+  - [and()](#and)
+  - [or()](#or)
 
 ### toBeAbstract()
 
@@ -330,8 +337,6 @@ $this
   );
 ```
 
-## Dependencies
-
 ### dependsOnlyOn()
 
 ```php
@@ -367,8 +372,6 @@ $this
 
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
 dependencies
-
-## Relation
 
 ### toExtend()
 
@@ -442,8 +445,6 @@ $this
   ->should(fn(Expr $expr) => $expr->toOnlyUseTrait(Bar::class));
 ```
 
-## Method
-
 ### toHaveMethod()
 
 ```php
@@ -469,8 +470,6 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveDestructor());
 ```
 
-## Naming
-
 ### toHavePrefix()
 
 ```php
@@ -488,8 +487,6 @@ $this
   ->fromRaw('<?php class FooExemple {}')
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
 ```
-
-## Other
 
 ### toUseStrictTypes()
 
@@ -514,15 +511,100 @@ $this
 ```php
 $this
   ->allClasses()
-  ->fromRaw('<?php  #[\Deprecated] class Foo {}')
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
   ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
 ```
 
-## Operators
-
 ## and()
+
+To be valid, all the rules contained in the `and()` method must meet the requirements.
+
+```php
+// if Foo interface extends ArrayAccess and (JsonSerializable and Countable)
+$this
+  ->allClasses()
+  ->fromRaw('<?php interface Foo extends ArrayAccess, JsonSerializable, Countable {}')
+  ->should(fn(Expr $expr) => $expr
+    ->toBeInterfaces()
+    ->toExtend(ArrayAccess::class)
+    ->and(fn(Expr $expr) => $expr
+      ->toExtend(JsonSerializable::class)
+      ->toExtend(Countable::class)
+    )
+  );
+```
 
 ## or()
 
+To be valid at least one of the rules contained in the `or()` method must meet the requirements.
+
+```php
+
+// if Foo class implements ArrayAccess and (JsonSerializable or Countable)
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo implements ArrayAccess, JsonSerializable {}')
+  ->should(fn(Expr $expr) => $expr
+    ->toBeClasses()
+    ->toImplement(ArrayAccess::class)
+    ->or(fn(Expr $expr) => $expr
+      ->toImplement(JsonSerializable::class)
+      ->toImplement(Countable::class)
+    )
+  );
+```
+
+## Custom assert
+
+To create a custom rule, implement the StructuraPhp\StructuraContracts\ExprInterface interface:
+
+```php
+<?php
+
+final readonly class CustomRule implements ExprInterface
+{
+    public function __construct(
+        private string $message = '',
+    ) {}
+
+    public function __toString(): string
+    {
+        return 'exemple'; // Name of the rule
+    }
+
+    public function assert(ClassDescription $class): bool
+    {
+        return true; // Must return false if the test fails
+    }
+
+    public function getViolation(ClassDescription $class): ViolationValueObject
+    {
+        return new ViolationValueObject(
+            'error message', // Console output
+            $this::class,
+            $class->lines,
+            $class->getFileBasename(),
+            $this->message,
+        );
+    }
+}
+```
+
+To use a custom rule, add it using the `addExpr()` method.
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo {}')
+  ->should(fn(Expr $expr) => $expr
+    ->addExpr(new CustomRule('foo'))
+  );
+```
+
+Use [existing rules](https://github.com/structuraphp/structura/tree/main/src/Asserts) as an example.
+
 ## With PHPUnit
 
+Structura can integrate architecture testing with PHPUnit with this project:
+
+<https://github.com/structuraphp/structura-phpunit>
