@@ -2,7 +2,6 @@
 
 # directories
 /.github export-ignore
-/docs export-ignore
 /tests export-ignore
 
 # files
@@ -12,5 +11,4 @@
 Makefile export-ignore
 phpstan.neon.dist export-ignore
 phpunit.xml export-ignore
-README.md export-ignore
 rector.php export-ignore

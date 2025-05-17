@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Concerns;
+namespace StructuraPhp\Structura\Tests\Unit\Concerns;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Concerns\Arr;
+use StructuraPhp\Structura\Concerns\Arr;
 
 #[CoversClass(Arr::class)]
-class ArrTest extends TestCase
+final class ArrTest extends TestCase
 {
     use Arr;
 

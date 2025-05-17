@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Services;
+namespace StructuraPhp\Structura\Tests\Unit\Services;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Services\ParseService;
+use StructuraPhp\Structura\Services\ParseService;
 
-class ParseServiceTest extends TestCase
+#[CoversClass(ParseService::class)]
+final class ParseServiceTest extends TestCase
 {
     private ParseService $parseService;
 

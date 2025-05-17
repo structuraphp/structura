@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Http;
+namespace StructuraPhp\Structura\Tests\Fixture\Http;
 
 abstract class ResourceBase {}

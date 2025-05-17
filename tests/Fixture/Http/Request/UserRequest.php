@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Http\Request;
+namespace StructuraPhp\Structura\Tests\Fixture\Http\Request;
 
 class UserRequest
 {

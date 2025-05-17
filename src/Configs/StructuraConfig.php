@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Structura\Configs;
+namespace StructuraPhp\Structura\Configs;
 
-use Structura\Testing\TestBuilder;
-use Structura\ValueObjects\RootNamespaceValueObject;
+use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 use Symfony\Component\Finder\Finder;
 
 class StructuraConfig
@@ -34,7 +34,7 @@ class StructuraConfig
     }
 
     /**
-     * @param class-string<TestBuilder> $classes
+     * @param class-string<TestBuilder> ...$classes
      */
     public function rules(string ...$classes): self
     {
@@ -64,7 +64,7 @@ class StructuraConfig
     }
 
     /**
-     * @return  array<int,class-string<TestBuilder>>
+     * @return array<int,class-string<TestBuilder>>
      */
     public function getRules(): array
     {

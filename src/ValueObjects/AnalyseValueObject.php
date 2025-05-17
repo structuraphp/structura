@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\ValueObjects;
+namespace StructuraPhp\Structura\ValueObjects;
 
 /**
  * @phpstan-type ViolationsByTest array<string, array<int, ViolationValueObject>>
@@ -16,6 +16,7 @@ final readonly class AnalyseValueObject
     public function __construct(
         public int $countPass,
         public int $countViolation,
+        public int $countWarning,
         public array $violationsByTests,
         public array $prints = [],
     ) {}

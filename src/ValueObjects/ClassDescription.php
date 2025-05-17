@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\ValueObjects;
+namespace StructuraPhp\Structura\ValueObjects;
 
 use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Identifier;
@@ -10,9 +10,9 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
-use Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\ClassType;
 
-class ClassDescription
+final class ClassDescription
 {
     /** @var array<int,string> */
     private array $dependencies = [];
@@ -21,11 +21,11 @@ class ClassDescription
 
     /**
      * @param array<array-key, AttributeGroup> $attrGroups
-     * @param Identifier|null $scalarType enum type
+     * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
-     * @param array<Name>|Name|null $extends
+     * @param null|array<Name>|Name $extends
      * @param array<TraitUse> $traits
-     * @param array<ClassMethod>|null $methods
+     * @param null|array<ClassMethod> $methods
      */
     public function __construct(
         public readonly ?string $name,
@@ -34,7 +34,7 @@ class ClassDescription
         public readonly ?string $namespace,
         public readonly ?Identifier $scalarType,
         public readonly ?array $interfaces,
-        public readonly array|Name|null $extends,
+        public readonly null|array|Name $extends,
         public readonly array $traits,
         public readonly ?int $flags,
         public readonly ClassType $classType,
@@ -209,5 +209,47 @@ class ClassDescription
         }
 
         return false;
+    }
+
+    /**
+     * @param array<int,string> $patterns
+     *
+     * @return array<int,string>
+     */
+    public function getDependenciesByPatterns(array $patterns): array
+    {
+        $matches = [];
+        if ($patterns === []) {
+            return [];
+        }
+
+        $pattern = implode('|', $patterns);
+
+        /** @var array<int,string>|false $match */
+        $match = preg_grep(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->getDependencies(),
+        );
+
+        if ($match !== false) {
+            return array_merge($matches, $match);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * @param array<int,string> $allowedCharacters
+     */
+    private function customPregQuote(
+        string $subject,
+        array $allowedCharacters = ['^', '$', '\\'],
+    ): string {
+        $mapping = [];
+        foreach ($allowedCharacters as $char) {
+            $mapping[$char] = '\\' . $char;
+        }
+
+        return strtr($subject, $mapping);
     }
 }

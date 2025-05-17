@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Exceptions;
+namespace StructuraPhp\Structura\Tests\Fixture\Exceptions;
 
 use Exception;
 

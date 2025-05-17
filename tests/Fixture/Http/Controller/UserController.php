@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Http\Controller;
+namespace StructuraPhp\Structura\Tests\Fixture\Http\Controller;
 
-use Structura\Tests\Fixture\Http\ControllerBase;
+use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 
 class UserController extends ControllerBase
 {

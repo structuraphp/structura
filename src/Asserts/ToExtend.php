@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
 use PhpParser\Node\Name\FullyQualified;
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToExtend implements ExprInterface
+final readonly class ToExtend implements ExprInterface
 {
     public function __construct(
-        public readonly string $name,
-        private readonly string $message,
+        private string $name,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

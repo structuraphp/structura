@@ -2,6 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Concerns;
+namespace StructuraPhp\Structura\Tests\Fixture\Concerns;
 
 trait HasFactory {}

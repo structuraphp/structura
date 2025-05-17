@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Asserts\ToBeReadonly;
-use Structura\Expr;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeReadonly::class)]
 #[CoversMethod(Expr::class, 'toBeReadonly')]
@@ -26,40 +25,43 @@ final class ToBeReadonlyTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php readonly class Foo {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert->toBeReadonly(),
+                static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonReadonly')]
     public function testShouldFailToBeReadonly(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeReadonly(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
             \sprintf(
                 'Resource <promote>%s</promote> must be a read-only class',
                 $exceptName,
             ),
         );
-
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->should(
-                static fn(Expr $assert): Expr => $assert->toBeReadonly(),
-            );
-
-        self::assertRules($rules);
     }
 
     public static function getClassLikeNonReadonly(): Generator
     {
         yield 'abstract class' => ['<?php abstract class Foo {}'];
+
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {}'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

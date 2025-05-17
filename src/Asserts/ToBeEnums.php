@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ClassType;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToBeEnums implements ExprInterface
+final readonly class ToBeEnums implements ExprInterface
 {
     public function __construct(
-        private readonly string $message = '',
+        private string $message = '',
     ) {}
 
     public function __toString(): string

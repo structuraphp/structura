@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToHaveMethod implements ExprInterface
+final readonly class ToHaveMethod implements ExprInterface
 {
     public function __construct(
-        private readonly string $name,
-        private readonly string $message = '',
+        private string $name,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

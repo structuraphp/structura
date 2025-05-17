@@ -2,51 +2,97 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Console\Commands;
+namespace StructuraPhp\Structura\Tests\Unit\Console\Commands;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Structura\Console\Commands\MakeTestCommand;
-use Structura\Console\Kernel;
+use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
+use StructuraPhp\Structura\Console\Kernel;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 #[CoversClass(MakeTestCommand::class)]
 final class MakeTestCommandTest extends TestCase
 {
+    private string $filename;
+
+    private string $config;
+
+    private CommandTester $commandTester;
+
+    protected function setUp(): void
+    {
+        $this->filename = \dirname(__DIR__, 3) . '/Architecture/TestModel.php';
+        $this->config = \sprintf(
+            '%s/Fixture/Commands/MakeTestCommand/structura.php',
+            \dirname(__DIR__, 3),
+        );
+
+        $application = new Kernel();
+
+        $command = $application->find(MakeTestCommand::getDefaultName() ?? '');
+        $this->commandTester = new CommandTester($command);
+    }
+
     protected function tearDown(): void
     {
-        $filename = \dirname(__DIR__, 3) . '/Architecture/ModelTest.php';
-
-        if (file_exists($filename)) {
-            unlink($filename);
+        if (file_exists($this->filename)) {
+            unlink($this->filename);
             rmdir(\dirname(__DIR__, 3) . '/Architecture');
         }
     }
 
-    public function testShouldMakeTest(): void
+    public function testShouldMake(): void
     {
-        $application = new Kernel();
+        $statusCode = $this
+            ->commandTester
+            ->setInputs(['Model', 'src'])
+            ->execute([
+                '--config' => $this->config,
+            ]);
 
-        $command = $application->find(MakeTestCommand::getDefaultName() ?? '');
-        $commandTester = new CommandTester($command);
-
-        $commandTester->setInputs(['yes']);
-
-        $commandTester->execute([
-            'name' => 'Model',
-            '--config' => \sprintf(
-                '%s/Fixture/Commands/MakeTestCommand/structura.php',
-                \dirname(__DIR__, 3),
-            ),
-        ]);
-
-        $display = $commandTester->getDisplay();
+        $display = $this->commandTester->getDisplay();
 
         self::assertStringContainsString(
-            'Test file ModelTest is added now',
+            '[INFO] Test file TestModel is added now',
             $display,
         );
+        self::assertSame(Command::SUCCESS, $statusCode);
+    }
 
-        $commandTester->assertCommandIsSuccessful();
+    public function testMakeTestFail(): void
+    {
+        $statusCode = $this->commandTester
+            ->setInputs([''])
+            ->execute([
+                '--config' => $this->config,
+            ]);
+
+        $display = $this->commandTester->getDisplay();
+
+        self::assertStringContainsString(
+            '[ERROR] Test name is required',
+            $display,
+        );
+        self::assertSame(Command::INVALID, $statusCode);
+    }
+
+    public function testMakeTestFailWithFileAlreadyExist(): void
+    {
+        $this->commandTester
+            ->setInputs(['Model', 'src'])
+            ->execute([
+                '--config' => $this->config,
+            ]);
+
+        $statusCode = $this->commandTester
+            ->setInputs(['Model', 'src'])
+            ->execute([
+                '--config' => $this->config,
+            ]);
+        $display = $this->commandTester->getDisplay();
+
+        self::assertStringContainsString('already exists', $display);
+        self::assertSame(Command::FAILURE, $statusCode);
     }
 }

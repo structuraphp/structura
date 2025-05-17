@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Asserts\ToBeAnonymousClasses;
-use Structura\Expr;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeAnonymousClasses::class)]
 #[CoversMethod(Expr::class, 'toBeAnonymousClasses')]
@@ -26,37 +25,38 @@ final class ToBeAnonymousClassesTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php new class {};')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toBeAnonymousClasses(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonAnonymousClasses')]
     public function testShouldFailToBeAnonymousClasses(string $raw): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            'Resource <promote>Foo</promote> must be an anonymous class',
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toBeAnonymousClasses(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must be an anonymous class',
+        );
     }
 
     public static function getClassLikeNonAnonymousClasses(): Generator
     {
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
+
         yield 'trait' => ['<?php trait Foo {}'];
     }
 }

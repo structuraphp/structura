@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
 use PhpParser\Node\Identifier;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ClassType;
-use Structura\Enums\ScalarType;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\ScalarType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToBeBackedEnums implements ExprInterface
+final readonly class ToBeBackedEnums implements ExprInterface
 {
     public function __construct(
-        private readonly ?ScalarType $scalarType = null,
-        private readonly string $message = '',
+        private ?ScalarType $scalarType = null,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

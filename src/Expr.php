@@ -2,39 +2,38 @@
 
 declare(strict_types=1);
 
-namespace Structura;
+namespace StructuraPhp\Structura;
 
 use Closure;
 use Generator;
 use IteratorAggregate;
-use Structura\Asserts\DependsOnlyOn;
-use Structura\Asserts\ToBeAbstract;
-use Structura\Asserts\ToBeAnonymousClasses;
-use Structura\Asserts\ToBeClasses;
-use Structura\Asserts\ToBeEnums;
-use Structura\Asserts\ToBeFinal;
-use Structura\Asserts\ToBeInterfaces;
-use Structura\Asserts\ToBeReadonly;
-use Structura\Asserts\ToBeTraits;
-use Structura\Asserts\ToExtend;
-use Structura\Asserts\ToExtendNothing;
-use Structura\Asserts\ToHaveAttribute;
-use Structura\Asserts\ToHaveMethod;
-use Structura\Asserts\ToHavePrefix;
-use Structura\Asserts\ToHaveSuffix;
-use Structura\Asserts\ToImplement;
-use Structura\Asserts\ToImplementNothing;
-use Structura\Asserts\ToNotDependsOn;
-use Structura\Asserts\ToOnlyImplement;
-use Structura\Asserts\ToOnlyUse;
-use Structura\Asserts\ToUse;
-use Structura\Asserts\ToUseDeclare;
-use Structura\Asserts\ToUseNothing;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ExpectValueObject;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Asserts\ToBeAbstract;
+use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Asserts\ToBeClasses;
+use StructuraPhp\Structura\Asserts\ToBeEnums;
+use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Asserts\ToBeInterfaces;
+use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Asserts\ToExtendNothing;
+use StructuraPhp\Structura\Asserts\ToHaveAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHavePrefix;
+use StructuraPhp\Structura\Asserts\ToHaveSuffix;
+use StructuraPhp\Structura\Asserts\ToImplement;
+use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyImplement;
+use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
+use StructuraPhp\Structura\Asserts\ToUseDeclare;
+use StructuraPhp\Structura\Asserts\ToUseTrait;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Traversable;
 
 /**
@@ -42,8 +41,8 @@ use Traversable;
  */
 class Expr implements IteratorAggregate
 {
-    /** @var array<int,ExprInterface|Expr> */
-    private array $asserts;
+    /** @var array<int,Expr|ExprInterface> */
+    private array $asserts = [];
 
     /** @var array<int,array<int,class-string>> */
     private array $hiddenDependencies = [];
@@ -144,22 +143,34 @@ class Expr implements IteratorAggregate
 
     /**
      * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns to match class names against
      */
-    public function dependsOnlyOn(string|array $names): self
-    {
+    public function dependsOnlyOn(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
         return $this->addExpr(
             new DependsOnlyOn(
                 array_unique(array_merge((array) $names, ...$this->hiddenDependencies)),
+                (array) $patterns,
+                $message,
             ),
         );
     }
 
     /**
      * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function toNotDependsOn(string|array $names): self
-    {
-        return $this->addExpr(new ToNotDependsOn((array) $names));
+    public function toNotDependsOn(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new ToNotDependsOn((array) $names, (array) $patterns, $message),
+        );
     }
 
     /**
@@ -220,26 +231,26 @@ class Expr implements IteratorAggregate
     /**
      * @param class-string $name
      */
-    public function toOnlyUse(string $name, string $message = ''): self
+    public function toOnlyUseTrait(string $name, string $message = ''): self
     {
         $this->hiddenDependencies[] = [$name];
 
-        return $this->addExpr(new ToOnlyUse($name, $message));
+        return $this->addExpr(new ToOnlyUseTrait($name, $message));
     }
 
     /**
      * @param array<int,class-string>|class-string $names
      */
-    public function toUse(array|string $names, string $message = ''): self
+    public function toUseTrait(array|string $names, string $message = ''): self
     {
         $this->hiddenDependencies[] = (array) $names;
 
-        return $this->addExpr(new ToUse($names, $message));
+        return $this->addExpr(new ToUseTrait($names, $message));
     }
 
-    public function toUseNothing(?ExpectValueObject $expect = null, string $message = ''): self
+    public function toNotUseTrait(string $message = ''): self
     {
-        return $this->addExpr(new ToUseNothing($message, $expect));
+        return $this->addExpr(new ToNotUseTrait($message));
     }
 
     public function toUseStrictTypes(string $message = ''): self
@@ -268,7 +279,7 @@ class Expr implements IteratorAggregate
     }
 
     /**
-     * @return Generator<ExprInterface|Expr>
+     * @return Generator<Expr|ExprInterface>
      */
     public function getIterator(): Traversable
     {

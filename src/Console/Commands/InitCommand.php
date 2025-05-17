@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Commands;
+namespace StructuraPhp\Structura\Console\Commands;
 
-use Structura\Console\Dtos\InitDto;
+use StructuraPhp\Structura\Console\Dtos\InitDto;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
     name: 'init',
     description: 'Initialize config file',
 )]
-class InitCommand extends Command
+final class InitCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -38,7 +38,7 @@ class InitCommand extends Command
                 $dto->configPath,
             ),
             'yes',
-            static fn(string $value): bool => \in_array($value, ['y', 'yes'], true),
+            static fn (string $value): bool => \in_array($value, ['y', 'yes'], true),
         );
 
         if (!$response) {
@@ -61,7 +61,7 @@ class InitCommand extends Command
         /** @var array<string,scalar> $data */
         $data = array_filter(
             array: $input->getOptions(),
-            callback: static fn(mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );

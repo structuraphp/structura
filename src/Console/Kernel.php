@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console;
+namespace StructuraPhp\Structura\Console;
 
-use Structura\Console\Commands\AnalyzeCommand;
-use Structura\Console\Commands\InitCommand;
-use Structura\Console\Commands\MakeTestCommand;
-use Structura\Console\Enums\Options;
+use StructuraPhp\Structura\Console\Commands\AnalyzeCommand;
+use StructuraPhp\Structura\Console\Commands\InitCommand;
+use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
+use StructuraPhp\Structura\Console\Enums\Options;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;

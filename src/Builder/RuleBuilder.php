@@ -2,17 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
-use Generator;
-use InvalidArgumentException;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
-use Structura\Except;
-use Structura\Expr;
-use Structura\Services\ParseService;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
 class RuleBuilder
@@ -21,9 +15,9 @@ class RuleBuilder
 
     public ?Finder $finder = null;
 
-    public ?Expr $thats = null;
+    public ?Expr $that = null;
 
-    public Expr $shoulds;
+    public Expr $should;
 
     public ?Except $except = null;
 
@@ -43,14 +37,14 @@ class RuleBuilder
 
     public function addThat(Expr $that): self
     {
-        $this->thats = $that;
+        $this->that = $that;
 
         return $this;
     }
 
     public function addShould(Expr $should): self
     {
-        $this->shoulds = $should;
+        $this->should = $should;
 
         return $this;
     }
@@ -67,9 +61,9 @@ class RuleBuilder
         return new RuleValuesObject(
             raw: $this->raw,
             finder: $this->finder,
-            thats: $this->thats,
+            that: $this->that,
             except: $this->except,
-            shoulds: $this->shoulds,
+            should: $this->should,
         );
     }
 }

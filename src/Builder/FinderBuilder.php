@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
 use Closure;
-use Structura\Contracts\ShouldInterface;
-use Structura\Contracts\ThatInterface;
-use Structura\Expr;
+use StructuraPhp\Structura\Contracts\ShouldInterface;
+use StructuraPhp\Structura\Contracts\ThatInterface;
+use StructuraPhp\Structura\Expr;
 
 class FinderBuilder extends ThatBuilder implements ThatInterface
 {

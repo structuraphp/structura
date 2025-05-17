@@ -5,12 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Structura\\": "src/"
+            "StructuraPhp\\Structura\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Structura\\Tests\\": "tests"
+            "StructuraPhp\\Structura\\Tests\\": "tests"
         }
     },
     "require": {
@@ -36,5 +36,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false
         }
-    }
+    },
+    "bin": [
+        "bin/structura"
+    ]
 }

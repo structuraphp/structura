@@ -21,4 +21,3 @@ parameters:
         -
             identifier: property.onlyWritten
             path: src/Builder/AssertBuilder.php
-

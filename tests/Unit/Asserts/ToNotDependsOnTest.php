@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use ArrayAccess;
 use Exception;
@@ -11,16 +11,15 @@ use JsonSerializable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Stringable;
-use Structura\Asserts\ToNotDependsOn;
-use Structura\Expr;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOn::class)]
 #[CoversMethod(Expr::class, 'toNotDependsOn')]
-class ToNotDependsOnTest extends TestCase
+final class ToNotDependsOnTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -31,41 +30,43 @@ class ToNotDependsOnTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
-                    ->toNotDependsOn([
-                        JsonSerializable::class,
-                    ]),
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOn(
+                        names: [JsonSerializable::class],
+                        patterns: ['Depend\Baz'],
+                    ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithNoDependsProvider')]
     public function testShouldFailToNotDependsOn(string $raw): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s',
-                ArrayAccess::class,
-                Exception::class,
-                Stringable::class,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
-                    ->toNotDependsOn([
-                        ArrayAccess::class,
-                        Exception::class,
-                        Stringable::class,
-                    ]),
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOn(
+                        names: [
+                            ArrayAccess::class,
+                            Exception::class,
+                            Stringable::class,
+                        ],
+                        patterns: ['Depend\(Bar|Baz)'],
+                    ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s, [1+]',
+                ArrayAccess::class,
+                'Depend\Bar',
+                Exception::class,
+            ),
+        );
     }
 
     public static function getClassLikeWithNoDependsProvider(): Generator
@@ -75,6 +76,8 @@ class ToNotDependsOnTest extends TestCase
             <?php
             
             use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
             
             class Foo implements \Stringable {
                 public function __construct(ArrayAccess $arrayAccess) {

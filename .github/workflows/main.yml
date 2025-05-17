@@ -1,6 +1,9 @@
-name: PHP Composer
+name: PHP Tests
 
-on: [push, pull_request]
+on: [push]
+
+env:
+  LATEST_PHP_VERSION: '8.4'
 
 jobs:
   build:
@@ -30,16 +33,20 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Dependencies tests
+      if: matrix.php-version == env.LATEST_PHP_VERSION
       run: vendor/bin/composer-dependency-analyser
 
     - name: Coding standards
+      if: matrix.php-version == env.LATEST_PHP_VERSION
       run: vendor/bin/php-cs-fixer fix --ansi --dry-run --using-cache=no -v --diff
 
     - name: Static analysis
+      if: matrix.php-version == env.LATEST_PHP_VERSION
       run: vendor/bin/phpstan --memory-limit=1G analyse
+
+    - name: Refactoring
+      if: matrix.php-version == env.LATEST_PHP_VERSION
+      run: vendor/bin/rector --dry-run
 
     - name: Unit tests
       run: vendor/bin/phpunit --testdox
-
-    - name: Refactoring
-      run: vendor/bin/rector --dry-run

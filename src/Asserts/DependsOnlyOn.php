@@ -2,40 +2,52 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Concerns\Arr;
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class DependsOnlyOn implements ExprInterface
+final readonly class DependsOnlyOn implements ExprInterface
 {
     use Arr;
 
     /**
      * @param array<int,class-string> $names
+     * @param array<int,string> $patterns
      */
     public function __construct(
-        private readonly array $names,
+        private array $names,
+        private array $patterns,
+        private string $message = '',
     ) {}
 
     public function __toString(): string
     {
         return \sprintf(
             'depends only on these namespaces <promote>%s</promote>',
-            $this->implodeMore($this->names),
+            $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
 
     public function assert(ClassDescription $class): bool
     {
-        return array_diff($class->getDependencies(), $this->names) === [];
+        $dependencies = array_merge(
+            $this->names,
+            $class->getDependenciesByPatterns($this->patterns),
+        );
+
+        return array_diff($class->getDependencies(), array_unique($dependencies)) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
-        $dependencies = array_diff($class->getDependencies(), $this->names);
+        $dependencies = array_merge(
+            $this->names,
+            $class->getDependenciesByPatterns($this->patterns),
+        );
+        $dependencies = array_diff($class->getDependencies(), $dependencies);
         sort($dependencies);
 
         return new ViolationValueObject(
@@ -49,7 +61,7 @@ class DependsOnlyOn implements ExprInterface
             $this::class,
             $class->lines,
             $class->getFileBasename(),
-            '',
+            $this->message,
         );
     }
 }

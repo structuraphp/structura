@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Stringable;
-use Structura\Expr;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToImplementTest::class)]
 #[CoversMethod(Expr::class, 'toImplement')]
@@ -27,48 +26,51 @@ final class ToImplementTest extends TestCase
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->toImplement(Stringable::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutImplement')]
     public function testShouldFailToImplement(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toImplement(Stringable::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
             \sprintf(
                 'Resource <promote>%s</promote> must implement <promote>%s</promote>',
                 $exceptName,
                 Stringable::class,
             ),
         );
-
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->should(
-                static fn(Expr $assert): Expr => $assert
-                    ->toImplement(Stringable::class),
-            );
-
-        self::assertRules($rules);
     }
 
     public static function getClassLikeWithImplement(): Generator
     {
         yield 'anonymous class' => ['<?php new class implements \Stringable {};'];
+
         yield 'class' => ['<?php class Foo implements \Stringable {}'];
+
         yield 'enum' => ['<?php enum Foo implements \Stringable {};'];
     }
 
     public static function getClassLikeWithoutImplement(): Generator
     {
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php class Foo {}'];
+
         yield 'enum' => ['<?php enum Foo {};'];
+
         yield 'interface' => ['<?php interface Foo {}'];
     }
 }

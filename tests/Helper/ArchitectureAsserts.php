@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Helper;
+namespace StructuraPhp\Structura\Tests\Helper;
 
 use PHPUnit\Framework\Assert;
-use Structura\Builder\AllClasses;
-use Structura\Builder\RuleBuilder;
-use Structura\Services\ExecuteService;
+use StructuraPhp\Structura\Builder\AllClasses;
+use StructuraPhp\Structura\Builder\RuleBuilder;
+use StructuraPhp\Structura\Services\ExecuteService;
 
 trait ArchitectureAsserts
 {
@@ -19,7 +19,7 @@ trait ArchitectureAsserts
     /**
      * @no-named-arguments
      */
-    final protected static function assertRules(RuleBuilder $ruleBuilder): void
+    final protected static function assertRulesPass(RuleBuilder $ruleBuilder): void
     {
         $executeService = new ExecuteService($ruleBuilder->getRuleObject());
         $assertBuilder = $executeService->assert();
@@ -30,6 +30,18 @@ trait ArchitectureAsserts
                 (bool) $value,
                 implode(', ', $violations[$key] ?? []),
             );
+        }
+    }
+
+    final protected static function assertRulesViolation(RuleBuilder $ruleBuilder, string $message): void
+    {
+        $executeService = new ExecuteService($ruleBuilder->getRuleObject());
+        $assertBuilder = $executeService->assert();
+
+        $violations = $assertBuilder->getViolations();
+        foreach ($assertBuilder->getPass() as $key => $value) {
+            Assert::assertFalse((bool) $value);
+            Assert::assertSame(implode(', ', $violations[$key] ?? []), $message);
         }
     }
 }

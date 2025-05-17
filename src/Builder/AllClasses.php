@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Structura\Builder;
+namespace StructuraPhp\Structura\Builder;
 
 use Closure;
-use Structura\Contracts\FinderInterface;
-use Structura\Contracts\ThatInterface;
+use StructuraPhp\Structura\Contracts\FinderInterface;
+use StructuraPhp\Structura\Contracts\ThatInterface;
 use Symfony\Component\Finder\Finder;
 
-class AllClasses implements FinderInterface
+readonly class AllClasses implements FinderInterface
 {
-    private readonly RuleBuilder $ruleBuilder;
+    private RuleBuilder $ruleBuilder;
 
     public function __construct()
     {
@@ -20,7 +20,7 @@ class AllClasses implements FinderInterface
 
     /**
      * @param array<int,string>|string $dirs
-     * @param Closure(Finder): ?Finder|null $closure
+     * @param null|Closure(Finder): ?Finder $closure
      */
     public function fromDir(array|string $dirs, ?Closure $closure = null): ThatInterface
     {

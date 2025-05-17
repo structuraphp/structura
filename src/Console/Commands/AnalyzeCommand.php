@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Commands;
+namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
-use Structura\Configs\StructuraConfig;
-use Structura\Console\Dtos\AnalyzeDto;
-use Structura\Console\Enums\StyleCustom;
-use Structura\Services\AnalyseService;
-use Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
+use StructuraPhp\Structura\Console\Enums\StyleCustom;
+use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -21,18 +21,32 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
 #[AsCommand(
     name: 'analyze',
     description: 'Test archi',
 )]
-class AnalyzeCommand extends Command
+final class AnalyzeCommand extends Command
 {
     private AnalyzeDto $analyzeDto;
 
     /** @var array<int,string> */
     private array $prints = [];
+
+    public function styleCustom(OutputInterface $output): OutputInterface
+    {
+        foreach (StyleCustom::cases() as $style) {
+            $output
+                ->getFormatter()
+                ->setStyle(
+                    $style->value,
+                    $style->getOutputFormatterStyle(),
+                );
+        }
+
+        return $output;
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -76,7 +90,7 @@ class AnalyzeCommand extends Command
         /** @var array<string,scalar> $data */
         $data = array_filter(
             array: $input->getOptions(),
-            callback: static fn(mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );
@@ -121,22 +135,24 @@ class AnalyzeCommand extends Command
 
     private function assertionsResumeOutput(AnalyseValueObject $analyseDto): void
     {
-        if ($analyseDto->countPass > 0 && $analyseDto->countViolation === 0) {
-            $this->prints[] = \sprintf(
-                '%-9s <green>%d passed</green> (%d assertion)',
-                'Tests:',
-                $analyseDto->countPass,
-                $analyseDto->countPass,
-            );
-        } elseif ($analyseDto->countViolation !== 0) {
-            $this->prints[] = \sprintf(
-                '%-9s <fire>%d failed</fire>, <green>%d passed</green> (%d assertion)',
-                'Tests:',
-                $analyseDto->countViolation,
-                $analyseDto->countPass,
-                $analyseDto->countPass + $analyseDto->countViolation,
-            );
-        }
+        $data = [
+            '<green>%d passed</green>' => $analyseDto->countPass,
+            '<fire>%d failed</fire>' => $analyseDto->countViolation,
+            '<warning>%d warning</warning>' => $analyseDto->countWarning,
+        ];
+
+        $data = array_filter($data, fn (int $value): bool => $value > 0);
+
+        $print = sprintf(
+            '%-9s ' . implode(', ', array_keys($data)),
+            'Tests:',
+            ...array_values($data),
+        );
+        $print .= sprintf(
+            ' (%d assertion)',
+            $analyseDto->countPass + $analyseDto->countViolation + $analyseDto->countWarning,
+        );
+        $this->prints[] = $print;
     }
 
     private function durationAndTimeOutput(float $time_start): void
@@ -148,7 +164,7 @@ class AnalyzeCommand extends Command
         $this->prints[] = \sprintf(
             'Duration: %s, Memory: %d MB',
             substr($now->format('i:s.u'), 0, -3),
-            (memory_get_peak_usage(true) / 1024 / 1024),
+            memory_get_peak_usage(true) / 1024 / 1024,
         );
     }
 
@@ -162,20 +178,5 @@ class AnalyzeCommand extends Command
         return $now === false
             ? throw new Exception()
             : $now;
-    }
-
-
-    public function styleCustom(OutputInterface $output): OutputInterface
-    {
-        foreach (StyleCustom::cases() as $style) {
-            $output
-                ->getFormatter()
-                ->setStyle(
-                    $style->value,
-                    $style->getOutputFormatterStyle(),
-                );
-        }
-
-        return $output;
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Models;
+namespace StructuraPhp\Structura\Tests\Fixture\Models;
 
-use Structura\Tests\Fixture\Concerns\HasFactory;
+use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 
 class User
 {

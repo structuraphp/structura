@@ -2,20 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-/**
- * @property non-empty-string $suffix
- */
-class ToHaveSuffix implements ExprInterface
+final readonly class ToHaveSuffix implements ExprInterface
 {
     public function __construct(
-        private readonly string $suffix,
-        private readonly string $message = '',
+        private string $suffix,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

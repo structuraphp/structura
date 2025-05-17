@@ -2,29 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Structura;
+namespace StructuraPhp\Structura;
 
-use Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprInterface;
 
 class Except
 {
-    /** @var array<class-string, array<int, class-string<ExprInterface>>>  */
+    /** @var array<class-string, array<int, class-string<ExprInterface>>> */
     private array $expects;
 
     /**
-     * @param class-string $className
-     * @param class-string<ExprInterface> $expr
+     * @param array<int, class-string>|class-string $className
+     * @param class-string<ExprInterface> $expression
      */
-    public function byRule(string $className, string $expr): self
-    {
-        $this->expects[$className][] = $expr;
+    public function byClassname(
+        array|string $className,
+        string $expression,
+    ): self {
+        $classNames = \is_array($className) ? $className : [$className];
+
+        foreach ($classNames as $class) {
+            $this->expects[$class][] = $expression;
+        }
 
         return $this;
     }
 
     /**
-     * @param string|null $className if anonymous class then null
-     * @param class-string<ExprInterface|Expr> $expr
+     * @param null|string $className if anonymous class then null
+     * @param class-string<Expr|ExprInterface> $expr
      */
     public function isExcept(?string $className, string $expr): bool
     {

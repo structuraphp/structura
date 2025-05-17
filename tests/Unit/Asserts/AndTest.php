@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Unit\Asserts;
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use ArrayAccess;
 use Iterator;
 use PHPUnit\Framework\Attributes\CoversMethod;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use Structura\Expr;
-use Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversMethod(Expr::class, 'and')]
 final class AndTest extends TestCase
@@ -23,33 +22,35 @@ final class AndTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo implements \ArrayAccess, \Iterator {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->and(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toImplement(ArrayAccess::class)
                             ->toImplement(Iterator::class),
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     public function testShouldFailToAnd(): void
     {
-        $this->expectException(ExpectationFailedException::class);
-
         $rules = $this
             ->allClasses()
             ->fromRaw('<?php class Foo implements \ArrayAccess {}')
             ->should(
-                static fn(Expr $assert): Expr => $assert
+                static fn (Expr $assert): Expr => $assert
                     ->and(
-                        static fn(Expr $assertion): Expr => $assertion
+                        static fn (Expr $assertion): Expr => $assertion
                             ->toImplement(ArrayAccess::class)
                             ->toImplement(Iterator::class),
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must implement <promote>ArrayAccess</promote>, '
+            . 'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>',
+        );
     }
 }

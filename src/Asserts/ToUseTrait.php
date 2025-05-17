@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Structura\Asserts;
+namespace StructuraPhp\Structura\Asserts;
 
-use Structura\Contracts\ExprInterface;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToUse implements ExprInterface
+final readonly class ToUseTrait implements ExprInterface
 {
     /** @var array<int,class-string> */
-    private readonly array $names;
+    private array $names;
 
     /**
      * @param array<int,class-string>|class-string $names
      */
     public function __construct(
         array|string $names,
-        private readonly string $message,
+        private string $message = '',
     ) {
         $this->names = (array) $names;
     }
@@ -26,7 +26,7 @@ class ToUse implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to use <promote>%s</promote>',
+            'to use trait <promote>%s</promote>',
             implode(', ', $this->names),
         );
     }

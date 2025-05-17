@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Fixture\Http\Resource;
+namespace StructuraPhp\Structura\Tests\Fixture\Http\Resource;
 
-use Structura\Tests\Fixture\Http\ResourceBase;
+use StructuraPhp\Structura\Tests\Fixture\Http\ResourceBase;
 
 class UserResource extends ResourceBase {}

@@ -2,20 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Structura\Tests\Feature;
+namespace StructuraPhp\Structura\Tests\Feature;
 
-use Structura\Asserts\DependsOnlyOn;
-use Structura\Asserts\ToBeAbstract;
-use Structura\Asserts\ToHavePrefix;
-use Structura\Asserts\ToNotDependsOn;
-use Structura\Attributes\TestDox;
-use Structura\Contracts\ExprInterface;
-use Structura\Except;
-use Structura\Expr;
-use Structura\Testing\TestBuilder;
-use Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Asserts\ToBeAbstract;
+use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Asserts\ToHavePrefix;
+use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
-class TestAssert extends TestBuilder
+final class TestAssert extends TestBuilder
 {
     #[TestDox('Asserts architecture rules')]
     public function testAssertArchitectureRules(): void
@@ -44,15 +45,16 @@ class TestAssert extends TestBuilder
             ->toUseDeclare('strict_types', '1')
             ->toHavePrefix('To')
             ->toExtendsNothing()
-            ->toUseNothing()
+            ->toNotUseTrait()
             ->toHaveConstructor();
     }
 
     private function exception(Except $except): void
     {
         $except
-            ->byRule(ToBeAbstract::class, ToNotDependsOn::class)
-            ->byRule(DependsOnlyOn::class, ToHavePrefix::class)
-        ;
+            ->byClassname(ToBeAbstract::class, ToNotDependsOn::class)
+            ->byClassname(DependsOnlyOn::class, ToHavePrefix::class)
+            // warning
+            ->byClassname(ToBeReadonly::class, ToHavePrefix::class);
     }
 }

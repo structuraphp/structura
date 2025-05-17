@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use Generator;
 use InvalidArgumentException;
-use Structura\Builder\AssertBuilder;
-use Structura\Contracts\ExprInterface;
-use Structura\Enums\ExprType;
-use Structura\Expr;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
-class ExecuteService
+final class ExecuteService
 {
     private AssertBuilder $builder;
 
@@ -33,7 +33,7 @@ class ExecuteService
             throw new InvalidArgumentException();
         }
 
-        $this->execute($classes, $this->ruleValuesObject->shoulds);
+        $this->execute($classes, $this->ruleValuesObject->should);
 
         return $this->builder;
     }
@@ -41,9 +41,9 @@ class ExecuteService
     /**
      * @param Generator<ClassDescription> $classes
      */
-    protected function execute(Generator $classes, Expr $assertions): void
+    private function execute(Generator $classes, Expr $assertions): void
     {
-        /** @var ExprInterface|Expr $assert */
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             $this->builder->addPass((string) $assert);
         }
@@ -60,11 +60,11 @@ class ExecuteService
 
     private function executeThat(ClassDescription $class): bool
     {
-        if (!$this->ruleValuesObject->thats instanceof Expr) {
+        if (!$this->ruleValuesObject->that instanceof Expr) {
             return false;
         }
 
-        foreach ($this->ruleValuesObject->thats as $expression) {
+        foreach ($this->ruleValuesObject->that as $expression) {
             $predicate = $expression instanceof ExprInterface
                 ? $expression->assert($class)
                 : $this->assertGroup($expression, $class);
@@ -81,7 +81,7 @@ class ExecuteService
         Expr $assertions,
         ClassDescription $class,
     ): void {
-        /** @var ExprInterface|Expr $assert */
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             if ($assert instanceof ExprInterface) {
                 $predicate = $assert->assert($class);
@@ -89,9 +89,14 @@ class ExecuteService
                 $predicate = $this->assertGroup($assert, $class);
             }
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class) && !$predicate) {
-                $this->builder->addExcept($class->namespace, (string) $assert);
-                $predicate = true;
+            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+                if (!$predicate) {
+                    $this->builder->addExcept($class->namespace, (string) $assert);
+
+                    continue;
+                }
+
+                $this->builder->addWarning($class->namespace, (string) $assert);
             }
 
             if (!$predicate) {
@@ -105,7 +110,8 @@ class ExecuteService
         ClassDescription $class,
     ): bool {
         $isPass = true;
-        /** @var ExprInterface|Expr $assert */
+
+        /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $key => $assert) {
             if ($assert instanceof ExprInterface) {
                 $predicate = $assert->assert($class);
@@ -113,9 +119,14 @@ class ExecuteService
                 $predicate = $this->assertGroup($assert, $class);
             }
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class) && !$predicate) {
-                $this->builder->addExcept($class->namespace, (string) $assert);
-                $predicate = true;
+            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+                if (!$predicate) {
+                    $this->builder->addExcept($class->namespace, (string) $assert);
+
+                    continue;
+                }
+
+                $this->builder->addWarning($class->namespace, (string) $assert);
             }
 
             if ($key === 0) {

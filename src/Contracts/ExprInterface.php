@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Structura\Contracts;
+namespace StructuraPhp\Structura\Contracts;
 
 use Stringable;
-use Structura\ValueObjects\ClassDescription;
-use Structura\ValueObjects\ViolationValueObject;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 interface ExprInterface extends Stringable
 {

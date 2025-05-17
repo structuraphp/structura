@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Structura\ValueObjects;
+namespace StructuraPhp\Structura\ValueObjects;
 
-use Structura\Except;
-use Structura\Expr;
+use StructuraPhp\Structura\Except;
+use StructuraPhp\Structura\Expr;
 use Symfony\Component\Finder\Finder;
 
 final readonly class RuleValuesObject
@@ -13,8 +13,8 @@ final readonly class RuleValuesObject
     public function __construct(
         public string $raw,
         public ?Finder $finder,
-        public ?Expr $thats,
+        public ?Expr $that,
         public ?Except $except,
-        public Expr $shoulds,
+        public Expr $should,
     ) {}
 }

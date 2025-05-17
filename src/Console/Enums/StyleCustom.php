@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Structura\Console\Enums;
+namespace StructuraPhp\Structura\Console\Enums;
 
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
@@ -13,6 +13,7 @@ enum StyleCustom: string
     case Pass = 'pass';
     case Promote = 'promote';
     case Violation = 'violation';
+    case Warning = 'warning';
 
     public function getOutputFormatterStyle(): OutputFormatterStyle
     {
@@ -22,6 +23,7 @@ enum StyleCustom: string
             self::Pass => new OutputFormatterStyle(null, 'green', ['bold', 'blink']),
             self::Promote => new OutputFormatterStyle('#066', null, ['bold', 'blink']),
             self::Violation => new OutputFormatterStyle(null, 'red', ['bold', 'blink']),
+            self::Warning => new OutputFormatterStyle('yellow', null, ['bold', 'blink']),
         };
     }
 }

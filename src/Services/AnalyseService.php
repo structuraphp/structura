@@ -2,26 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Structura\Services;
+namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
-use Structura\Attributes\TestDox;
-use Structura\Builder\AssertBuilder;
-use Structura\Configs\StructuraConfig;
-use Structura\Expr;
-use Structura\Testing\TestBuilder;
-use Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @phpstan-import-type ViolationsByTest from \Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
-class AnalyseService
+final class AnalyseService
 {
     private int $countPass = 0;
 
     private int $countViolation = 0;
+
+    private int $countWarning = 0;
 
     /** @var array<int,string> */
     private array $prints = [];
@@ -43,6 +45,7 @@ class AnalyseService
         return new AnalyseValueObject(
             countPass: $this->countPass,
             countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
             violationsByTests: $this->violationsByTests,
             prints: $this->prints,
         );
@@ -75,7 +78,6 @@ class AnalyseService
         }
     }
 
-
     private function executeAssertions(
         TestBuilder $instance,
         string $testDox,
@@ -88,6 +90,7 @@ class AnalyseService
 
             $this->countPass += $assertBuilder->countAssertsSuccess();
             $this->countViolation += $assertBuilder->countAssertsFailure();
+            $this->countWarning += $assertBuilder->countAssertsWarning();
 
             $this->prints[] = \sprintf(
                 '%s %s in %s',
@@ -99,7 +102,7 @@ class AnalyseService
             );
 
             $this->fromOutput($ruleValueObject->finder);
-            $this->thatOutput($ruleValueObject->thats);
+            $this->thatOutput($ruleValueObject->that);
             $this->shouldOutput($assertBuilder);
 
             $this->prints[] = '';
@@ -141,13 +144,24 @@ class AnalyseService
         $this->prints[] = 'Should';
 
         foreach ($assertBuilder->getPass() as $message => $isPass) {
-            $this->prints[] = $isPass === 1
-                ? (' <green>✔</green> ' . $message)
-                : \sprintf(
+            if ($isPass === 0) {
+                $this->prints[] = \sprintf(
                     ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
                     $message,
                     $assertBuilder->countViolation($message),
                 );
+            } else {
+                $countWarning = $assertBuilder->countWarning($message);
+                $warning = $countWarning !== 0
+                    ? sprintf(' <warning>%d warning(s)</warning>', $countWarning)
+                    : '';
+
+                $this->prints[] = \sprintf(
+                    ' <green>✔</green> %s%s',
+                    $message,
+                    $warning,
+                );
+            }
         }
     }
 }
