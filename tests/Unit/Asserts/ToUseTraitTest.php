@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToUseTrait;
 use StructuraPhp\Structura\Expr;
@@ -32,7 +31,7 @@ final class ToUseTraitTest extends TestCase
                     ->toUseTrait(HasFactory::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutTrait')]
@@ -40,14 +39,6 @@ final class ToUseTraitTest extends TestCase
         string $raw,
         string $exceptName = 'Foo',
     ): void {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
-                $exceptName,
-                HasFactory::class,
-            ),
-        );
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -56,7 +47,14 @@ final class ToUseTraitTest extends TestCase
                     ->toUseTrait(HasFactory::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
+                $exceptName,
+                HasFactory::class,
+            ),
+        );
     }
 
     public static function getClassLikeWithTrait(): Generator

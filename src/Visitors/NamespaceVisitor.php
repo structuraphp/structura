@@ -26,7 +26,7 @@ use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 
-class NamespaceVisitor extends NodeVisitorAbstract
+final class NamespaceVisitor extends NodeVisitorAbstract
 {
     private const TYPES = [
         'bool' => 1,

@@ -12,7 +12,7 @@ use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Testing\TestBuilder;
 
-class TestException extends TestBuilder
+final class TestException extends TestBuilder
 {
     #[TestDox('Exceptions architecture rules')]
     public function testExceptionsArchitectureRules(): void

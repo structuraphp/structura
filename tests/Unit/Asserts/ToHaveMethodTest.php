@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Expr;
@@ -31,20 +30,12 @@ final class ToHaveMethodTest extends TestCase
                     ->toHaveMethod('bar'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutMethod')]
     public function testShouldFailToHaveMethod(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must have method <promote>bar</promote>',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -53,7 +44,13 @@ final class ToHaveMethodTest extends TestCase
                     ->toHaveMethod('bar'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must have method <promote>bar</promote>',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeWithoutMethod(): Generator

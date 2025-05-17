@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Expr;
 interface ThatInterface extends ShouldInterface
 {
     /**
-     * @param Closure(Expr $expr): Expr|Closure(Expr $expr): void $closure
+     * @param Closure(Expr $expr): (Expr|void) $closure
      */
     public function that(Closure $closure): ShouldInterface;
 }

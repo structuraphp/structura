@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
 use StructuraPhp\Structura\Expr;
@@ -32,21 +31,12 @@ final class ToOnlyUseTraitTest extends TestCase
                     ->toOnlyUseTrait(HasFactory::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutTrait')]
     public function testShouldFailToOnlyUse(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
-                $exceptName,
-                HasFactory::class,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -55,7 +45,14 @@ final class ToOnlyUseTraitTest extends TestCase
                     ->toOnlyUseTrait(HasFactory::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                $exceptName,
+                HasFactory::class,
+            ),
+        );
     }
 
     public static function getClassLikeWithTrait(): Generator

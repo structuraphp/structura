@@ -9,7 +9,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Expr;
@@ -32,20 +31,12 @@ final class ToExtendTest extends TestCase
                     ->toExtend(Exception::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeExtendsNothing')]
     public function testShouldFailToExtends(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must extend by <promote>Exception</promote>',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -54,7 +45,13 @@ final class ToExtendTest extends TestCase
                     ->toExtend(Exception::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must extend by <promote>Exception</promote>',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeExtendsNothing(): Generator

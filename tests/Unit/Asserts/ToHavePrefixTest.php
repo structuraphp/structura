@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Expr;
@@ -31,20 +30,12 @@ final class ToHavePrefixTest extends TestCase
                     ->toHavePrefix('Controller'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutPrefixProvider')]
     public function testShouldFailToHavePrefix(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource name <promote>%s</promote> must start with <promote>Controller</promote>',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -53,7 +44,13 @@ final class ToHavePrefixTest extends TestCase
                     ->toHavePrefix('Controller'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource name <promote>%s</promote> must start with <promote>Controller</promote>',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeWithPrefixProvider(): Generator

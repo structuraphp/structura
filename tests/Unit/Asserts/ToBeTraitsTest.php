@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
 use StructuraPhp\Structura\Expr;
@@ -29,17 +28,12 @@ final class ToBeTraitsTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeTraits(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonTrait')]
     public function testShouldFailToBeTrait(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf('Resource <promote>%s</promote> must be a trait', $exceptName),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -47,7 +41,10 @@ final class ToBeTraitsTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeTraits(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf('Resource <promote>%s</promote> must be a trait', $exceptName),
+        );
     }
 
     public static function getClassLikeNonTrait(): Generator

@@ -8,17 +8,17 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToUseTrait implements ExprInterface
+final readonly class ToUseTrait implements ExprInterface
 {
     /** @var array<int,class-string> */
-    private readonly array $names;
+    private array $names;
 
     /**
      * @param array<int,class-string>|class-string $names
      */
     public function __construct(
         array|string $names,
-        private readonly string $message,
+        private string $message = '',
     ) {
         $this->names = (array) $names;
     }

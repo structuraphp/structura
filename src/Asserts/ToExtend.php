@@ -9,11 +9,11 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToExtend implements ExprInterface
+final readonly class ToExtend implements ExprInterface
 {
     public function __construct(
-        public readonly string $name,
-        private readonly string $message,
+        private string $name,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

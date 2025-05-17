@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Except;
@@ -32,7 +31,7 @@ final class ToNotUseTraitTest extends TestCase
                     ->toNotUseTrait(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     /**
@@ -54,20 +53,12 @@ final class ToNotUseTraitTest extends TestCase
                     ->toNotUseTrait(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithTrait')]
     public function testShouldFailToUseNothing(string $raw, string $exceptName): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must not use a trait',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -76,7 +67,13 @@ final class ToNotUseTraitTest extends TestCase
                     ->toNotUseTrait(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must not use a trait',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeWithTrait(): Generator

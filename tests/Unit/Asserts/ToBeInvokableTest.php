@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Expr;
@@ -29,20 +28,12 @@ final class ToBeInvokableTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeInvokable(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonInvokable')]
     public function testShouldFailToBeInvokable(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must have method <promote>__invoke</promote>',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -51,7 +42,13 @@ final class ToBeInvokableTest extends TestCase
                     ->toBeInvokable(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must have method <promote>__invoke</promote>',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeNonInvokable(): Generator

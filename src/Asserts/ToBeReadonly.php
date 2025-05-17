@@ -10,10 +10,10 @@ use StructuraPhp\Structura\Enums\FlagType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToBeReadonly implements ExprInterface
+final readonly class ToBeReadonly implements ExprInterface
 {
     public function __construct(
-        private readonly string $message = '',
+        private string $message = '',
     ) {}
 
     public function __toString(): string

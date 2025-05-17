@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Expr;
@@ -29,20 +28,12 @@ final class ToBeReadonlyTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonReadonly')]
     public function testShouldFailToBeReadonly(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must be a read-only class',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -50,7 +41,13 @@ final class ToBeReadonlyTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must be a read-only class',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeNonReadonly(): Generator

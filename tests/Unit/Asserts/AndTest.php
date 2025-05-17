@@ -7,7 +7,6 @@ namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 use ArrayAccess;
 use Iterator;
 use PHPUnit\Framework\Attributes\CoversMethod;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -31,13 +30,11 @@ final class AndTest extends TestCase
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     public function testShouldFailToAnd(): void
     {
-        $this->expectException(ExpectationFailedException::class);
-
         $rules = $this
             ->allClasses()
             ->fromRaw('<?php class Foo implements \ArrayAccess {}')
@@ -50,6 +47,10 @@ final class AndTest extends TestCase
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must implement <promote>ArrayAccess</promote>, '
+            . 'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>',
+        );
     }
 }

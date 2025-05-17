@@ -9,9 +9,9 @@ use ArrayIterator;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversMethod;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Fixture\Exceptions\UserException;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversMethod(Expr::class, 'or')]
@@ -33,13 +33,11 @@ final class OrTest extends TestCase
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     public function testShouldFailToOr(): void
     {
-        $this->expectException(ExpectationFailedException::class);
-
         $rules = $this
             ->allClasses()
             ->fromDir('tests/Fixture/Exceptions')
@@ -52,6 +50,14 @@ final class OrTest extends TestCase
                     ),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            sprintf(
+                'Resource <promote>%s</promote> must extend by <promote>ArrayIterator</promote>, '
+                . 'Resource <promote>%s</promote> must extend by <promote>AppendIterator</promote>',
+                UserException::class,
+                UserException::class,
+            ),
+        );
     }
 }

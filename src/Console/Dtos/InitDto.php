@@ -7,10 +7,10 @@ namespace StructuraPhp\Structura\Console\Dtos;
 use ArrayAccess;
 use InvalidArgumentException;
 
-class InitDto
+final readonly class InitDto
 {
     public function __construct(
-        public readonly string $configPath,
+        public string $configPath,
     ) {}
 
     /**

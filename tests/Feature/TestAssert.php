@@ -16,7 +16,7 @@ use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
-class TestAssert extends TestBuilder
+final class TestAssert extends TestBuilder
 {
     #[TestDox('Asserts architecture rules')]
     public function testAssertArchitectureRules(): void

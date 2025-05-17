@@ -9,12 +9,12 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToNotUseTrait implements ExprInterface
+final readonly class ToNotUseTrait implements ExprInterface
 {
     use Arr;
 
     public function __construct(
-        private readonly string $message,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

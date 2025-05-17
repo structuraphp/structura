@@ -9,9 +9,9 @@ use StructuraPhp\Structura\Contracts\FinderInterface;
 use StructuraPhp\Structura\Contracts\ThatInterface;
 use Symfony\Component\Finder\Finder;
 
-class AllClasses implements FinderInterface
+readonly class AllClasses implements FinderInterface
 {
-    private readonly RuleBuilder $ruleBuilder;
+    private RuleBuilder $ruleBuilder;
 
     public function __construct()
     {

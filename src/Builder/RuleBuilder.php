@@ -15,9 +15,9 @@ class RuleBuilder
 
     public ?Finder $finder = null;
 
-    public ?Expr $thats = null;
+    public ?Expr $that = null;
 
-    public Expr $shoulds;
+    public Expr $should;
 
     public ?Except $except = null;
 
@@ -37,14 +37,14 @@ class RuleBuilder
 
     public function addThat(Expr $that): self
     {
-        $this->thats = $that;
+        $this->that = $that;
 
         return $this;
     }
 
     public function addShould(Expr $should): self
     {
-        $this->shoulds = $should;
+        $this->should = $should;
 
         return $this;
     }
@@ -61,9 +61,9 @@ class RuleBuilder
         return new RuleValuesObject(
             raw: $this->raw,
             finder: $this->finder,
-            thats: $this->thats,
+            that: $this->that,
             except: $this->except,
-            shoulds: $this->shoulds,
+            should: $this->should,
         );
     }
 }
