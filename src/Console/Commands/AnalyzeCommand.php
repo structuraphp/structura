@@ -21,13 +21,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
 #[AsCommand(
     name: 'analyze',
     description: 'Test archi',
 )]
-class AnalyzeCommand extends Command
+final class AnalyzeCommand extends Command
 {
     private AnalyzeDto $analyzeDto;
 

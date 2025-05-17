@@ -15,9 +15,9 @@ use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
+ * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
-class AnalyseService
+final class AnalyseService
 {
     private int $countPass = 0;
 
@@ -102,7 +102,7 @@ class AnalyseService
             );
 
             $this->fromOutput($ruleValueObject->finder);
-            $this->thatOutput($ruleValueObject->thats);
+            $this->thatOutput($ruleValueObject->that);
             $this->shouldOutput($assertBuilder);
 
             $this->prints[] = '';

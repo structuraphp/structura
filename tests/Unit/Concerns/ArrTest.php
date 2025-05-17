@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Concerns\Arr;
 
 #[CoversClass(Arr::class)]
-class ArrTest extends TestCase
+final class ArrTest extends TestCase
 {
     use Arr;
 

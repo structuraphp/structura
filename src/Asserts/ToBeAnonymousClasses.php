@@ -9,10 +9,10 @@ use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToBeAnonymousClasses implements ExprInterface
+final readonly class ToBeAnonymousClasses implements ExprInterface
 {
     public function __construct(
-        private readonly string $message = '',
+        private string $message = '',
     ) {}
 
     public function __toString(): string

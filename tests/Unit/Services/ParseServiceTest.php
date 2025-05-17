@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Services\ParseService;
 
 #[CoversClass(ParseService::class)]
-class ParseServiceTest extends TestCase
+final class ParseServiceTest extends TestCase
 {
     private ParseService $parseService;
 

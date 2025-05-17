@@ -13,7 +13,7 @@ use StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController;
 use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 use StructuraPhp\Structura\Tests\Fixture\Models\User;
 
-class TestController extends TestBuilder
+final class TestController extends TestBuilder
 {
     #[TestDox('Controllers architecture rules')]
     public function testControllersArchitectureRules(): void

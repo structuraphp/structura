@@ -13,8 +13,8 @@ final readonly class RuleValuesObject
     public function __construct(
         public string $raw,
         public ?Finder $finder,
-        public ?Expr $thats,
+        public ?Expr $that,
         public ?Except $except,
-        public Expr $shoulds,
+        public Expr $should,
     ) {}
 }

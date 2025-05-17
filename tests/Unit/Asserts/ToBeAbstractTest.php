@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -28,20 +27,12 @@ final class ToBeAbstractTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeAbstract(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonAbstract')]
     public function testShouldFailToBeAbstract(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> be an abstract class',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -49,7 +40,13 @@ final class ToBeAbstractTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeAbstract(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> be an abstract class',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeNonAbstract(): Generator

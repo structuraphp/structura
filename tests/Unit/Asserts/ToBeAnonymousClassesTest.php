@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Expr;
@@ -30,17 +29,12 @@ final class ToBeAnonymousClassesTest extends TestCase
                     ->toBeAnonymousClasses(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeNonAnonymousClasses')]
     public function testShouldFailToBeAnonymousClasses(string $raw): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            'Resource <promote>Foo</promote> must be an anonymous class',
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -49,7 +43,10 @@ final class ToBeAnonymousClassesTest extends TestCase
                     ->toBeAnonymousClasses(),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must be an anonymous class',
+        );
     }
 
     public static function getClassLikeNonAnonymousClasses(): Generator

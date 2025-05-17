@@ -9,7 +9,7 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToNotDependsOn implements ExprInterface
+final readonly class ToNotDependsOn implements ExprInterface
 {
     use Arr;
 
@@ -18,9 +18,9 @@ class ToNotDependsOn implements ExprInterface
      * @param array<int,string> $patterns
      */
     public function __construct(
-        private readonly array $names,
-        private readonly array $patterns,
-        private readonly string $message = '',
+        private array $names,
+        private array $patterns,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
 use StructuraPhp\Structura\Enums\ClassType;
 
-class ClassDescription
+final class ClassDescription
 {
     /** @var array<int,string> */
     private array $dependencies = [];

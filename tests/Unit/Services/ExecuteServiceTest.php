@@ -16,7 +16,7 @@ use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 #[CoversClass(ExecuteService::class)]
-class ExecuteServiceTest extends TestCase
+final class ExecuteServiceTest extends TestCase
 {
     use ArchitectureAsserts;
 

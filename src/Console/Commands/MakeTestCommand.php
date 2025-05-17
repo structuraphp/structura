@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'make',
     description: 'Make test',
 )]
-class MakeTestCommand extends Command
+final class MakeTestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

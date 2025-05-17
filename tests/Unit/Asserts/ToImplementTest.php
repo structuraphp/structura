@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Expr;
@@ -31,21 +30,12 @@ final class ToImplementTest extends TestCase
                     ->toImplement(Stringable::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutImplement')]
     public function testShouldFailToImplement(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must implement <promote>%s</promote>',
-                $exceptName,
-                Stringable::class,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -54,7 +44,14 @@ final class ToImplementTest extends TestCase
                     ->toImplement(Stringable::class),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                $exceptName,
+                Stringable::class,
+            ),
+        );
     }
 
     public static function getClassLikeWithImplement(): Generator

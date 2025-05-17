@@ -11,7 +11,7 @@ use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 use Symfony\Component\Filesystem\Filesystem;
 
-class MakeTestService
+final readonly class MakeTestService
 {
     private const STUB_FILENAME = '%s/Stubs/test.php.dist';
 

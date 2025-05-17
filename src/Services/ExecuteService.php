@@ -14,7 +14,7 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
-class ExecuteService
+final class ExecuteService
 {
     private AssertBuilder $builder;
 
@@ -33,7 +33,7 @@ class ExecuteService
             throw new InvalidArgumentException();
         }
 
-        $this->execute($classes, $this->ruleValuesObject->shoulds);
+        $this->execute($classes, $this->ruleValuesObject->should);
 
         return $this->builder;
     }
@@ -41,7 +41,7 @@ class ExecuteService
     /**
      * @param Generator<ClassDescription> $classes
      */
-    protected function execute(Generator $classes, Expr $assertions): void
+    private function execute(Generator $classes, Expr $assertions): void
     {
         /** @var Expr|ExprInterface $assert */
         foreach ($assertions as $assert) {
@@ -60,11 +60,11 @@ class ExecuteService
 
     private function executeThat(ClassDescription $class): bool
     {
-        if (!$this->ruleValuesObject->thats instanceof Expr) {
+        if (!$this->ruleValuesObject->that instanceof Expr) {
             return false;
         }
 
-        foreach ($this->ruleValuesObject->thats as $expression) {
+        foreach ($this->ruleValuesObject->that as $expression) {
             $predicate = $expression instanceof ExprInterface
                 ? $expression->assert($class)
                 : $this->assertGroup($expression, $class);

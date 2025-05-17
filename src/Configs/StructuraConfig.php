@@ -34,7 +34,7 @@ class StructuraConfig
     }
 
     /**
-     * @param class-string<TestBuilder> $classes
+     * @param class-string<TestBuilder> ...$classes
      */
     public function rules(string ...$classes): self
     {

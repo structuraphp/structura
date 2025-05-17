@@ -8,7 +8,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveAttribute;
 use StructuraPhp\Structura\Expr;
@@ -31,20 +30,12 @@ final class ToHaveAttributeTest extends TestCase
                     ->toHaveAttribute('Attribute'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesPass($rules);
     }
 
     #[DataProvider('getClassLikeWithoutAttribute')]
     public function testShouldFailToHaveAttribute(string $raw, string $exceptName = 'Foo'): void
     {
-        $this->expectException(ExpectationFailedException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Resource <promote>%s</promote> must have attribute <promote>Attribute</promote>',
-                $exceptName,
-            ),
-        );
-
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -53,7 +44,13 @@ final class ToHaveAttributeTest extends TestCase
                     ->toHaveAttribute('Attribute'),
             );
 
-        self::assertRules($rules);
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must have attribute <promote>Attribute</promote>',
+                $exceptName,
+            ),
+        );
     }
 
     public static function getClassLikeWithAttribute(): Generator

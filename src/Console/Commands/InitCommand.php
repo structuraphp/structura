@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
     name: 'init',
     description: 'Initialize config file',
 )]
-class InitCommand extends Command
+final class InitCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

@@ -11,11 +11,11 @@ use StructuraPhp\Structura\Enums\ScalarType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-class ToBeBackedEnums implements ExprInterface
+final readonly class ToBeBackedEnums implements ExprInterface
 {
     public function __construct(
-        private readonly ?ScalarType $scalarType = null,
-        private readonly string $message = '',
+        private ?ScalarType $scalarType = null,
+        private string $message = '',
     ) {}
 
     public function __toString(): string

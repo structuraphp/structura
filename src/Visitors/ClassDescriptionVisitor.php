@@ -16,7 +16,7 @@ use PhpParser\NodeVisitorAbstract;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
-class ClassDescriptionVisitor extends NodeVisitorAbstract
+final class ClassDescriptionVisitor extends NodeVisitorAbstract
 {
     private ?Declare_ $declare = null;
 
