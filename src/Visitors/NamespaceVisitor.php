@@ -55,6 +55,14 @@ final class NamespaceVisitor extends NodeVisitorAbstract
     {
         $dependencies = array_keys($this->dependencies);
 
+        /*
+         * Removes shadows-dependencies, example:
+         *
+         * use Dependency\Shadow;
+         * Shadow\Foo::class;
+         *
+         * ['Dependency\Shadow\Foo'] !== ['Dependency\Shadow', 'Shadow\Foo']
+         */
         foreach (array_keys($this->namespace) as $namespace) {
             foreach ($dependencies as $dependency) {
                 if (
@@ -68,7 +76,13 @@ final class NamespaceVisitor extends NodeVisitorAbstract
             }
         }
 
-        return $this->namespace + $this->dependencies;
+        $output = $this->namespace + $this->dependencies;
+
+        // clean dependencies
+        $this->namespace = [];
+        $this->dependencies = [];
+
+        return $output;
     }
 
     /**
