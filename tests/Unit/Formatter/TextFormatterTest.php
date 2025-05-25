@@ -1,22 +1,16 @@
 <?php
 
-declare(strict_types=1);
+namespace StructuraPhp\Structura\Tests\Unit\Formatter;
 
-namespace StructuraPhp\Structura\Tests\Unit\Services;
-
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Console\Output\OutputInterface;
 
-#[CoversClass(AnalyseService::class)]
-final class AnalyseServiceTest extends TestCase
+class TextFormatterTest extends TestCase
 {
-    public function testAnalyseService(): void
+    public function testFormat(): void
     {
         $service = new AnalyseService(
             StructuraConfig::make()
@@ -29,13 +23,10 @@ final class AnalyseServiceTest extends TestCase
         $result = $service->analyse();
         $text = new TextFormatter();
 
-        $buffer = new BufferedOutput(256);
+        $buffer = new BufferedOutput();
 
         $out = $text->formatErrors($result, $buffer);
-
-        self::assertSame(4, $result->countViolation);
-        self::assertSame(11, $result->countPass);
-        self::assertSame(1, $result->countWarning);
+        self::assertEquals(1, $out);
 
         $expected = <<<'EOF'
          ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
@@ -82,8 +73,8 @@ final class AnalyseServiceTest extends TestCase
 
         EOF;
 
-        $expected = explode( PHP_EOL, $expected);
-        $fetch = explode( PHP_EOL, $buffer->fetch());
+        $expected = explode(PHP_EOL, $expected);
+        $fetch = explode(PHP_EOL, $buffer->fetch());
 
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key]);
