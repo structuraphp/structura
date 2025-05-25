@@ -24,24 +24,24 @@ final class AnalyseServiceTest extends TestCase
 
         $result = $service->analyse();
 
-        self::assertSame(4, $result->countViolation);
-        self::assertSame(11, $result->countPass);
+        self::assertSame(5, $result->countViolation);
+        self::assertSame(10, $result->countPass);
         self::assertSame(1, $result->countWarning);
 
         $expected = <<<'EOF'
         <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        24 classes from
+        28 classes from
          - dirs
         That
          - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
         Should
          <green>✔</green> to be classes
-         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>23 error(s)</fire>
+         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>27 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <green>✔</green> to have prefix <promote>To</promote> <warning>1 warning(s)</warning>
          <green>✔</green> to extend nothing
-         <fire>✘</fire> to not use trait <fire>3 error(s)</fire>
+         <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
 
         <violation> ERROR </violation> Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
@@ -54,7 +54,7 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
-         <green>✔</green> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [2+]</promote>
+         <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+]</promote> <fire>2 error(s)</fire>
 
         <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
         2 classes from
@@ -66,7 +66,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        65 classes from
+        70 classes from
          - dirs
         That
         Should

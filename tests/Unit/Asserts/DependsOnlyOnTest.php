@@ -60,10 +60,12 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s, %s, %s, [1+]',
+                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                'Depend\Bap',
                 ArrayAccess::class,
                 'Depend\Bar',
                 Exception::class,
+                Stringable::class,
             ),
         );
     }
@@ -78,9 +80,9 @@ final class DependsOnlyOnTest extends TestCase
             use Depend\Bap;
             use Depend\Bar;
             
-            class Foo implements \Stringable {
+            class Foo {
                 public function __construct(ArrayAccess $arrayAccess) {
-                    
+                    \Stringable::class;
                 }
 
                 public function __toString(): string {

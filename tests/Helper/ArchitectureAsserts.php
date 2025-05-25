@@ -40,7 +40,7 @@ trait ArchitectureAsserts
 
         $violations = $assertBuilder->getViolations();
         foreach ($assertBuilder->getPass() as $key => $value) {
-            Assert::assertFalse((bool) $value);
+            Assert::assertFalse((bool) $value, $message);
             Assert::assertSame(implode(', ', $violations[$key] ?? []), $message);
         }
     }

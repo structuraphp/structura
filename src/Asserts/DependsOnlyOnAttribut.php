@@ -6,10 +6,11 @@ namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
 use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\DependenciesType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOn implements ExprInterface
+final readonly class DependsOnlyOnAttribut implements ExprInterface
 {
     use Arr;
 
@@ -26,7 +27,7 @@ final readonly class DependsOnlyOn implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'depends only on these namespaces <promote>%s</promote>',
+            'depends only on attribut <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -35,10 +36,10 @@ final readonly class DependsOnlyOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Attributes),
         );
 
-        return array_diff($class->getDependencies(), array_unique($dependencies)) === [];
+        return array_diff($class->getAttributeNames(), array_unique($dependencies)) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
@@ -46,14 +47,14 @@ final readonly class DependsOnlyOn implements ExprInterface
         $authorisedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Attributes),
         );
-        $violations = array_diff($class->getDependencies(), $dependencies);
+        $violations = array_diff($class->getAttributeNames(), $dependencies);
         sort($violations);
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s',
+                'Resource <promote>%s</promote> must use attributes on these namespaces %s but use attributes %s',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
