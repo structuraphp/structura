@@ -8,6 +8,10 @@ use Closure;
 use Generator;
 use IteratorAggregate;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
@@ -45,7 +49,16 @@ class Expr implements IteratorAggregate
     private array $asserts = [];
 
     /** @var array<int,array<int,class-string>> */
-    private array $hiddenDependencies = [];
+    private array $attributDependencies = [];
+
+    /** @var array<int,array<int,class-string>> */
+    private array $extendDependencies = [];
+
+    /** @var array<int,array<int,class-string>> */
+    private array $implementDependencies = [];
+
+    /** @var array<int,array<int,class-string>> */
+    private array $traitDependencies = [];
 
     public function __construct(
         private readonly ExprType $exprType = ExprType::And,
@@ -151,8 +164,76 @@ class Expr implements IteratorAggregate
         string $message = '',
     ): self {
         return $this->addExpr(
-            new DependsOnlyOn(
-                array_unique(array_merge((array) $names, ...$this->hiddenDependencies)),
+            new DependsOnlyOn((array) $names, (array) $patterns, $message),
+        );
+    }
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
+     */
+    public function dependsOnlyOnUseTrait(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnUseTrait(
+                array_unique(array_merge((array) $names, ...$this->traitDependencies)),
+                (array) $patterns,
+                $message,
+            ),
+        );
+    }
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
+     */
+    public function dependsOnlyOnInheritance(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnInheritance(
+                array_unique(array_merge((array) $names, ...$this->extendDependencies)),
+                (array) $patterns,
+                $message,
+            ),
+        );
+    }
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
+     */
+    public function dependsOnlyOnImplementation(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnImplementation(
+                array_unique(array_merge((array) $names, ...$this->implementDependencies)),
+                (array) $patterns,
+                $message,
+            ),
+        );
+    }
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match class names against
+     */
+    public function dependsOnlyOnAttribut(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnAttribut(
+                array_unique(array_merge((array) $names, ...$this->attributDependencies)),
                 (array) $patterns,
                 $message,
             ),
@@ -178,7 +259,7 @@ class Expr implements IteratorAggregate
      */
     public function toExtend(string $name, string $message = ''): self
     {
-        $this->hiddenDependencies[] = [$name];
+        $this->extendDependencies[] = [$name];
 
         return $this->addExpr(new ToExtend($name, $message));
     }
@@ -188,7 +269,7 @@ class Expr implements IteratorAggregate
      */
     public function toImplement(array|string $names, string $message = ''): self
     {
-        $this->hiddenDependencies[] = (array) $names;
+        $this->implementDependencies[] = (array) $names;
 
         return $this->addExpr(new ToImplement($names, $message));
     }
@@ -203,7 +284,7 @@ class Expr implements IteratorAggregate
      */
     public function toHaveAttribute(string $name, string $message = ''): self
     {
-        $this->hiddenDependencies[] = [$name];
+        $this->attributDependencies[] = [$name];
 
         return $this->addExpr(new ToHaveAttribute($name, $message));
     }
@@ -223,7 +304,7 @@ class Expr implements IteratorAggregate
      */
     public function toOnlyImplement(string $name, string $message = ''): self
     {
-        $this->hiddenDependencies[] = [$name];
+        $this->implementDependencies[] = [$name];
 
         return $this->addExpr(new ToOnlyImplement($name, $message));
     }
@@ -233,7 +314,7 @@ class Expr implements IteratorAggregate
      */
     public function toOnlyUseTrait(string $name, string $message = ''): self
     {
-        $this->hiddenDependencies[] = [$name];
+        $this->traitDependencies[] = [$name];
 
         return $this->addExpr(new ToOnlyUseTrait($name, $message));
     }
@@ -243,7 +324,7 @@ class Expr implements IteratorAggregate
      */
     public function toUseTrait(array|string $names, string $message = ''): self
     {
-        $this->hiddenDependencies[] = (array) $names;
+        $this->traitDependencies[] = (array) $names;
 
         return $this->addExpr(new ToUseTrait($names, $message));
     }

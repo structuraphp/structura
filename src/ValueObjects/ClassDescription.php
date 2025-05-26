@@ -11,6 +11,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\DependenciesType;
 
 final class ClassDescription
 {
@@ -144,6 +145,27 @@ final class ClassDescription
         return false;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getExtendNames(): array
+    {
+        if ($this->extends instanceof Name) {
+            return [$this->extends->toString()];
+        }
+
+        if ($this->extends === null) {
+            return [];
+        }
+
+        $extends = [];
+        foreach ($this->extends as $extend) {
+            $extends[] = $extend->toString();
+        }
+
+        return $extends;
+    }
+
     public function hasInterface(string $name): bool
     {
         if ($this->interfaces === [] || $this->interfaces === null) {
@@ -191,6 +213,21 @@ final class ClassDescription
         return $interfaces;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getAttributeNames(): array
+    {
+        $attributeNames = [];
+        foreach ($this->attrGroups as $attrGroup) {
+            foreach ($attrGroup->attrs as $attr) {
+                $attributeNames[] = $attr->name->toString();
+            }
+        }
+
+        return $attributeNames;
+    }
+
     public function hasDeclare(
         string $key,
         string $value,
@@ -216,8 +253,10 @@ final class ClassDescription
      *
      * @return array<int,string>
      */
-    public function getDependenciesByPatterns(array $patterns): array
-    {
+    public function getDependenciesByPatterns(
+        array $patterns,
+        DependenciesType $type = DependenciesType::All,
+    ): array {
         $matches = [];
         if ($patterns === []) {
             return [];
@@ -228,7 +267,7 @@ final class ClassDescription
         /** @var array<int,string>|false $match */
         $match = preg_grep(
             '/^' . $this->customPregQuote($pattern) . '$/',
-            $this->getDependencies(),
+            $this->getDependenciesByType($type),
         );
 
         if ($match !== false) {
@@ -251,5 +290,19 @@ final class ClassDescription
         }
 
         return strtr($subject, $mapping);
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function getDependenciesByType(DependenciesType $dependenciesType): array
+    {
+        return match ($dependenciesType) {
+            DependenciesType::All => $this->getDependencies(),
+            DependenciesType::Attributes => $this->getAttributeNames(),
+            DependenciesType::Traits => $this->getTraitNames(),
+            DependenciesType::Extends => $this->getExtendNames(),
+            DependenciesType::Interfaces => $this->getInterfaceNames(),
+        };
     }
 }

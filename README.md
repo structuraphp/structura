@@ -213,6 +213,10 @@ php bin/structura analyze
   - [toBeTraits()](#tobetraits)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
+  - [dependsOnlyOnAttribut](#dependsonlyonattribut)
+  - [dependsOnlyOnImplementation](#dependsonlyonimplementation)
+  - [dependsOnlyOnInheritance](#dependsonlyoninheritance)
+  - [dependsOnlyOnUseTrait](#dependsonlyonusetrait)
   - [toNotDependsOn()](#tonotdependson)
 - 🧲 Relation
   - [toExtend()](#toextend)
@@ -339,6 +343,8 @@ $this
 
 ### dependsOnlyOn()
 
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
+
 ```php
 $this
   ->allClasses()
@@ -350,12 +356,65 @@ $this
   );
 ```
 
-You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
-dependencies
+### dependsOnlyOnAttribut()
 
-If you use the rule
-classes ([toExtend()](#toextend), [toImplement()](#toimplement), [toOnlyImplement()](#toonlyimplement), [toHaveAttribute()](#tohaveattribute), [toOnlyUseTrait()](#toonlyusetrait), [toUseTrait()](#tousetrait)),
-they are included by default in the permitted dependencies.
+If you use the rule classes [toHaveAttribute()](#tohaveattribute), they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnAttribut(
+        names: [\Attribute::class, /* ... */],
+        patterns: ['Attributes\Custom.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnImplementation()
+
+If you use the rule classes [toImplement()](#toimplement) and [toOnlyImplement()](#toonlyimplement) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnImplementation(
+        names: [\ArrayAccess::class, /* ... */],
+        patterns: ['Contracts\Dto.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnInheritance()
+
+If you use the rule classes [toExtend()](#toextend) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnInheritance(
+        names: [Controller::class, /* ... */],
+        patterns: ['Controllers\Admin.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnUseTrait()
+
+If you use the rule classes [toUseTrait()](#tousetrait) and [toOnlyUseTrait()](#toonlyusetrait) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnUseTrait(
+        names: [\HasFactor::class, /* ... */],
+        patterns: ['Concerns\Models.+', /* ... */],
+    )
+  );
+```
 
 ### toNotDependsOn()
 

@@ -79,9 +79,9 @@ final class ToNotDependsOnTest extends TestCase
             use Depend\Bap;
             use Depend\Bar;
             
-            class Foo implements \Stringable {
+            class Foo {
                 public function __construct(ArrayAccess $arrayAccess) {
-                    
+                    \Stringable::class;
                 }
 
                 public function __toString(): string {

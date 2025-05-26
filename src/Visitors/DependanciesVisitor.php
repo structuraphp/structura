@@ -17,6 +17,7 @@ use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\GroupUse;
@@ -26,27 +27,27 @@ use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 
-final class NamespaceVisitor extends NodeVisitorAbstract
+final class DependanciesVisitor extends NodeVisitorAbstract
 {
-    private const TYPES = [
-        'bool' => 1,
-        'true' => 1,
-        'false' => 1,
-        'callable' => 1,
-        'int' => 1,
-        'float' => 1,
-        'string' => 1,
-        'array' => 1,
-        'object' => 1,
-        'null' => 1,
-        'mixed' => 1,
-    ];
-
     /** @var array<string,int> */
     private array $dependencies = [];
 
     /** @var array<string,int> */
     private array $namespace = [];
+
+    /** @var array<string,int> */
+    private array $traits = [];
+
+    /** @var array<string,int> */
+    private array $interfaces = [];
+
+    /** @var array<string,int> */
+    private array $inheritance = [];
+
+    /** @var array<string,int> */
+    private array $attributes = [];
+
+    private int $classDeep = 0;
 
     /**
      * @return array<string,int>
@@ -54,6 +55,13 @@ final class NamespaceVisitor extends NodeVisitorAbstract
     public function getDependencies(): array
     {
         $dependencies = array_keys($this->dependencies);
+        $namespaces = array_keys($this->namespace);
+        $otherDependencies = array_merge(
+            array_keys($this->interfaces),
+            array_keys($this->inheritance),
+            array_keys($this->traits),
+            array_keys($this->attributes),
+        );
 
         /*
          * Removes shadows-dependencies, example:
@@ -63,7 +71,7 @@ final class NamespaceVisitor extends NodeVisitorAbstract
          *
          * ['Dependency\Shadow\Foo'] !== ['Dependency\Shadow', 'Shadow\Foo']
          */
-        foreach (array_keys($this->namespace) as $namespace) {
+        foreach ($namespaces as $namespace) {
             foreach ($dependencies as $dependency) {
                 if (
                     str_starts_with($dependency, $namespace . '\\')
@@ -73,6 +81,21 @@ final class NamespaceVisitor extends NodeVisitorAbstract
 
                     break;
                 }
+            }
+
+            foreach ($otherDependencies as $dependency) {
+                if (
+                    str_starts_with($dependency, $namespace . '\\')
+                    && !\in_array($namespace, $dependencies, true)
+                ) {
+                    unset($this->namespace[$namespace]);
+
+                    break;
+                }
+            }
+
+            if (\in_array($namespace, $otherDependencies, true)) {
+                unset($this->namespace[$namespace]);
             }
         }
 
@@ -97,6 +120,10 @@ final class NamespaceVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
+        if ($node instanceof ClassLike) {
+            $this->classDeep++;
+        }
+
         match (true) {
             $node instanceof GroupUse => $this->addGroupUseDependency($node),
             $node instanceof Use_ => $this->addUseDependency($node),
@@ -104,8 +131,7 @@ final class NamespaceVisitor extends NodeVisitorAbstract
             $node instanceof Enum_ => $this->addEnumDependency($node),
             $node instanceof Interface_ => $this->addInterfaceDependency($node),
             $node instanceof TraitUse => $this->addTraitDependency($node),
-            $node instanceof Attribute => $this
-                ->addDependency($node->name->getLine(), $node->name->toString()),
+            $node instanceof Attribute => $this->addAttributDependency($node),
             $node instanceof New_
             || $node instanceof Instanceof_
             || $node instanceof ClassConstFetch => $this->addStaticDependency($node),
@@ -151,7 +177,9 @@ final class NamespaceVisitor extends NodeVisitorAbstract
     private function addTraitDependency(TraitUse $node): void
     {
         foreach ($node->traits as $trait) {
-            $this->addDependency($trait->getLine(), $trait->toString());
+            $this->classDeep === 1
+                ? $this->traits[$trait->toString()] = $trait->getLine()
+                : $this->addDependency($trait->getLine(), $trait->toString());
         }
     }
 
@@ -169,26 +197,41 @@ final class NamespaceVisitor extends NodeVisitorAbstract
     private function addClassDependency(Class_ $node): void
     {
         if ($node->extends instanceof Name) {
-            $this->addDependency($node->extends->getLine(), $node->extends->toString());
+            $this->classDeep === 1
+                ? $this->inheritance[$node->extends->toString()] = $node->extends->getLine()
+                : $this->addDependency($node->extends->getLine(), $node->extends->toString());
         }
 
         foreach ($node->implements as $interface) {
-            $this->addDependency($interface->getLine(), $interface->toString());
+            $this->classDeep === 1
+                ? $this->interfaces[$interface->toString()] = $interface->getLine()
+                : $this->addDependency($interface->getLine(), $interface->toString());
         }
     }
 
     private function addEnumDependency(Enum_ $node): void
     {
         foreach ($node->implements as $interface) {
-            $this->addDependency($interface->getLine(), $interface->toString());
+            $this->classDeep === 1
+                ? $this->interfaces[$interface->toString()] = $interface->getLine()
+                : $this->addDependency($interface->getLine(), $interface->toString());
         }
     }
 
     private function addInterfaceDependency(Interface_ $node): void
     {
         foreach ($node->extends as $extend) {
-            $this->addDependency($extend->getLine(), $extend->toString());
+            $this->classDeep === 1
+                ? $this->inheritance[$extend->toString()] = $extend->getLine()
+                : $this->addDependency($extend->getLine(), $extend->toString());
         }
+    }
+
+    private function addAttributDependency(Attribute $node): void
+    {
+        $this->classDeep === 0 || $this->classDeep === 1
+            ? $this->attributes[$node->name->toString()] = $node->name->getLine()
+            : $this->addDependency($node->name->getLine(), $node->name->toString());
     }
 
     private function addMethodDependency(ArrowFunction|ClassMethod|Closure $node): void
@@ -212,7 +255,7 @@ final class NamespaceVisitor extends NodeVisitorAbstract
             return;
         }
 
-        if ($type->isSpecialClassName() || $this->isBuiltInType($type->toString())) {
+        if ($type->isSpecialClassName()) {
             return;
         }
 
@@ -224,11 +267,6 @@ final class NamespaceVisitor extends NodeVisitorAbstract
         foreach ($node->types as $type) {
             $this->addDependency($type->getLine(), $type->toString());
         }
-    }
-
-    private function isBuiltInType(string $typeName): bool
-    {
-        return isset(self::TYPES[$typeName]);
     }
 
     private function addDependency(int $line, string $dependency): void
