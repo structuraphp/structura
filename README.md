@@ -211,6 +211,7 @@ php bin/structura analyze
   - [toBeInvokable()](#tobeinvokable)
   - [toBeReadonly()](#tobereadonly)
   - [toBeTraits()](#tobetraits)
+  - [toBeAttribute()](#tobetraits)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
   - [dependsOnlyOnAttribut](#dependsonlyonattribut)
@@ -341,6 +342,35 @@ $this
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeTraits(),
   );
+```
+
+### toBeAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+  );
+```
+
+Un attribut valide est une classe qui utilise \Attribut avec un flag valide et qui est instanciable
+
+```php
+#[\Attribute()] // OK
+class Foo {
+
+}
+
+#[Custom] // KO
+class Bar {
+
+}
+
+$class = new ReflectionClass(ValidAttr::class);
+$attributes = $class->getAttributes();
+array_map(fn($attribute) => $attribute->newInstance(), $attributes);
 ```
 
 ### dependsOnlyOn()

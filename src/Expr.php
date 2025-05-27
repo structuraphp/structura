@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura;
 
+use Attribute;
 use Closure;
 use Generator;
 use IteratorAggregate;
@@ -14,6 +15,7 @@ use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Asserts\ToBeAttribute;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
@@ -154,6 +156,11 @@ class Expr implements IteratorAggregate
     public function toBeReadonly(string $message = ''): self
     {
         return $this->addExpr(new ToBeReadonly($message));
+    }
+
+    public function toBeAttribute(int $flag = Attribute::TARGET_ALL, string $message = ''): self
+    {
+        return $this->addExpr(new ToBeAttribute($flag, $message));
     }
 
     /**
