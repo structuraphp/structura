@@ -24,6 +24,8 @@ use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Asserts\ToExtendNothing;
 use StructuraPhp\Structura\Asserts\ToHaveAttribute;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
@@ -287,6 +289,21 @@ class Expr implements IteratorAggregate
         $this->attributDependencies[] = [$name];
 
         return $this->addExpr(new ToHaveAttribute($name, $message));
+    }
+
+    public function toHaveNoAttribute(string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveNoAttribute($message));
+    }
+
+    /**
+     * @param class-string $name
+     */
+    public function toHaveOnlyAttribute(string $name, string $message = ''): self
+    {
+        $this->attributDependencies[] = [$name];
+
+        return $this->addExpr(new ToHaveOnlyAttribute($name, $message));
     }
 
     public function toHavePrefix(string $prefix): self

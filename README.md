@@ -227,6 +227,9 @@ php bin/structura analyze
   - [toUseTrait()](#tousetrait)
   - [toNotUseTrait()](#tonotusetrait)
   - [toOnlyUseTrait()](#toonlyusetrait)
+  - [toHaveAttribute()](#tohaveattribute)
+  - [toHaveNoAttribute()](#tohavenoattribute)
+  - [toHaveOnlyAttribute()](#tohaveonlyattribute)
 - 🔌 Method
   - [toHaveMethod()](#tohavemethod)
   - [toHaveConstructor()](#tohaveconstructor)
@@ -237,7 +240,6 @@ php bin/structura analyze
 - 🕹️ Other
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
-  - [toHaveAttribute()](#tohaveattribute)
 - 🗜️ Operators
   - [and()](#and)
   - [or()](#or)
@@ -504,6 +506,33 @@ $this
   ->should(fn(Expr $expr) => $expr->toOnlyUseTrait(Bar::class));
 ```
 
+### toHaveAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
+```
+
+### toHaveNoAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveNoAttribute());
+```
+
+### toHaveOnlyAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyAttribute(Deprecated::class));
+```
+
 ### toHaveMethod()
 
 ```php
@@ -563,15 +592,6 @@ $this
   ->allClasses()
   ->fromRaw('<?php declare(encoding='ISO-8859-1'); class Foo {}')
   ->should(fn(Expr $expr) => $expr->toUseDeclare('encoding', 'ISO-8859-1'));
-```
-
-### toHaveAttribute()
-
-```php
-$this
-  ->allClasses()
-  ->fromRaw('<?php #[\Deprecated] class Foo {}')
-  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
 ```
 
 ## and()
