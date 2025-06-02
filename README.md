@@ -206,6 +206,7 @@ php bin/structura analyze
   - [toBeAnonymousClasses()](#tobeanonymousclasses)
   - [toBeClasses()](#tobeclasses)
   - [toBeEnums()](#tobeenums)
+  - [toBeBackedEnums()](#tobebackedenums)
   - [toBeFinal()](#tobefinal)
   - [toBeInterfaces()](#tobeinterfaces)
   - [toBeInvokable()](#tobeinvokable)
@@ -280,12 +281,31 @@ $this
 
 ### toBeEnums()
 
+Must be a valid Unit Enum or Backed Enum.
+
 ```php
 $this
   ->allClasses()
   ->fromRaw('<?php enum Foo {}')
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeEnums(),
+  );
+```
+
+### toBeBackedEnums()
+
+Must be a backed enumeration, if `ScalarType` is not specified, `int` and `string` are accepted.
+
+https://www.php.net/manual/en/language.enumerations.backed.php
+
+```php
+use StructuraPhp\Structura\Enums\ScalarType;
+
+$this
+  ->allClasses()
+  ->fromRaw('<?php enum Foo: string {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeBackedEnums(ScalarType::String),
   );
 ```
 
