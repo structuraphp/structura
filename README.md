@@ -211,7 +211,7 @@ php bin/structura analyze
   - [toBeInvokable()](#tobeinvokable)
   - [toBeReadonly()](#tobereadonly)
   - [toBeTraits()](#tobetraits)
-  - [toBeAttribute()](#tobetraits)
+  - [toBeAttribute()](#tobeattribute)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
   - [dependsOnlyOnAttribut](#dependsonlyonattribut)
@@ -346,6 +346,10 @@ $this
 
 ### toBeAttribute()
 
+- Must be a [syntax-compliant attribute](https://www.php.net/manual/en/language.attributes.classes.php), 
+- Must be instantiable by a [class reflection](https://www.php.net/manual/fr/language.attributes.reflection.php),
+- And uses [valid flags](https://www.php.net/manual/en/class.attribute.php#attribute.constants.target-class).
+
 ```php
 $this
   ->allClasses()
@@ -355,10 +359,10 @@ $this
   );
 ```
 
-Un attribut valide est une classe qui utilise \Attribut avec un flag valide et qui est instanciable
-
 ```php
-#[\Attribute()] // OK
+<?php
+
+[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] // OK
 class Foo {
 
 }
@@ -368,9 +372,8 @@ class Bar {
 
 }
 
-$class = new ReflectionClass(ValidAttr::class);
-$attributes = $class->getAttributes();
-array_map(fn($attribute) => $attribute->newInstance(), $attributes);
+(new ReflectionClass(Bar::class))->getAttributes()[0]->newInstance();
+// Fatal error: Uncaught Error: Attribute class "Custom" not found
 ```
 
 ### dependsOnlyOn()

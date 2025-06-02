@@ -13,11 +13,15 @@ use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Identifier;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\FlagType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 final readonly class ToBeAttribute implements ExprInterface
 {
+    /**
+     * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag
+     */
     public function __construct(
         private int $flag,
         private string $message = '',
@@ -25,12 +29,16 @@ final readonly class ToBeAttribute implements ExprInterface
 
     public function __toString(): string
     {
-        return 'to be anonymous classes';
+        return 'to be attribute';
     }
 
     public function assert(ClassDescription $class): bool
     {
-        if ($class->classType !== ClassType::Class_ && $class->attrGroups === []) {
+        if (
+            $class->classType !== ClassType::Class_
+            || $class->attrGroups === []
+            || $class->flags & FlagType::ModifierAbstract->value
+        ) {
             return false;
         }
 
@@ -42,7 +50,7 @@ final readonly class ToBeAttribute implements ExprInterface
 
                 try {
                     return $this->checkFlag($attr->args);
-                } catch (InvalidArgumentException $e) {
+                } catch (InvalidArgumentException) {
                     return false;
                 }
             }
@@ -55,8 +63,10 @@ final readonly class ToBeAttribute implements ExprInterface
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must be an anonymous class',
-                $class->namespace,
+                'Resource <promote>%s</promote> must be attributable',
+                $class->isAnonymous()
+                    ? 'Anonymous'
+                    : $class->namespace,
             ),
             $this::class,
             $class->lines,
@@ -110,7 +120,7 @@ final readonly class ToBeAttribute implements ExprInterface
                 $targets = array_merge($targets, $this->extractTargetValues($child));
             }
         } else {
-            throw new InvalidArgumentException();
+            throw new InvalidArgumentException('The node is not a valid flag');
         }
 
         return $targets;

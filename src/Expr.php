@@ -158,6 +158,9 @@ class Expr implements IteratorAggregate
         return $this->addExpr(new ToBeReadonly($message));
     }
 
+    /**
+     * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag
+     */
     public function toBeAttribute(int $flag = Attribute::TARGET_ALL, string $message = ''): self
     {
         return $this->addExpr(new ToBeAttribute($flag, $message));
