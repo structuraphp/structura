@@ -211,6 +211,7 @@ php bin/structura analyze
   - [toBeInvokable()](#tobeinvokable)
   - [toBeReadonly()](#tobereadonly)
   - [toBeTraits()](#tobetraits)
+  - [toBeAttribute()](#tobeattribute)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
   - [dependsOnlyOnAttribut](#dependsonlyonattribut)
@@ -341,6 +342,38 @@ $this
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeTraits(),
   );
+```
+
+### toBeAttribute()
+
+- Must be a [syntax-compliant attribute](https://www.php.net/manual/en/language.attributes.classes.php), 
+- Must be instantiable by a [class reflection](https://www.php.net/manual/fr/language.attributes.reflection.php),
+- And uses [valid flags](https://www.php.net/manual/en/class.attribute.php#attribute.constants.target-class).
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+  );
+```
+
+```php
+<?php
+
+[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] // OK
+class Foo {
+
+}
+
+#[Custom] // KO
+class Bar {
+
+}
+
+(new ReflectionClass(Bar::class))->getAttributes()[0]->newInstance();
+// Fatal error: Uncaught Error: Attribute class "Custom" not found
 ```
 
 ### dependsOnlyOn()
