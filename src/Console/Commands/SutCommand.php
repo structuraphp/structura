@@ -31,20 +31,6 @@ class SutCommand extends Command
     /** @var array<int,string> */
     private array $prints = [];
 
-    public function styleCustom(OutputInterface $output): OutputInterface
-    {
-        foreach (StyleCustom::cases() as $style) {
-            $output
-                ->getFormatter()
-                ->setStyle(
-                    $style->value,
-                    $style->getOutputFormatterStyle(),
-                );
-        }
-
-        return $output;
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -74,21 +60,47 @@ class SutCommand extends Command
 
         $timeStart = microtime(true);
 
+        $countPass = 0;
+        $countViolation = 0;
+        $violations = [];
+
         foreach ($rules as $rule) {
             $analyseService = new SutService($rule->getRuleSutValueObject());
             $analyseValueObject = $analyseService->analyse();
 
-            $this->failedOutput($analyseValueObject->violations);
-            $this->assertionsResumeOutput($analyseValueObject);
+            $countPass += $analyseValueObject->countPass;
+            $countViolation += $analyseValueObject->countViolation;
+            $violations += $analyseValueObject->violations;
         }
 
+        if ($violations !== []) {
+            $this->failedOutput($violations);
+        }
+
+        $this->assertionsResumeOutput(new AnalyseSutValueObject($countPass, $countViolation, $violations));
         $this->durationAndTimeOutput($timeStart);
 
         foreach ($this->prints as $print) {
             $this->styleCustom($output)->writeln($print);
         }
 
-        return self::SUCCESS;
+        return $violations === []
+            ? self::SUCCESS
+            : self::FAILURE;
+    }
+
+    private function styleCustom(OutputInterface $output): OutputInterface
+    {
+        foreach (StyleCustom::cases() as $style) {
+            $output
+                ->getFormatter()
+                ->setStyle(
+                    $style->value,
+                    $style->getOutputFormatterStyle(),
+                );
+        }
+
+        return $output;
     }
 
     /**

@@ -38,11 +38,11 @@ class SutBuilder
     }
 
     /**
-     * @param class-string $className
+     * @param class-string ...$className
      */
-    public function expect(string $className): self
+    public function expect(string ...$className): self
     {
-        $this->expects[] = $className;
+        $this->expects = array_values($className);
 
         return $this;
     }

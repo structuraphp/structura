@@ -92,7 +92,12 @@ class SutService
                 );
                 $className .= '\\' . pathinfo($file->getPathname(), \PATHINFO_FILENAME);
 
-                if (class_exists($className)) {
+                if (
+                    class_exists($className)
+                    || trait_exists($className)
+                    || interface_exists($className)
+                    || enum_exists($className)
+                ) {
                     $classesName[] = $className;
                 }
             }
