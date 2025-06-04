@@ -16,6 +16,7 @@ use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Asserts\ToBeAttribute;
+use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
@@ -40,6 +41,7 @@ use StructuraPhp\Structura\Asserts\ToUseDeclare;
 use StructuraPhp\Structura\Asserts\ToUseTrait;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\Enums\ScalarType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Traversable;
@@ -126,6 +128,11 @@ class Expr implements IteratorAggregate
     public function toBeEnums(string $message = ''): self
     {
         return $this->addExpr(new ToBeEnums($message));
+    }
+
+    public function toBeBackedEnums(?ScalarType $scalarType = null, string $message = ''): self
+    {
+        return $this->addExpr(new ToBeBackedEnums($scalarType, $message));
     }
 
     public function toBeInterfaces(string $message = ''): self
