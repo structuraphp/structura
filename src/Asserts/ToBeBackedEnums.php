@@ -20,7 +20,10 @@ final readonly class ToBeBackedEnums implements ExprInterface
 
     public function __toString(): string
     {
-        return 'to be backed enums';
+        return sprintf(
+            'to be backed enums type of <promote>%s</promote>',
+            $this->scalarType->value ?? 'int or string',
+        );
     }
 
     public function assert(ClassDescription $class): bool
@@ -30,24 +33,22 @@ final readonly class ToBeBackedEnums implements ExprInterface
         }
 
         if (!$class->scalarType instanceof Identifier) {
-            return true;
+            return !$this->scalarType instanceof ScalarType;
         }
 
-        if ($this->scalarType instanceof ScalarType) {
-            return $class->scalarType->toLowerString() === $this->scalarType->value;
-        }
-
-        return true;
+        return !$this->scalarType instanceof ScalarType
+            || $this->scalarType->value === $class->scalarType->toLowerString();
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
         return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must be an enum',
+            sprintf(
+                'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
+                $this->scalarType->value ?? 'int or string',
             ),
             $this::class,
             $class->lines,

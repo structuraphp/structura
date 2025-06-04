@@ -7,10 +7,11 @@ namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Asserts\ToUseDeclare;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(Expr::class)]
+#[CoversClass(ToUseDeclare::class)]
 #[CoversMethod(Expr::class, 'toUseStrictTypes')]
 final class ToUseStrictTypesTest extends TestCase
 {

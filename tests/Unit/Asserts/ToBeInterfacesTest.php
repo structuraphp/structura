@@ -15,7 +15,7 @@ use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeInterfaces::class)]
 #[CoversMethod(Expr::class, 'toBeInterfaces')]
-final class ToBeInterfaceTest extends TestCase
+final class ToBeInterfacesTest extends TestCase
 {
     use ArchitectureAsserts;
 

@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Console;
 use StructuraPhp\Structura\Console\Commands\AnalyzeCommand;
 use StructuraPhp\Structura\Console\Commands\InitCommand;
 use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
+use StructuraPhp\Structura\Console\Commands\SutCommand;
 use StructuraPhp\Structura\Console\Enums\Options;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -19,6 +20,7 @@ class Kernel extends Application
         parent::__construct('Structura');
 
         $this->add(new AnalyzeCommand());
+        $this->add(new SutCommand());
         $this->add(new InitCommand());
         $this->add(new MakeTestCommand());
 
