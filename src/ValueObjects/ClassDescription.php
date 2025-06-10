@@ -278,6 +278,23 @@ final class ClassDescription
     }
 
     /**
+     * @param array<int,string> $patterns
+     */
+    public function hasNamespaceByPatterns(array $patterns): bool
+    {
+        if ($patterns === []) {
+            return false;
+        }
+
+        $pattern = implode('|', $patterns);
+
+        return (bool) preg_match(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->namespace ?? '',
+        );
+    }
+
+    /**
      * @param array<int,string> $allowedCharacters
      */
     private function customPregQuote(

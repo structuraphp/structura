@@ -13,6 +13,7 @@ use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
+use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Asserts\ToBeAttribute;
@@ -20,6 +21,7 @@ use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
@@ -101,6 +103,28 @@ class Expr implements IteratorAggregate
         $this->asserts[] = $expr;
 
         return $this;
+    }
+
+    /**
+     * @param array<int,string>|string $patterns class names or regular expression patterns to
+     *                                           be matched with namespaces
+     */
+    public function toBeInOneOfTheNamespaces(
+        array|string $patterns,
+        string $message = '',
+    ): self {
+        return $this->addExpr(new ToBeInOneOfTheNamespaces((array) $patterns, $message));
+    }
+
+    /**
+     * @param array<int,string>|string $patterns class names or regular expression patterns not
+     *                                           to be matched with namespaces
+     */
+    public function notToBeInOneOfTheNamespaces(
+        array|string $patterns,
+        string $message = '',
+    ): self {
+        return $this->addExpr(new NotToBeInOneOfTheNamespaces((array) $patterns, $message));
     }
 
     public function toBeAbstract(string $message = ''): self
