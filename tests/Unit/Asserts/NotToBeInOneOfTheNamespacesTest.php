@@ -30,7 +30,10 @@ class NotToBeInOneOfTheNamespacesTest extends TestCase
                     ->notToBeInOneOfTheNamespaces('Foo\.*'),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'not to be in one of the namespaces <promote>Foo\.*</promote>',
+        );
     }
 
     #[DataProvider('getClasseLikeForFail')]

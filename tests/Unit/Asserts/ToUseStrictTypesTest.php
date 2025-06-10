@@ -26,7 +26,10 @@ final class ToUseStrictTypesTest extends TestCase
                     ->toUseStrictTypes(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to use declare <promote>strict_types=1</promote>',
+        );
     }
 
     public function testShouldFailToUserStrictType(): void

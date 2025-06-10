@@ -30,7 +30,10 @@ final class ToHavePrefixTest extends TestCase
                     ->toHavePrefix('Controller'),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have prefix <promote>Controller</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutPrefixProvider')]

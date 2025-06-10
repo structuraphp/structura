@@ -30,7 +30,7 @@ final class ToHaveNoAttributeTest extends TestCase
                     ->toHaveNoAttribute(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to have no attribute');
     }
 
     #[DataProvider('getClassLikeWithAttribute')]

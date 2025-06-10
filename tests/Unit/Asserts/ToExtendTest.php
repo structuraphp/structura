@@ -31,7 +31,10 @@ final class ToExtendTest extends TestCase
                     ->toExtend(Exception::class),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to extend <promote>Exception</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeExtendsNothing')]

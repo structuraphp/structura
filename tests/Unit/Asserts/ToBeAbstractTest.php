@@ -27,7 +27,7 @@ final class ToBeAbstractTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeAbstract(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be abstract');
     }
 
     #[DataProvider('getClassLikeNonAbstract')]

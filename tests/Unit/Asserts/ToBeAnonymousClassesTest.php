@@ -29,7 +29,7 @@ final class ToBeAnonymousClassesTest extends TestCase
                     ->toBeAnonymousClasses(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be anonymous classes');
     }
 
     #[DataProvider('getClassLikeNonAnonymousClasses')]

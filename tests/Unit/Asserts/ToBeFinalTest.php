@@ -28,7 +28,7 @@ final class ToBeFinalTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeFinal(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be final');
     }
 
     #[DataProvider('getClassLikeNonFinal')]

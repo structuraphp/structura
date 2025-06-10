@@ -30,7 +30,10 @@ final class ToHaveMethodTest extends TestCase
                     ->toHaveMethod('bar'),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have method <promote>bar</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutMethod')]

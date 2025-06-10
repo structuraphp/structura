@@ -28,7 +28,7 @@ final class ToBeInterfaceTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeInterfaces(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be interfaces');
     }
 
     #[DataProvider('getClassLikeNonEnums')]

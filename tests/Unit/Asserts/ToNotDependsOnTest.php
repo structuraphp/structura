@@ -37,7 +37,14 @@ final class ToNotDependsOnTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to not depends on these namespaces <promote>%s, %s</promote>',
+                JsonSerializable::class,
+                'Depend\Baz',
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithNoDependsProvider')]

@@ -34,7 +34,10 @@ final class DependsOnlyOnAttributTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'depends only on attribut <promote>SensitiveParameter, Dependencies\Acme\.*</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutInheritance')]

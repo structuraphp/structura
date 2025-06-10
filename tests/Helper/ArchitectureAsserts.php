@@ -19,17 +19,19 @@ trait ArchitectureAsserts
     /**
      * @no-named-arguments
      */
-    final protected static function assertRulesPass(RuleBuilder $ruleBuilder): void
+    final protected static function assertRulesPass(RuleBuilder $ruleBuilder, string $message): void
     {
         $executeService = new ExecuteService($ruleBuilder->getRuleObject());
         $assertBuilder = $executeService->assert();
 
         $violations = $assertBuilder->getViolations();
-        foreach ($assertBuilder->getPass() as $key => $value) {
+        $pass = $assertBuilder->getPass();
+        foreach ($pass as $key => $value) {
             Assert::assertTrue(
                 (bool) $value,
                 implode(', ', $violations[$key] ?? []),
             );
+            Assert::assertSame($key, $message);
         }
     }
 

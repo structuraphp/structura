@@ -33,7 +33,7 @@ class ToBeAttributeTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeAttribute($flag),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be attribute');
     }
 
     #[DataProvider('getClasseLikeForFail')]

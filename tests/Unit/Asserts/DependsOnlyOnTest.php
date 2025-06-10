@@ -43,7 +43,15 @@ final class DependsOnlyOnTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'depends only on these namespaces <promote>%s, %s, %s, [2+]</promote>',
+                ArrayAccess::class,
+                Exception::class,
+                Stringable::class,
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithDependsProvider')]
