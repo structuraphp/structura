@@ -242,6 +242,8 @@ php bin/structura analyze
 - 🕹️ Other
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
+  - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
+  - [notToBeInOneOfTheNamespaces()](#nottobeinoneofthenamespaces)
 - 🗜️ Operators
   - [and()](#and)
   - [or()](#or)
@@ -484,8 +486,7 @@ $this
   );
 ```
 
-You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
-dependencies
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
 
 ### toExtend()
 
@@ -646,6 +647,48 @@ $this
   ->fromRaw('<?php declare(encoding='ISO-8859-1'); class Foo {}')
   ->should(fn(Expr $expr) => $expr->toUseDeclare('encoding', 'ISO-8859-1'));
 ```
+
+### toBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes contained in a namespace.
+
+> Information !
+> 
+> Anonymous classes cannot have namespaces
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->toBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
+
+### notToBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes not contained in a namespace.
+
+> Information !
+>
+> Anonymous classes cannot have namespaces
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->notToBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
 
 ## and()
 
