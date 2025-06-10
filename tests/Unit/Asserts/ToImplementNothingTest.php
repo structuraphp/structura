@@ -29,7 +29,7 @@ final class ToImplementNothingTest extends TestCase
                     ->toImplementNothing(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to implement nothing');
     }
 
     #[DataProvider('getClassLikeImplements')]

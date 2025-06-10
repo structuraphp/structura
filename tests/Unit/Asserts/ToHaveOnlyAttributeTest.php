@@ -31,7 +31,10 @@ final class ToHaveOnlyAttributeTest extends TestCase
                     ->toHaveOnlyAttribute(Attribute::class),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have only attribute <promote>Attribute</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutAttribute')]

@@ -34,7 +34,10 @@ final class DependsOnlyOnImplementationTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'depends only on inheritance <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutInheritance')]

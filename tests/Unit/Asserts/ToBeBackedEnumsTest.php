@@ -30,7 +30,13 @@ class ToBeBackedEnumsTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeBackedEnums($scalarType),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to be backed enums type of <promote>%s</promote>',
+                $scalarType->value ?? 'int or string',
+            ),
+        );
     }
 
     #[DataProvider('getClasseLikeForFail')]

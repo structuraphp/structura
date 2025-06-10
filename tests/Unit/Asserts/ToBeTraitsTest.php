@@ -28,7 +28,7 @@ final class ToBeTraitsTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeTraits(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be traits');
     }
 
     #[DataProvider('getClassLikeNonTrait')]

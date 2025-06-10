@@ -30,7 +30,10 @@ final class ToHaveAttributeTest extends TestCase
                     ->toHaveAttribute('Attribute'),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have attribute <promote>Attribute</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutAttribute')]
