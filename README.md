@@ -242,8 +242,8 @@ php bin/structura analyze
 - 🕹️ Other
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
-  - [toBeInOneOfTheNamespaces()](#toBeInOneOfTheNamespaces)
-  - [toUseDeclare()](#tousedeclare)
+  - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
+  - [notToBeInOneOfTheNamespaces()](#nottobeinoneofthenamespaces)
 - 🗜️ Operators
   - [and()](#and)
   - [or()](#or)
@@ -652,6 +652,10 @@ $this
 
 Allows you to specifically target classes contained in a namespace.
 
+> Information !
+> 
+> Anonymous classes cannot have namespaces
+
 ```php
 $this
   ->allClasses()
@@ -668,6 +672,10 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 ### notToBeInOneOfTheNamespaces()
 
 Allows you to specifically target classes not contained in a namespace.
+
+> Information !
+>
+> Anonymous classes cannot have namespaces
 
 ```php
 $this

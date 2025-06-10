@@ -31,10 +31,6 @@ final readonly class NotToBeInOneOfTheNamespaces implements ExprInterface
 
     public function assert(ClassDescription $class): bool
     {
-        if ($class->isAnonymous()) {
-            return true;
-        }
-
         return !$class->hasNamespaceByPatterns($this->patterns);
     }
 

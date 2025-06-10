@@ -69,6 +69,9 @@ class ToBeInOneOfTheNamespacesTest extends TestCase
 
     public static function getClasseLikeForFail(): Generator
     {
+        // Anonymous classes cannot have namespaces
+        yield 'anonymous class' => ['<?php namespace Acme\Foo; new class {};', 'Anonymous'];
+
         yield 'class' => ['<?php namespace Acme\Bar; class Foo {}'];
 
         yield 'enum' => ['<?php namespace Acme\Bar; enum Foo {}'];
