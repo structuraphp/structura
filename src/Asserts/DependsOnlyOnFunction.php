@@ -9,12 +9,12 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class ToNotDependsOn implements ExprInterface
+final readonly class DependsOnlyOnFunction implements ExprInterface
 {
     use Arr;
 
     /**
-     * @param array<int,class-string> $names
+     * @param array<int,string> $names
      * @param array<int,string> $patterns
      */
     public function __construct(
@@ -26,7 +26,7 @@ final readonly class ToNotDependsOn implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to not depends on these namespaces <promote>%s</promote>',
+            'depends only on function <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -35,28 +35,30 @@ final readonly class ToNotDependsOn implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns),
+            $class->getDependenciesFunctionByPatterns($this->patterns),
         );
 
-        return array_intersect($class->getClassDependencies(), $dependencies) === [];
+        return array_diff($class->getFunctionDependencies(), array_unique($dependencies)) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
     {
+        $authorisedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns),
+            $class->getDependenciesFunctionByPatterns($this->patterns),
         );
-        $dependencies = array_intersect($class->getClassDependencies(), $dependencies);
-        sort($dependencies);
+        $violations = array_diff($class->getFunctionDependencies(), $dependencies);
+        sort($violations);
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on these namespaces %s',
+                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
-                $this->implodeMore($dependencies),
+                implode(', ', $authorisedDependence),
+                implode(', ', $violations),
             ),
             $this::class,
             $class->lines,
