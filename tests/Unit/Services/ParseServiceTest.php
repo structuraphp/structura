@@ -65,7 +65,7 @@ final class ParseServiceTest extends TestCase
 
     public function testClassDependencies2(): void
     {
-        $raw = $this->getUseDependanciesClass();
+        $raw = $this->getUseDependenciesClass();
 
         $generator = $this->parseService->parseRaw($raw);
         $classDescription = iterator_to_array($generator)[0];
@@ -76,7 +76,7 @@ final class ParseServiceTest extends TestCase
         );
     }
 
-    public function getUseDependanciesClass(): string
+    public function getUseDependenciesClass(): string
     {
         return <<<'PHP'
             <?php

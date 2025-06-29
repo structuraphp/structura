@@ -14,7 +14,7 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\Visitors\ClassDescriptionVisitor;
-use StructuraPhp\Structura\Visitors\DependanciesVisitor;
+use StructuraPhp\Structura\Visitors\DependenciesVisitor;
 use Symfony\Component\Finder\Finder;
 
 final readonly class ParseService
@@ -25,14 +25,14 @@ final readonly class ParseService
 
     private ClassDescriptionVisitor $classDescriptionVisitor;
 
-    private DependanciesVisitor $namespaceVisitor;
+    private DependenciesVisitor $namespaceVisitor;
 
     public function __construct()
     {
         $this->parser = (new ParserFactory())->createForHostVersion();
 
         $this->classDescriptionVisitor = new ClassDescriptionVisitor();
-        $this->namespaceVisitor = new DependanciesVisitor();
+        $this->namespaceVisitor = new DependenciesVisitor();
 
         $this->nodeTraverser = new NodeTraverser(
             new NameResolver(),
