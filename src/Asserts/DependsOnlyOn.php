@@ -38,7 +38,7 @@ final readonly class DependsOnlyOn implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns),
         );
 
-        return array_diff($class->getDependencies(), array_unique($dependencies)) === [];
+        return array_diff($class->getClassDependencies(), array_unique($dependencies)) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
@@ -48,7 +48,7 @@ final readonly class DependsOnlyOn implements ExprInterface
             $this->names,
             $class->getDependenciesByPatterns($this->patterns),
         );
-        $violations = array_diff($class->getDependencies(), $dependencies);
+        $violations = array_diff($class->getClassDependencies(), $dependencies);
         sort($violations);
 
         return new ViolationValueObject(

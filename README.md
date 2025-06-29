@@ -220,6 +220,8 @@ php bin/structura analyze
   - [dependsOnlyOnInheritance](#dependsonlyoninheritance)
   - [dependsOnlyOnUseTrait](#dependsonlyonusetrait)
   - [toNotDependsOn()](#tonotdependson)
+  - [dependsOnFunction()](#dependsonfunction)
+  - [toNotDependsOnFunction()](#tonotdependsonfunction)
 - 🧲 Relation
   - [toExtend()](#toextend)
   - [toExtendsNothing()](#toextendsnothing)
@@ -482,6 +484,38 @@ $this
     ->toNotDependsOn(
         names: [ArrayAccess::class, /* ... */],
         patterns: ['App\Dto.+', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### dependsOnFunction()
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['strtolower', /* ... */],
+        patterns: ['array_.+', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### toNotDependsOnFunction()
+
+Prohibit the use of function.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['goto', /* ... */],
+        patterns: ['.+exec', /* ... */],
     )
   );
 ```

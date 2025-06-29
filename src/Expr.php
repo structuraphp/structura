@@ -10,6 +10,7 @@ use Generator;
 use IteratorAggregate;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
@@ -36,6 +37,7 @@ use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
@@ -280,6 +282,34 @@ class Expr implements IteratorAggregate
                 (array) $patterns,
                 $message,
             ),
+        );
+    }
+
+    /**
+     * @param array<int,string>|string $names
+     * @param array<int,string>|string $patterns regex patterns to match class names against
+     */
+    public function dependsOnlyOnFunction(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnFunction((array) $names, (array) $patterns, $message),
+        );
+    }
+
+    /**
+     * @param array<int,string>|string $names
+     * @param array<int,string>|string $patterns regex patterns to match class names against
+     */
+    public function toNotDependsOnFunction(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new ToNotDependsOnFunction((array) $names, (array) $patterns, $message),
         );
     }
 
