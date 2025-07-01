@@ -28,7 +28,10 @@ final class ToBeInvokableTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeInvokable(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have method <promote>__invoke</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeNonInvokable')]

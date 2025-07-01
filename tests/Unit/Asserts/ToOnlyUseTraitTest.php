@@ -31,7 +31,13 @@ final class ToOnlyUseTraitTest extends TestCase
                     ->toOnlyUseTrait(HasFactory::class),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to only use trait <promote>%s</promote>',
+                HasFactory::class,
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithoutTrait')]

@@ -34,7 +34,14 @@ final class DependsOnlyOnInheritanceTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'depends only on inheritance <promote>%s, %s</promote>',
+                ControllerBase::class,
+                'Dependencies\Acme\.*',
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithoutInheritance')]

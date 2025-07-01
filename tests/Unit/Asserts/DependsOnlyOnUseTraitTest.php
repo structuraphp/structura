@@ -34,7 +34,14 @@ final class DependsOnlyOnUseTraitTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to use trait on these namespaces <promote>%s, %s</promote>',
+                HasFactory::class,
+                'Dependencies\Acme\.*',
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithoutTrait')]

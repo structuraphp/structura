@@ -38,7 +38,7 @@ final readonly class ToNotDependsOn implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns),
         );
 
-        return array_intersect($class->getDependencies(), $dependencies) === [];
+        return array_intersect($class->getClassDependencies(), $dependencies) === [];
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject
@@ -47,7 +47,7 @@ final readonly class ToNotDependsOn implements ExprInterface
             $this->names,
             $class->getDependenciesByPatterns($this->patterns),
         );
-        $dependencies = array_intersect($class->getDependencies(), $dependencies);
+        $dependencies = array_intersect($class->getClassDependencies(), $dependencies);
         sort($dependencies);
 
         return new ViolationValueObject(

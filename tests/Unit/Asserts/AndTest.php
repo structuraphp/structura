@@ -30,7 +30,13 @@ final class AndTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            <<<TXT
+            to implement <promote>ArrayAccess</promote>
+               & to implement <promote>Iterator</promote>
+            TXT
+        );
     }
 
     public function testShouldFailToAnd(): void

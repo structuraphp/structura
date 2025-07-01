@@ -16,7 +16,10 @@ use StructuraPhp\Structura\Enums\DependenciesType;
 final class ClassDescription
 {
     /** @var array<int,string> */
-    private array $dependencies = [];
+    private array $classDependencies = [];
+
+    /** @var array<int,string> */
+    private array $functionDependencies = [];
 
     private ?string $fileBasename = null;
 
@@ -46,17 +49,35 @@ final class ClassDescription
     /**
      * @return array<int,string>
      */
-    public function getDependencies(): array
+    public function getClassDependencies(): array
     {
-        return $this->dependencies;
+        return $this->classDependencies;
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    public function getFunctionDependencies(): array
+    {
+        return $this->functionDependencies;
+    }
+
+    /**
+     * @param array<int,string> $classDependencies
+     */
+    public function setClassDependencies(array $classDependencies): self
+    {
+        $this->classDependencies = $classDependencies;
+
+        return $this;
     }
 
     /**
      * @param array<int,string> $dependencies
      */
-    public function setDependencies(array $dependencies): self
+    public function setFunctionDependencies(array $dependencies): self
     {
-        $this->dependencies = $dependencies;
+        $this->functionDependencies = $dependencies;
 
         return $this;
     }
@@ -278,6 +299,51 @@ final class ClassDescription
     }
 
     /**
+     * @param array<int,string> $patterns
+     *
+     * @return array<int,string>
+     */
+    public function getDependenciesFunctionByPatterns(
+        array $patterns,
+    ): array {
+        $matches = [];
+        if ($patterns === []) {
+            return [];
+        }
+
+        $pattern = implode('|', $patterns);
+
+        /** @var array<int,string>|false $match */
+        $match = preg_grep(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->getFunctionDependencies(),
+        );
+
+        if ($match !== false) {
+            return array_merge($matches, $match);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * @param array<int,string> $patterns
+     */
+    public function hasNamespaceByPatterns(array $patterns): bool
+    {
+        if ($patterns === []) {
+            return false;
+        }
+
+        $pattern = implode('|', $patterns);
+
+        return (bool) preg_match(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->namespace ?? '',
+        );
+    }
+
+    /**
      * @param array<int,string> $allowedCharacters
      */
     private function customPregQuote(
@@ -298,7 +364,7 @@ final class ClassDescription
     private function getDependenciesByType(DependenciesType $dependenciesType): array
     {
         return match ($dependenciesType) {
-            DependenciesType::All => $this->getDependencies(),
+            DependenciesType::All => $this->getClassDependencies(),
             DependenciesType::Attributes => $this->getAttributeNames(),
             DependenciesType::Traits => $this->getTraitNames(),
             DependenciesType::Extends => $this->getExtendNames(),

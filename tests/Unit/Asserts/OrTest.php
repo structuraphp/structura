@@ -33,7 +33,13 @@ final class OrTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            <<<TXT
+            to extend <promote>InvalidArgumentException</promote>
+               | to extend <promote>Exception</promote>
+            TXT
+        );
     }
 
     public function testShouldFailToOr(): void

@@ -28,7 +28,7 @@ final class ToBeReadonlyTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeReadonly(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be readonly');
     }
 
     #[DataProvider('getClassLikeNonReadonly')]

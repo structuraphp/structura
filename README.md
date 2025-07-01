@@ -206,18 +206,22 @@ php bin/structura analyze
   - [toBeAnonymousClasses()](#tobeanonymousclasses)
   - [toBeClasses()](#tobeclasses)
   - [toBeEnums()](#tobeenums)
+  - [toBeBackedEnums()](#tobebackedenums)
   - [toBeFinal()](#tobefinal)
   - [toBeInterfaces()](#tobeinterfaces)
   - [toBeInvokable()](#tobeinvokable)
   - [toBeReadonly()](#tobereadonly)
   - [toBeTraits()](#tobetraits)
+  - [toBeAttribute()](#tobeattribute)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
-  - [dependsOnlyOnAttribut](#dependsonlyonattribut)
-  - [dependsOnlyOnImplementation](#dependsonlyonimplementation)
-  - [dependsOnlyOnInheritance](#dependsonlyoninheritance)
-  - [dependsOnlyOnUseTrait](#dependsonlyonusetrait)
+  - [dependsOnlyOnAttribut()](#dependsonlyonattribut)
+  - [dependsOnlyOnImplementation()](#dependsonlyonimplementation)
+  - [dependsOnlyOnInheritance()](#dependsonlyoninheritance)
+  - [dependsOnlyOnUseTrait()](#dependsonlyonusetrait)
   - [toNotDependsOn()](#tonotdependson)
+  - [dependsOnFunction()](#dependsonfunction)
+  - [toNotDependsOnFunction()](#tonotdependsonfunction)
 - 🧲 Relation
   - [toExtend()](#toextend)
   - [toExtendsNothing()](#toextendsnothing)
@@ -227,6 +231,9 @@ php bin/structura analyze
   - [toUseTrait()](#tousetrait)
   - [toNotUseTrait()](#tonotusetrait)
   - [toOnlyUseTrait()](#toonlyusetrait)
+  - [toHaveAttribute()](#tohaveattribute)
+  - [toHaveNoAttribute()](#tohavenoattribute)
+  - [toHaveOnlyAttribute()](#tohaveonlyattribute)
 - 🔌 Method
   - [toHaveMethod()](#tohavemethod)
   - [toHaveConstructor()](#tohaveconstructor)
@@ -237,7 +244,8 @@ php bin/structura analyze
 - 🕹️ Other
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
-  - [toHaveAttribute()](#tohaveattribute)
+  - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
+  - [notToBeInOneOfTheNamespaces()](#nottobeinoneofthenamespaces)
 - 🗜️ Operators
   - [and()](#and)
   - [or()](#or)
@@ -277,12 +285,31 @@ $this
 
 ### toBeEnums()
 
+Must be a valid Unit Enum or Backed Enum.
+
 ```php
 $this
   ->allClasses()
   ->fromRaw('<?php enum Foo {}')
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeEnums(),
+  );
+```
+
+### toBeBackedEnums()
+
+Must be a backed enumeration, if `ScalarType` is not specified, `int` and `string` are accepted.
+
+https://www.php.net/manual/en/language.enumerations.backed.php
+
+```php
+use StructuraPhp\Structura\Enums\ScalarType;
+
+$this
+  ->allClasses()
+  ->fromRaw('<?php enum Foo: string {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeBackedEnums(ScalarType::String),
   );
 ```
 
@@ -339,6 +366,38 @@ $this
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeTraits(),
   );
+```
+
+### toBeAttribute()
+
+- Must be a [syntax-compliant attribute](https://www.php.net/manual/en/language.attributes.classes.php), 
+- Must be instantiable by a [class reflection](https://www.php.net/manual/fr/language.attributes.reflection.php),
+- And uses [valid flags](https://www.php.net/manual/en/class.attribute.php#attribute.constants.target-class).
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+  );
+```
+
+```php
+<?php
+
+[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] // OK
+class Foo {
+
+}
+
+#[Custom] // KO
+class Bar {
+
+}
+
+(new ReflectionClass(Bar::class))->getAttributes()[0]->newInstance();
+// Fatal error: Uncaught Error: Attribute class "Custom" not found
 ```
 
 ### dependsOnlyOn()
@@ -429,8 +488,39 @@ $this
   );
 ```
 
-You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
-dependencies
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### dependsOnFunction()
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['strtolower', /* ... */],
+        patterns: ['array_.+', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### toNotDependsOnFunction()
+
+Prohibit the use of function.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['goto', /* ... */],
+        patterns: ['.+exec', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
 
 ### toExtend()
 
@@ -504,6 +594,33 @@ $this
   ->should(fn(Expr $expr) => $expr->toOnlyUseTrait(Bar::class));
 ```
 
+### toHaveAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
+```
+
+### toHaveNoAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveNoAttribute());
+```
+
+### toHaveOnlyAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyAttribute(Deprecated::class));
+```
+
 ### toHaveMethod()
 
 ```php
@@ -565,14 +682,47 @@ $this
   ->should(fn(Expr $expr) => $expr->toUseDeclare('encoding', 'ISO-8859-1'));
 ```
 
-### toHaveAttribute()
+### toBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes contained in a namespace.
+
+> Information !
+> 
+> Anonymous classes cannot have namespaces
 
 ```php
 $this
   ->allClasses()
-  ->fromRaw('<?php #[\Deprecated] class Foo {}')
-  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->toBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
 ```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
+
+### notToBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes not contained in a namespace.
+
+> Information !
+>
+> Anonymous classes cannot have namespaces
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->notToBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
 
 ## and()
 

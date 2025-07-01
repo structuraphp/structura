@@ -27,7 +27,7 @@ use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 
-final class DependanciesVisitor extends NodeVisitorAbstract
+final class DependenciesVisitor extends NodeVisitorAbstract
 {
     /** @var array<string,int> */
     private array $dependencies = [];

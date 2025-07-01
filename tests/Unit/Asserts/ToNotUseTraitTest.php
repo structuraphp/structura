@@ -31,7 +31,7 @@ final class ToNotUseTraitTest extends TestCase
                     ->toNotUseTrait(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to not use trait');
     }
 
     /**
@@ -53,7 +53,7 @@ final class ToNotUseTraitTest extends TestCase
                     ->toNotUseTrait(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to not use trait');
     }
 
     #[DataProvider('getClassLikeWithTrait')]

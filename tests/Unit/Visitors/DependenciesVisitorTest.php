@@ -2,28 +2,23 @@
 
 declare(strict_types=1);
 
-namespace StructuraPhp\Structura\Tests\Unit\Services;
+namespace StructuraPhp\Structura\Tests\Unit\Visitors;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Services\ParseService;
+use StructuraPhp\Structura\Tests\Helper\ParserHelper;
+use StructuraPhp\Structura\Visitors\DependenciesVisitor;
 
-#[CoversClass(ParseService::class)]
-final class ParseServiceTest extends TestCase
+#[CoversClass(DependenciesVisitor::class)]
+final class DependenciesVisitorTest extends TestCase
 {
-    private ParseService $parseService;
-
-    protected function setUp(): void
-    {
-        $this->parseService = new ParseService();
-    }
+    use ParserHelper;
 
     public function testClassDependencies(): void
     {
-        $raw = $this->getClassLikeProvider();
+        $visitor = new DependenciesVisitor();
 
-        $generator = $this->parseService->parseRaw($raw);
-        $classDescription = iterator_to_array($generator)[0];
+        $this->traverse($visitor, $this->getClassLikeProvider());
 
         self::assertSame(
             [
@@ -59,24 +54,23 @@ final class ParseServiceTest extends TestCase
                 'Dependency\Shadow1\Dependency26',
                 'Dependency4\Shadow2\Dependency27',
             ],
-            $classDescription->getDependencies(),
+            array_keys($visitor->getDependencies()),
         );
     }
 
     public function testClassDependencies2(): void
     {
-        $raw = $this->getUseDependanciesClass();
+        $visitor = new DependenciesVisitor();
 
-        $generator = $this->parseService->parseRaw($raw);
-        $classDescription = iterator_to_array($generator)[0];
+        $this->traverse($visitor, $this->getUseDependenciesClass());
 
         self::assertSame(
             [],
-            $classDescription->getDependencies(),
+            array_keys($visitor->getDependencies()),
         );
     }
 
-    public function getUseDependanciesClass(): string
+    public function getUseDependenciesClass(): string
     {
         return <<<'PHP'
             <?php

@@ -28,7 +28,7 @@ final class ToBeEnumsTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toBeEnums(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to be enums');
     }
 
     #[DataProvider('getClassLikeNonEnums')]
