@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Contracts\Expr;
 
+use Closure;
+
 interface OtherAssertInterface
 {
+    public function toHaveCorrespondingClass(Closure $closure, string $message = ''): self;
+
     public function toUseStrictTypes(string $message = ''): self;
 
     public function toUseDeclare(string $key, string $value, string $message = ''): self;

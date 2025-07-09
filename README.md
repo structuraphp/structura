@@ -242,6 +242,7 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
   - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
@@ -662,6 +663,29 @@ $this
   ->allClasses()
   ->fromRaw('<?php class FooExemple {}')
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
+```
+
+### toHaveCorrespondingClass()
+
+Check the correspondence between a class and a mask.
+To build the mask, you have access to the description of the current class.
+
+For example, you can check whether each unit test class has a corresponding class in your project :
+
+```php
+$this
+    ->allClasses()
+    ->fromDir('tests/Unit')
+    ->should(
+        static fn(Expr $assert): Expr => $assert
+            ->toHaveCorrespondingClass(
+                static fn (ClassDescription $classDescription): string => preg_replace(
+                    '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
+                    '$1\\\$2',
+                    $classDescription->namespace,
+                )
+            ),
+    );
 ```
 
 ### toUseStrictTypes()
