@@ -10,6 +10,8 @@ interface OtherAssertInterface
 {
     public function toHaveCorrespondingClass(Closure $closure, string $message = ''): self;
 
+    public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self;
+
     public function toUseStrictTypes(string $message = ''): self;
 
     public function toUseDeclare(string $key, string $value, string $message = ''): self;

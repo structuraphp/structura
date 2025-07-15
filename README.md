@@ -243,6 +243,7 @@ php bin/structura analyze
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
+  - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
   - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
@@ -687,6 +688,10 @@ $this
             ),
     );
 ```
+
+### toHaveCorrespondingTrait()
+
+Similar to [toHaveCorrespondingClass](#tohavecorrespondingclass), but for matching with a trait.
 
 ### toUseStrictTypes()
 
