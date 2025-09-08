@@ -243,6 +243,7 @@ php bin/structura analyze
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
+  - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
   - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
@@ -688,6 +689,10 @@ $this
             ),
     );
 ```
+
+### toHaveCorrespondingEnum()
+
+Similar to [toHaveCorrespondingClass](#tohavecorrespondingclass), but for matching with an enum.
 
 ### toHaveCorrespondingTrait()
 
