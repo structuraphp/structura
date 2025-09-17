@@ -17,12 +17,17 @@ interface OtherAssertInterface
     /**
      * @param Closure(ClassDescription): string $closure
      */
-    public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self;
+    public function toHaveCorrespondingEnum(Closure $closure, string $message = ''): self;
 
     /**
      * @param Closure(ClassDescription): string $closure
      */
-    public function toHaveCorrespondingEnum(Closure $closure, string $message = ''): self;
+    public function toHaveCorrespondingInterface(Closure $closure, string $message = ''): self;
+
+    /**
+     * @param Closure(ClassDescription): string $closure
+     */
+    public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self;
 
     public function toUseStrictTypes(string $message = ''): self;
 

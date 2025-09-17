@@ -244,6 +244,7 @@ php bin/structura analyze
 - 🕹️ Other
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
   - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
+  - [toHaveCorrespondingInterface()](#tohavecorrespondinginterface)
   - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
@@ -693,6 +694,10 @@ $this
 ### toHaveCorrespondingEnum()
 
 Similar to [toHaveCorrespondingClass](#tohavecorrespondingclass), but for matching with an enum.
+
+### toHaveCorrespondingInterface()
+
+Similar to [toHaveCorrespondingClass](#tohavecorrespondingclass), but for matching with an interface.
 
 ### toHaveCorrespondingTrait()
 
