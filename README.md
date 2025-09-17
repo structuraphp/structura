@@ -242,7 +242,11 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveCorresponding()](#tohavecorresponding)
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
+  - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
+  - [toHaveCorrespondingInterface()](#tohavecorrespondinginterface)
+  - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
   - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
@@ -665,10 +669,16 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
 ```
 
-### toHaveCorrespondingClass()
+### toHaveCorresponding()
 
-Check the correspondence between a class and a mask.
+Check the correspondence between a class/enum/interface/trait and a mask.
 To build the mask, you have access to the description of the current class.
+
+Correspondence rules can be used in many scenarios, such as:
+- If a model has a repository interface,
+- If a model has a policy with the same name,
+- If your controllers have associated queries or resources,
+- ...
 
 For example, you can check whether each unit test class has a corresponding class in your project :
 
@@ -687,6 +697,22 @@ $this
             ),
     );
 ```
+
+### toHaveCorrespondingClass()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a class.
+
+### toHaveCorrespondingEnum()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an enum.
+
+### toHaveCorrespondingInterface()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an interface.
+
+### toHaveCorrespondingTrait()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a trait.
 
 ### toUseStrictTypes()
 

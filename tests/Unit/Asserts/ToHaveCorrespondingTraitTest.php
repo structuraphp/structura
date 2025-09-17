@@ -8,34 +8,30 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Tests\Unit\Concerns\ArrTest;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
-#[CoversClass(ToHaveCorrespondingClass::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingClass')]
-class ToHaveCorrespondingClassTest extends TestCase
+#[CoversClass(ToHaveCorrespondingTrait::class)]
+#[CoversMethod(Expr::class, 'toHaveCorrespondingTrait')]
+class ToHaveCorrespondingTraitTest extends TestCase
 {
     use ArchitectureAsserts;
 
     private const CORRESPONDENCE_ERROR = [
-        AndTest::class => 'StructuraPhp\Structura\Asserts\And',
-        NotDependsOnFunctionTest::class => 'StructuraPhp\Structura\Asserts\NotDependsOnFunction',
-        OrTest::class => 'StructuraPhp\Structura\Asserts\Or',
-        ToBeInterfaceTest::class => 'StructuraPhp\Structura\Asserts\ToBeInterface',
-        ToBeInvokableTest::class => 'StructuraPhp\Structura\Asserts\ToBeInvokable',
-        ToUseStrictTypesTest::class => 'StructuraPhp\Structura\Asserts\ToUseStrictTypes',
+        ArrTest::class => 'StructuraPhp\Structura\Concerns\ArrError',
     ];
 
-    public function testToHaveCorrespondingClass(): void
+    public function testToHaveCorrespondingTrait(): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir(dirname(__DIR__) . '/Visitors')
+            ->fromDir(dirname(__DIR__) . '/Concerns')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toHaveCorrespondingClass(
+                    ->toHaveCorrespondingTrait(
                         static function (ClassDescription $classDescription): string {
                             $classname = preg_replace(
                                 '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
@@ -52,22 +48,22 @@ class ToHaveCorrespondingClassTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'to have corresponding class',
+            'to have corresponding trait',
         );
     }
 
-    public function testShouldFailToHaveCorrespondingClass(): void
+    public function testShouldFailToHaveCorrespondingTrait(): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir(__DIR__)
+            ->fromDir(dirname(__DIR__) . '/Concerns')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toHaveCorrespondingClass(
+                    ->toHaveCorrespondingTrait(
                         static function (ClassDescription $classDescription): string {
                             $classname = preg_replace(
                                 '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
-                                '$1\\\$2',
+                                '$1\\\$2Error',
                                 $classDescription->namespace ?? '',
                             );
 
@@ -81,7 +77,7 @@ class ToHaveCorrespondingClassTest extends TestCase
         $output = [];
         foreach (self::CORRESPONDENCE_ERROR as $class => $except) {
             $output[] = sprintf(
-                'Resource name <promote>%s</promote> must have corresponding class <promote>%s</promote>',
+                'Resource name <promote>%s</promote> must have corresponding trait <promote>%s</promote>',
                 $class,
                 $except,
             );

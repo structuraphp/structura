@@ -8,38 +8,34 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Fixture\Enum\UserStatus;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
-#[CoversClass(ToHaveCorrespondingClass::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingClass')]
-class ToHaveCorrespondingClassTest extends TestCase
+#[CoversClass(ToHaveCorrespondingInterface::class)]
+#[CoversMethod(Expr::class, 'toHaveCorrespondingInterface')]
+class ToHaveCorrespondingInterfaceTest extends TestCase
 {
     use ArchitectureAsserts;
 
     private const CORRESPONDENCE_ERROR = [
-        AndTest::class => 'StructuraPhp\Structura\Asserts\And',
-        NotDependsOnFunctionTest::class => 'StructuraPhp\Structura\Asserts\NotDependsOnFunction',
-        OrTest::class => 'StructuraPhp\Structura\Asserts\Or',
-        ToBeInterfaceTest::class => 'StructuraPhp\Structura\Asserts\ToBeInterface',
-        ToBeInvokableTest::class => 'StructuraPhp\Structura\Asserts\ToBeInvokable',
-        ToUseStrictTypesTest::class => 'StructuraPhp\Structura\Asserts\ToUseStrictTypes',
+        UserStatus::class => 'StructuraPhp\Structura\Tests\Fixture\Contract\Repository\UserStatusRepository',
     ];
 
-    public function testToHaveCorrespondingClass(): void
+    public function testToHaveCorrespondingInterface(): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir(dirname(__DIR__) . '/Visitors')
+            ->fromDir(dirname(__DIR__, 2) . '/Fixture/Models')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toHaveCorrespondingClass(
+                    ->toHaveCorrespondingInterface(
                         static function (ClassDescription $classDescription): string {
                             $classname = preg_replace(
-                                '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
-                                '$1\\\$2',
+                                '/^(.+?)\\\Tests\\\Fixture\\\Models\\\(.+?)$/',
+                                '$1\\\Tests\\\Fixture\\\Contract\\\Repository\\\$2Repository',
                                 $classDescription->namespace ?? '',
                             );
 
@@ -52,22 +48,22 @@ class ToHaveCorrespondingClassTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'to have corresponding class',
+            'to have corresponding interface',
         );
     }
 
-    public function testShouldFailToHaveCorrespondingClass(): void
+    public function testShouldFailToHaveCorrespondingInterface(): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir(__DIR__)
+            ->fromDir(dirname(__DIR__, 2) . '/Fixture/Enum')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toHaveCorrespondingClass(
+                    ->toHaveCorrespondingInterface(
                         static function (ClassDescription $classDescription): string {
                             $classname = preg_replace(
-                                '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
-                                '$1\\\$2',
+                                '/^(.+?)\\\Tests\\\Fixture\\\Enum\\\(.+?)$/',
+                                '$1\\\Tests\\\Fixture\\\Contract\\\Repository\\\$2Repository',
                                 $classDescription->namespace ?? '',
                             );
 
@@ -81,7 +77,7 @@ class ToHaveCorrespondingClassTest extends TestCase
         $output = [];
         foreach (self::CORRESPONDENCE_ERROR as $class => $except) {
             $output[] = sprintf(
-                'Resource name <promote>%s</promote> must have corresponding class <promote>%s</promote>',
+                'Resource name <promote>%s</promote> must have corresponding interface <promote>%s</promote>',
                 $class,
                 $except,
             );
