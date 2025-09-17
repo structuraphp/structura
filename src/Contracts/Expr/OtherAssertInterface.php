@@ -12,6 +12,11 @@ interface OtherAssertInterface
     /**
      * @param Closure(ClassDescription): string $closure
      */
+    public function toHaveCorresponding(Closure $closure, string $message = ''): self;
+
+    /**
+     * @param Closure(ClassDescription): string $closure
+     */
     public function toHaveCorrespondingClass(Closure $closure, string $message = ''): self;
 
     /**

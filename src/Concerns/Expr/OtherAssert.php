@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Concerns\Expr;
 use Closure;
 use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
+use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
@@ -19,6 +20,11 @@ use StructuraPhp\Structura\Expr;
  */
 trait OtherAssert
 {
+    public function toHaveCorresponding(Closure $closure, string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveCorresponding($closure, $message));
+    }
+
     public function toHaveCorrespondingClass(Closure $closure, string $message = ''): self
     {
         return $this->addExpr(new ToHaveCorrespondingClass($closure, $message));
