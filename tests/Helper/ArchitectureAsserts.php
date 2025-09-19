@@ -7,13 +7,26 @@ namespace StructuraPhp\Structura\Tests\Helper;
 use PHPUnit\Framework\Assert;
 use StructuraPhp\Structura\Builder\AllClasses;
 use StructuraPhp\Structura\Builder\RuleBuilder;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Services\ExecuteService;
 
 trait ArchitectureAsserts
 {
+    /**
+     * @return AllClasses<Expr>
+     */
     final protected function allClasses(): AllClasses
     {
-        return new AllClasses();
+        return AllClasses::allClasses();
+    }
+
+    /**
+     * @return AllClasses<ExprScript>
+     */
+    final protected function allScript(): AllClasses
+    {
+        return AllClasses::allScript();
     }
 
     /**

@@ -34,10 +34,6 @@ interface OtherAssertInterface
      */
     public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self;
 
-    public function toUseStrictTypes(string $message = ''): self;
-
-    public function toUseDeclare(string $key, string $value, string $message = ''): self;
-
     /**
      * @param array<int,string>|string $patterns class names or regular expression patterns to
      *                                           be matched with namespaces

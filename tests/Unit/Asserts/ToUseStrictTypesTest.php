@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(Expr::class)]
@@ -30,6 +31,19 @@ final class ToUseStrictTypesTest extends TestCase
             $rules,
             'to use declare <promote>strict_types=1</promote>',
         );
+
+        $rules = $this
+            ->allScript()
+            ->fromRaw('<?php declare(strict_types=1); $foo=1;')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseStrictTypes(),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'to use declare <promote>strict_types=1</promote>',
+        );
     }
 
     public function testShouldFailToUserStrictType(): void
@@ -39,6 +53,19 @@ final class ToUseStrictTypesTest extends TestCase
             ->fromRaw('<?php class Foo {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
+                    ->toUseStrictTypes(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must use declaration <promote>strict_types=1</promote>',
+        );
+
+        $rules = $this
+            ->allScript()
+            ->fromRaw('<?php namespace Foo; $foo=1;')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
                     ->toUseStrictTypes(),
             );
 

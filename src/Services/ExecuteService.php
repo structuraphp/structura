@@ -6,12 +6,15 @@ namespace StructuraPhp\Structura\Services;
 
 use Generator;
 use InvalidArgumentException;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Enums\ExprType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use Symfony\Component\Finder\Finder;
 
 final class ExecuteService
@@ -22,52 +25,53 @@ final class ExecuteService
 
     public function assert(): AssertBuilder
     {
-        $service = new ParseService();
+        $service = new ParseService(
+            $this->ruleValuesObject->getDescriptorType(),
+        );
         $this->builder = new AssertBuilder();
 
         if ($this->ruleValuesObject->finder instanceof Finder) {
-            $classes = $service->parse($this->ruleValuesObject->finder);
+            $description = $service->parse($this->ruleValuesObject->finder);
         } elseif ($this->ruleValuesObject->raw !== '') {
-            $classes = $service->parseRaw($this->ruleValuesObject->raw);
+            $description = $service->parseRaw($this->ruleValuesObject->raw);
         } else {
             throw new InvalidArgumentException();
         }
 
-        $this->execute($classes, $this->ruleValuesObject->should);
+        $this->execute($description, $this->ruleValuesObject->should);
 
         return $this->builder;
     }
 
     /**
-     * @param Generator<ClassDescription> $classes
+     * @param Generator<ClassDescription|ScriptDescription> $descriptions
      */
-    private function execute(Generator $classes, Expr $assertions): void
+    private function execute(Generator $descriptions, AbstractExpr $assertions): void
     {
-        /** @var Expr|ExprInterface $assert */
+        /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             $this->builder->addPass((string) $assert);
         }
 
-        /** @var ClassDescription $class */
-        foreach ($classes as $class) {
-            if ($this->executeThat($class)) {
+        /** @var ScriptDescription $description */
+        foreach ($descriptions as $description) {
+            if ($this->executeThat($description)) {
                 continue;
             }
 
-            $this->executeShould($assertions, $class);
+            $this->executeShould($assertions, $description);
         }
     }
 
-    private function executeThat(ClassDescription $class): bool
+    private function executeThat(ClassDescription|ScriptDescription $description): bool
     {
         if (!$this->ruleValuesObject->that instanceof Expr) {
             return false;
         }
 
-        foreach ($this->ruleValuesObject->that as $expression) {
-            $predicate = $expression instanceof ExprInterface
-                ? $expression->assert($class)
-                : $this->assertGroup($expression, $class);
+        /** @var AbstractExpr|ExprInterface $assert */
+        foreach ($this->ruleValuesObject->that as $assert) {
+            $predicate = $this->predicate($assert, $description);
 
             if (!$predicate) {
                 return true;
@@ -78,55 +82,57 @@ final class ExecuteService
     }
 
     private function executeShould(
-        Expr $assertions,
-        ClassDescription $class,
+        AbstractExpr $assertions,
+        ClassDescription|ScriptDescription $description,
     ): void {
-        /** @var Expr|ExprInterface $assert */
+        /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
-            if ($assert instanceof ExprInterface) {
-                $predicate = $assert->assert($class);
-            } else {
-                $predicate = $this->assertGroup($assert, $class);
-            }
+            $predicate = $this->predicate($assert, $description);
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+            $isExcept = $this
+                ->ruleValuesObject
+                ->except
+                ?->isExcept($description->namespace, $assert::class);
+
+            if ($isExcept === true) {
                 if (!$predicate) {
-                    $this->builder->addExcept($class->namespace, (string) $assert);
+                    $this->builder->addExcept($description->namespace, (string) $assert);
 
                     continue;
                 }
 
-                $this->builder->addWarning($class->namespace, (string) $assert);
+                $this->builder->addWarning($description->namespace, (string) $assert);
             }
 
             if (!$predicate) {
-                $this->builder->addViolation((string) $assert, $assert, $class);
+                $this->builder->addViolation((string) $assert, $assert, $description);
             }
         }
     }
 
     private function assertGroup(
-        Expr $assertions,
-        ClassDescription $class,
+        AbstractExpr $assertions,
+        ClassDescription|ScriptDescription $description,
     ): bool {
         $isPass = true;
 
-        /** @var Expr|ExprInterface $assert */
+        /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $key => $assert) {
-            if ($assert instanceof ExprInterface) {
-                $predicate = $assert->assert($class);
-            } else {
-                $predicate = $this->assertGroup($assert, $class);
-            }
+            $predicate = $this->predicate($assert, $description);
 
-            if ($this->ruleValuesObject->except?->isExcept($class->namespace, $assert::class)) {
+            $isExcept = $this
+                ->ruleValuesObject
+                ->except
+                ?->isExcept($description->namespace, $assert::class);
+
+            if ($isExcept === true) {
                 if (!$predicate) {
-                    $this->builder->addExcept($class->namespace, (string) $assert);
+                    $this->builder->addExcept($description->namespace, (string) $assert);
 
                     continue;
                 }
 
-                $this->builder->addWarning($class->namespace, (string) $assert);
+                $this->builder->addWarning($description->namespace, (string) $assert);
             }
 
             if ($key === 0) {
@@ -146,5 +152,24 @@ final class ExecuteService
         }
 
         return $isPass;
+    }
+
+    private function predicate(
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
+    ): bool {
+        if ($assert instanceof ExprScriptInterface) {
+            return $assert->assert($description);
+        }
+
+        if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
+            return $assert->assert($description);
+        }
+
+        if ($assert instanceof AbstractExpr) {
+            return $this->assertGroup($assert, $description);
+        }
+
+        throw new InvalidArgumentException();
     }
 }

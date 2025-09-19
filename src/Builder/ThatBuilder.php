@@ -5,17 +5,29 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Builder;
 
 use Closure;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Contracts\ShouldInterface;
 use StructuraPhp\Structura\Except;
-use StructuraPhp\Structura\Expr;
 
+/**
+ * @template T of AbstractExpr
+ *
+ * @implements ShouldInterface<T>
+ */
 class ThatBuilder implements ShouldInterface
 {
-    public function __construct(protected readonly RuleBuilder $ruleBuilder) {}
+    /**
+     * @param class-string<T> $abstractExpr
+     */
+    public function __construct(
+        protected readonly RuleBuilder $ruleBuilder,
+        protected readonly string $abstractExpr,
+    ) {}
 
     public function should(Closure $closure): RuleBuilder
     {
-        $expression = new Expr();
+        /** @var T $expression */
+        $expression = new $this->abstractExpr();
         $closure($expression);
 
         $this->ruleBuilder->addShould($expression);

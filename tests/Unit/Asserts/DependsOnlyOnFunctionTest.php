@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnFunction::class)]
@@ -20,13 +21,33 @@ class DependsOnlyOnFunctionTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testDependsOnlyOnFunction(string $raw): void
+    public function testDependsOnlyOnFunctionWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnFunction(
+                        names: 'strtolower',
+                        patterns: 'array_.+',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on function <promote>strtolower, array_.+</promote>',
+        );
+    }
+
+    #[DataProvider('getScriptWithFunction')]
+    public function testDependsOnlyOnFunctionWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScript()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
                     ->dependsOnlyOnFunction(
                         names: 'strtolower',
                         patterns: 'array_.+',
@@ -64,6 +85,31 @@ class DependsOnlyOnFunctionTest extends TestCase
         );
     }
 
+    #[DataProvider('getScriptWithFunction')]
+    public function testShouldFailDependsOnlyOnFunctionWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScript()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOnFunction(
+                        names: 'strtoupper',
+                        patterns: 'mb_.+',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
+                'Foo',
+                'strtoupper, mb_.+',
+                'array_merge, strtolower',
+            ),
+        );
+    }
+
     public static function getClassLikeWithFunction(): Generator
     {
         yield 'anonymous class' => [
@@ -75,6 +121,22 @@ class DependsOnlyOnFunctionTest extends TestCase
                 }
             };',
             'Anonymous',
+        ];
+    }
+
+    public static function getScriptWithFunction(): Generator
+    {
+        yield 'script' => [
+            <<<'PHP'
+            <?php
+
+            namespace Foo;
+
+            function bar() {
+                array_merge([], []);
+                strtolower("FOO");
+            }
+            PHP,
         ];
     }
 }

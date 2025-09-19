@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Concerns\Expr;
 
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Asserts\ToExtendNothing;
 use StructuraPhp\Structura\Asserts\ToHaveAttribute;
@@ -18,7 +19,7 @@ use StructuraPhp\Structura\Asserts\ToUseTrait;
 use StructuraPhp\Structura\Expr;
 
 /**
- * @mixin Expr
+ * @mixin AbstractExpr&Expr
  */
 trait RelationAssert
 {
