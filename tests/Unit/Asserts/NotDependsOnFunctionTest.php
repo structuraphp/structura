@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOnFunction::class)]
@@ -20,13 +21,33 @@ class NotDependsOnFunctionTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testNotDependsOnFunction(string $raw): void
+    public function testNotDependsOnFunctionWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOnFunction(
+                        names: 'strtoupper',
+                        patterns: 'mb_.+',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'not depends on function <promote>strtoupper, mb_.+</promote>',
+        );
+    }
+
+    #[DataProvider('getScriptWithFunction')]
+    public function testNotDependsOnFunctionWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
                     ->toNotDependsOnFunction(
                         names: 'strtoupper',
                         patterns: 'mb_.+',
@@ -64,6 +85,31 @@ class NotDependsOnFunctionTest extends TestCase
         );
     }
 
+    #[DataProvider('getScriptWithFunction')]
+    public function testShouldFailNotDependsOnFunctionWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toNotDependsOnFunction(
+                        names: 'strtolower',
+                        patterns: 'array_.+',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must not depends on functions %s but depends on %s',
+                'Foo',
+                'strtolower, array_.+',
+                'array_merge, strtolower',
+            ),
+        );
+    }
+
     public static function getClassLikeWithFunction(): Generator
     {
         yield 'anonymous class' => [
@@ -75,6 +121,22 @@ class NotDependsOnFunctionTest extends TestCase
                 }
             };',
             'Anonymous',
+        ];
+    }
+
+    public static function getScriptWithFunction(): Generator
+    {
+        yield 'script' => [
+            <<<'PHP'
+            <?php
+
+            namespace Foo;
+
+            function bar() {
+                array_merge([], []);
+                strtolower("FOO");
+            }
+            PHP,
         ];
     }
 }

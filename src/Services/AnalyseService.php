@@ -6,10 +6,10 @@ namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Configs\StructuraConfig;
-use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Finder\Finder;
@@ -126,9 +126,9 @@ final class AnalyseService
         }
     }
 
-    private function thatOutput(?Expr $builder): void
+    private function thatOutput(?AbstractExpr $builder): void
     {
-        if (!$builder instanceof Expr) {
+        if (!$builder instanceof AbstractExpr) {
             return;
         }
 

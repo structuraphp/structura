@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\Expr;
 
 use Attribute;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Asserts\ToBeAttribute;
@@ -16,10 +17,9 @@ use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
 use StructuraPhp\Structura\Enums\ScalarType;
-use StructuraPhp\Structura\Expr;
 
 /**
- * @mixin Expr
+ * @mixin AbstractExpr
  */
 trait TypeAssert
 {

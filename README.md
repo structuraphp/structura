@@ -121,6 +121,20 @@ final class TestDto extends TestBuilder
 }
 ```
 
+### toBeClasses() and allScripts()
+
+There are two types of analysis:
+
+```php
+// Analysis of classes. A class MUST be present, otherwise an exception is raised.
+$this->allClasses()
+
+// Analysis of all PHP scripts.
+$this->allScripts()
+```
+
+If you choose script analysis, all PHP code can be analysed, but only rules can be used.
+
 ### fromDir() and fromRaw()
 
 Start with the `fromDir()` method, which takes the path of the files to be analysed.
@@ -157,7 +171,10 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
 Specifies rules for targeting class analysis, optional functionality:
 
 ```php
+// with allClasses()
 ->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
+// with allScript()
+->that(static fn(ExprScript $expr): ExprScript => $expr->toBeClasses())
 ```
 
 ### except()
@@ -181,6 +198,7 @@ Ignores class rules, can be used as a baseline, optional functionality:
 List of architecture rules, required functionality:
 
 ```php
+// with allClasses()
 ->should(static fn(Expr $expr): Expr => $expr
     ->toBeFinal()
     ->toBeReadonly()
@@ -189,6 +207,8 @@ List of architecture rules, required functionality:
     ->toHaveMethod('fromArray')
     ->toImplement(\JsonSerializable::class)
 )
+// with allScript()
+->should(static fn(ExprScript $expr): ExprScript => $expr)
 ```
 
 ## First run
@@ -242,6 +262,11 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveCorresponding()](#tohavecorresponding)
+  - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
+  - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
+  - [toHaveCorrespondingInterface()](#tohavecorrespondinginterface)
+  - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
   - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
@@ -664,6 +689,51 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
 ```
 
+### toHaveCorresponding()
+
+Check the correspondence between a class/enum/interface/trait and a mask.
+To build the mask, you have access to the description of the current class.
+
+Correspondence rules can be used in many scenarios, such as:
+- If a model has a repository interface,
+- If a model has a policy with the same name,
+- If your controllers have associated queries or resources,
+- ...
+
+For example, you can check whether each unit test class has a corresponding class in your project :
+
+```php
+$this
+    ->allClasses()
+    ->fromDir('tests/Unit')
+    ->should(
+        static fn(Expr $assert): Expr => $assert
+            ->toHaveCorrespondingClass(
+                static fn (ClassDescription $classDescription): string => preg_replace(
+                    '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
+                    '$1\\\$2',
+                    $classDescription->namespace,
+                )
+            ),
+    );
+```
+
+### toHaveCorrespondingClass()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a class.
+
+### toHaveCorrespondingEnum()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an enum.
+
+### toHaveCorrespondingInterface()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an interface.
+
+### toHaveCorrespondingTrait()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a trait.
+
 ### toUseStrictTypes()
 
 ```php
@@ -765,7 +835,10 @@ $this
 
 ## Custom assert
 
-To create a custom rule, implement the StructuraPhp\StructuraContracts\ExprInterface interface:
+To create a custom rule :
+
+- for class analysis, implement the `StructuraPhp\Structura\Contracts\ExprInterface` interface
+- for script analysis, implement the `StructuraPhp\Structura\Contracts\ExprScriptInterface` interface.
 
 ```php
 <?php
