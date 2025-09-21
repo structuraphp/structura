@@ -85,7 +85,7 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not depends on these namespaces %s',
-                $script->namespace ?? '',
+                $script->namespace ?? $script->getFileBasename(),
                 $this->implodeMore($dependencies),
             ),
             $this::class,

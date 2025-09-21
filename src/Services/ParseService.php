@@ -67,7 +67,7 @@ final readonly class ParseService
     /**
      * @return Generator<ClassDescription|ScriptDescription>
      */
-    public function parseRaw(string $raw, ?string $pathname = null): Generator
+    public function parseRaw(string $raw, string $pathname): Generator
     {
         try {
             /** @var array<int,Stmt> $ast */

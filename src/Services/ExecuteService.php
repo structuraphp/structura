@@ -29,12 +29,17 @@ final class ExecuteService
             $this->ruleValuesObject->getDescriptorType(),
         );
         $this->builder = new AssertBuilder();
+        $description = null;
 
         if ($this->ruleValuesObject->finder instanceof Finder) {
             $description = $service->parse($this->ruleValuesObject->finder);
-        } elseif ($this->ruleValuesObject->raw !== '') {
-            $description = $service->parseRaw($this->ruleValuesObject->raw);
-        } else {
+        } elseif ($this->ruleValuesObject->raws !== []) {
+            foreach ($this->ruleValuesObject->raws as $filePath => $raw) {
+                $description = $service->parseRaw($raw, $filePath);
+            }
+        }
+
+        if (!$description instanceof Generator) {
             throw new InvalidArgumentException();
         }
 

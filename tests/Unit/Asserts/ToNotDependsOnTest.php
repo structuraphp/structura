@@ -102,8 +102,10 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testShouldFailToNotDependsOnWithScript(string $raw): void
-    {
+    public function testShouldFailToNotDependsOnWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
@@ -122,7 +124,8 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s, [1+]',
+                'Resource <promote>%s</promote> must not depends on these namespaces %s, %s, %s, [1+]',
+                $exceptName,
                 ArrayAccess::class,
                 'Depend\Bar',
                 Exception::class,
@@ -155,7 +158,7 @@ final class ToNotDependsOnTest extends TestCase
 
     public static function getScriptWithNoDependsProvider(): Generator
     {
-        yield 'script' => [
+        yield 'script with namespace' => [
             <<<'PHP'
             <?php
 
@@ -173,6 +176,26 @@ final class ToNotDependsOnTest extends TestCase
                 return $this->arrayAccess['foo'] ?? throw new \Exception();
             }
             PHP,
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            <<<'PHP'
+            <?php
+
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            function foo(ArrayAccess $arrayAccess) {
+                \Stringable::class;
+            }
+
+            function bar(): string {
+                return $this->arrayAccess['foo'] ?? throw new \Exception();
+            }
+            PHP,
+            'tmp/run_0.php',
         ];
     }
 }

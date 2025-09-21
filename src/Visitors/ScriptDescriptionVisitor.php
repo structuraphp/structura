@@ -45,7 +45,7 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
 
         if (!$this->script instanceof ScriptDescription) {
             $this->script = new ScriptDescription(
-                namespace: $this->namespace?->name?->toString() ?? '',
+                namespace: $this->namespace?->name?->toString(),
                 declare: $this->declare,
             );
         }

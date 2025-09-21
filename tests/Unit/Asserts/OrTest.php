@@ -7,8 +7,10 @@ namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 use AppendIterator;
 use ArrayIterator;
 use Exception;
+use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Exceptions\UserException;
@@ -19,11 +21,15 @@ final class OrTest extends TestCase
 {
     use ArchitectureAsserts;
 
-    public function testShouldOr(): void
+    /**
+     * @param array<int,string> $raws
+     */
+    #[DataProvider('getClassLikeProvider')]
+    public function testShouldOr(array $raws): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir('tests/Fixture/Exceptions')
+            ->fromRawMultiple($raws)
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->or(
@@ -42,11 +48,15 @@ final class OrTest extends TestCase
         );
     }
 
-    public function testShouldFailToOr(): void
+    /**
+     * @param array<int,string> $raws
+     */
+    #[DataProvider('getClassLikeProvider')]
+    public function testShouldFailToOr(array $raws): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir('tests/Fixture/Exceptions')
+            ->fromRawMultiple($raws)
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->or(
@@ -65,5 +75,35 @@ final class OrTest extends TestCase
                 UserException::class,
             ),
         );
+    }
+
+    public static function getClassLikeProvider(): Generator
+    {
+        yield [
+            [
+                <<<PHP
+                <?php
+                
+                declare(strict_types=1);
+                
+                namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
+                
+                use InvalidArgumentException;
+                
+                class InvalidException extends InvalidArgumentException {}
+                PHP,
+                <<<PHP
+                <?php
+                
+                declare(strict_types=1);
+                
+                namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
+                
+                use Exception;
+                
+                class UserException extends Exception {}
+                PHP,
+            ],
+        ];
     }
 }

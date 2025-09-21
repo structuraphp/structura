@@ -11,7 +11,8 @@ use Symfony\Component\Finder\Finder;
 
 class RuleBuilder
 {
-    public string $raw = '';
+    /** @var array<string, string> */
+    public array $raws = [];
 
     public ?Finder $finder = null;
 
@@ -21,35 +22,40 @@ class RuleBuilder
 
     public ?Except $except = null;
 
-    public function addRaw(string $raw): self
+    public function addRaw(string $raw, string $pathname): self
     {
-        $this->raw = $raw;
+        if ($pathname === '') {
+            $nb = count($this->raws);
+            $pathname = 'tmp/run_' . $nb . '.php';
+        }
+
+        $this->raws[$pathname] = $raw;
 
         return $this;
     }
 
-    public function addFinder(Finder $finder): self
+    public function setFinder(Finder $finder): self
     {
         $this->finder = $finder;
 
         return $this;
     }
 
-    public function addThat(AbstractExpr $that): self
+    public function setThat(AbstractExpr $that): self
     {
         $this->that = $that;
 
         return $this;
     }
 
-    public function addShould(AbstractExpr $should): self
+    public function setShould(AbstractExpr $should): self
     {
         $this->should = $should;
 
         return $this;
     }
 
-    public function addExpect(Except $expect): self
+    public function setExpect(Except $expect): self
     {
         $this->except = $expect;
 
@@ -59,7 +65,7 @@ class RuleBuilder
     public function getRuleObject(): RuleValuesObject
     {
         return new RuleValuesObject(
-            raw: $this->raw,
+            raws: $this->raws,
             finder: $this->finder,
             that: $this->that,
             except: $this->except,

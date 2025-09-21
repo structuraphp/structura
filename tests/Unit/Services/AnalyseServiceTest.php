@@ -30,7 +30,7 @@ final class AnalyseServiceTest extends TestCase
 
         $expected = <<<'EOF'
         <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        40 classes from
+        40 classe(s) from
          - dirs
         That
          - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
@@ -45,7 +45,7 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to have method <promote>__construct</promote>
 
         <violation> ERROR </violation> Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
-        3 classes from
+        3 classe(s) from
          - dirs
         Should
          <green>✔</green> to be classes
@@ -57,8 +57,8 @@ final class AnalyseServiceTest extends TestCase
          <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+]</promote> <fire>2 error(s)</fire>
 
         <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
-        2 classes from
-         - dirs
+        2 classe(s) from
+         - raw value
         Should
          <green>✔</green> to extend <promote>InvalidArgumentException</promote>
            | to extend <promote>Exception</promote>
@@ -66,7 +66,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        105 classes from
+        105 classe(s) from
          - dirs
         That
         Should
