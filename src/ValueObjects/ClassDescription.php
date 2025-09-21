@@ -13,16 +13,8 @@ use PhpParser\Node\Stmt\TraitUse;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
-final class ClassDescription
+final class ClassDescription extends ScriptDescription
 {
-    /** @var array<int,string> */
-    private array $classDependencies = [];
-
-    /** @var array<int,string> */
-    private array $functionDependencies = [];
-
-    private ?string $fileBasename = null;
-
     /**
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
@@ -32,10 +24,11 @@ final class ClassDescription
      * @param null|array<ClassMethod> $methods
      */
     public function __construct(
+        ?string $namespace,
+        ?Declare_ $declare,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
-        public readonly ?string $namespace,
         public readonly ?Identifier $scalarType,
         public readonly ?array $interfaces,
         public readonly null|array|Name $extends,
@@ -43,55 +36,8 @@ final class ClassDescription
         public readonly ?int $flags,
         public readonly ClassType $classType,
         public readonly ?array $methods,
-        public readonly ?Declare_ $declare,
-    ) {}
-
-    /**
-     * @return array<int,string>
-     */
-    public function getClassDependencies(): array
-    {
-        return $this->classDependencies;
-    }
-
-    /**
-     * @return array<int,string>
-     */
-    public function getFunctionDependencies(): array
-    {
-        return $this->functionDependencies;
-    }
-
-    /**
-     * @param array<int,string> $classDependencies
-     */
-    public function setClassDependencies(array $classDependencies): self
-    {
-        $this->classDependencies = $classDependencies;
-
-        return $this;
-    }
-
-    /**
-     * @param array<int,string> $dependencies
-     */
-    public function setFunctionDependencies(array $dependencies): self
-    {
-        $this->functionDependencies = $dependencies;
-
-        return $this;
-    }
-
-    public function getFileBasename(): ?string
-    {
-        return $this->fileBasename;
-    }
-
-    public function setFilePathname(?string $fileBasename): self
-    {
-        $this->fileBasename = $fileBasename;
-
-        return $this;
+    ) {
+        parent::__construct($namespace, $declare);
     }
 
     public function isExtendable(): bool
@@ -341,21 +287,6 @@ final class ClassDescription
             '/^' . $this->customPregQuote($pattern) . '$/',
             $this->namespace ?? '',
         );
-    }
-
-    /**
-     * @param array<int,string> $allowedCharacters
-     */
-    private function customPregQuote(
-        string $subject,
-        array $allowedCharacters = ['^', '$', '\\'],
-    ): string {
-        $mapping = [];
-        foreach ($allowedCharacters as $char) {
-            $mapping[$char] = '\\' . $char;
-        }
-
-        return strtr($subject, $mapping);
     }
 
     /**

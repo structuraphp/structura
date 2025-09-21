@@ -5,19 +5,27 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Builder;
 
 use Closure;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Contracts\ShouldInterface;
 use StructuraPhp\Structura\Contracts\ThatInterface;
-use StructuraPhp\Structura\Expr;
 
+/**
+ * @template T of AbstractExpr
+ *
+ * @extends ThatBuilder<T>
+ *
+ * @implements ThatInterface<T>
+ */
 class FinderBuilder extends ThatBuilder implements ThatInterface
 {
     public function that(Closure $closure): ShouldInterface
     {
-        $expression = new Expr();
+        /** @var T $expression */
+        $expression = new $this->abstractExpr();
         $closure($expression);
 
         $this->ruleBuilder->addThat($expression);
 
-        return new ThatBuilder($this->ruleBuilder);
+        return new ThatBuilder($this->ruleBuilder, $this->abstractExpr);
     }
 }

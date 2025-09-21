@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOn::class)]
@@ -24,7 +25,7 @@ final class ToNotDependsOnTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithNoDependsProvider')]
-    public function testToNotDependsOn(string $raw): void
+    public function testToNotDependsOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
@@ -47,14 +48,67 @@ final class ToNotDependsOnTest extends TestCase
         );
     }
 
+    #[DataProvider('getScriptWithNoDependsProvider')]
+    public function testToNotDependsOnWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toNotDependsOn(
+                        names: [JsonSerializable::class],
+                        patterns: ['Depend\Baz'],
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to not depends on these namespaces <promote>%s, %s</promote>',
+                JsonSerializable::class,
+                'Depend\Baz',
+            ),
+        );
+    }
+
     #[DataProvider('getClassLikeWithNoDependsProvider')]
-    public function testShouldFailToNotDependsOn(string $raw): void
+    public function testShouldFailToNotDependsOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOn(
+                        names: [
+                            ArrayAccess::class,
+                            Exception::class,
+                            Stringable::class,
+                        ],
+                        patterns: ['Depend\(Bar|Baz)'],
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s, [1+]',
+                ArrayAccess::class,
+                'Depend\Bar',
+                Exception::class,
+            ),
+        );
+    }
+
+    #[DataProvider('getScriptWithNoDependsProvider')]
+    public function testShouldFailToNotDependsOnWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
                     ->toNotDependsOn(
                         names: [
                             ArrayAccess::class,
@@ -94,6 +148,29 @@ final class ToNotDependsOnTest extends TestCase
                 public function __toString(): string {
                     return $this->arrayAccess['foo'] ?? throw new \Exception();
                 }
+            }
+            PHP,
+        ];
+    }
+
+    public static function getScriptWithNoDependsProvider(): Generator
+    {
+        yield 'script' => [
+            <<<'PHP'
+            <?php
+
+            namespace Foo;
+
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            function foo(ArrayAccess $arrayAccess) {
+                \Stringable::class;
+            }
+
+            function bar(): string {
+                return $this->arrayAccess['foo'] ?? throw new \Exception();
             }
             PHP,
         ];

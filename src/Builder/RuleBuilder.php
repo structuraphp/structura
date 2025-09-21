@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Builder;
 
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Except;
-use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use Symfony\Component\Finder\Finder;
 
@@ -15,9 +15,9 @@ class RuleBuilder
 
     public ?Finder $finder = null;
 
-    public ?Expr $that = null;
+    public ?AbstractExpr $that = null;
 
-    public Expr $should;
+    public AbstractExpr $should;
 
     public ?Except $except = null;
 
@@ -35,14 +35,14 @@ class RuleBuilder
         return $this;
     }
 
-    public function addThat(Expr $that): self
+    public function addThat(AbstractExpr $that): self
     {
         $this->that = $that;
 
         return $this;
     }
 
-    public function addShould(Expr $should): self
+    public function addShould(AbstractExpr $should): self
     {
         $this->should = $should;
 

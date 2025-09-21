@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Concerns\Expr;
 
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
-use StructuraPhp\Structura\Expr;
 
 /**
- * @mixin Expr
+ * @mixin AbstractExpr
  */
 trait NameAssert
 {

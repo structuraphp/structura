@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\Expr;
 
 use Closure;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
@@ -12,11 +13,9 @@ use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
-use StructuraPhp\Structura\Asserts\ToUseDeclare;
-use StructuraPhp\Structura\Expr;
 
 /**
- * @mixin Expr
+ * @mixin AbstractExpr
  */
 trait OtherAssert
 {
@@ -43,16 +42,6 @@ trait OtherAssert
     public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self
     {
         return $this->addExpr(new ToHaveCorrespondingTrait($closure, $message));
-    }
-
-    public function toUseStrictTypes(string $message = ''): self
-    {
-        return $this->toUseDeclare('strict_types', '1', $message);
-    }
-
-    public function toUseDeclare(string $key, string $value, string $message = ''): self
-    {
-        return $this->addExpr(new ToUseDeclare($key, $value, $message));
     }
 
     public function toBeInOneOfTheNamespaces(

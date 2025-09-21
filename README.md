@@ -121,6 +121,20 @@ final class TestDto extends TestBuilder
 }
 ```
 
+### toBeClasses() and allScripts()
+
+There are two types of analysis:
+
+```php
+// Analysis of classes. A class MUST be present, otherwise an exception is raised.
+$this->allClasses()
+
+// Analysis of all PHP scripts.
+$this->allScripts()
+```
+
+If you choose script analysis, all PHP code can be analysed, but only rules can be used.
+
 ### fromDir() and fromRaw()
 
 Start with the `fromDir()` method, which takes the path of the files to be analysed.
@@ -157,7 +171,10 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
 Specifies rules for targeting class analysis, optional functionality:
 
 ```php
+// with allClasses()
 ->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
+// with allScript()
+->that(static fn(ExprScript $expr): ExprScript => $expr->toBeClasses())
 ```
 
 ### except()
@@ -181,6 +198,7 @@ Ignores class rules, can be used as a baseline, optional functionality:
 List of architecture rules, required functionality:
 
 ```php
+// with allClasses()
 ->should(static fn(Expr $expr): Expr => $expr
     ->toBeFinal()
     ->toBeReadonly()
@@ -189,6 +207,8 @@ List of architecture rules, required functionality:
     ->toHaveMethod('fromArray')
     ->toImplement(\JsonSerializable::class)
 )
+// with allScript()
+->should(static fn(ExprScript $expr): ExprScript => $expr)
 ```
 
 ## First run
@@ -815,7 +835,10 @@ $this
 
 ## Custom assert
 
-To create a custom rule, implement the StructuraPhp\StructuraContracts\ExprInterface interface:
+To create a custom rule :
+
+- for class analysis, implement the `StructuraPhp\Structura\Contracts\ExprInterface` interface
+- for script analysis, implement the `StructuraPhp\Structura\Contracts\ExprScriptInterface` interface.
 
 ```php
 <?php
