@@ -33,7 +33,7 @@ final class ToUseStrictTypesTest extends TestCase
         );
 
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw('<?php declare(strict_types=1); $foo=1;')
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
@@ -62,7 +62,7 @@ final class ToUseStrictTypesTest extends TestCase
         );
 
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw('<?php namespace Foo; $foo=1;')
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert

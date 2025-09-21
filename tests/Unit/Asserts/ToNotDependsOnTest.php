@@ -52,7 +52,7 @@ final class ToNotDependsOnTest extends TestCase
     public function testToNotDependsOnWithScript(string $raw): void
     {
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
@@ -105,7 +105,7 @@ final class ToNotDependsOnTest extends TestCase
     public function testShouldFailToNotDependsOnWithScript(string $raw): void
     {
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert

@@ -44,7 +44,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     public function testDependsOnlyOnFunctionWithScript(string $raw): void
     {
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
@@ -89,7 +89,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     public function testShouldFailDependsOnlyOnFunctionWithScript(string $raw): void
     {
         $rules = $this
-            ->allScript()
+            ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert

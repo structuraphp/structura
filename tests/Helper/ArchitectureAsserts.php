@@ -24,9 +24,9 @@ trait ArchitectureAsserts
     /**
      * @return AllClasses<ExprScript>
      */
-    final protected function allScript(): AllClasses
+    final protected function allScripts(): AllClasses
     {
-        return AllClasses::allScript();
+        return AllClasses::allScripts();
     }
 
     /**

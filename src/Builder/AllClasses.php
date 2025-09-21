@@ -41,7 +41,7 @@ readonly class AllClasses implements FinderInterface
     /**
      * @return AllClasses<ExprScript>
      */
-    public static function allScript(): self
+    public static function allScripts(): self
     {
         return new self(ExprScript::class);
     }
