@@ -65,7 +65,7 @@ readonly class AllClasses implements FinderInterface
             $closure($finder);
         }
 
-        $this->ruleBuilder->addFinder($finder);
+        $this->ruleBuilder->setFinder($finder);
 
         return new FinderBuilder($this->ruleBuilder, $this->abstractExpr);
     }
@@ -73,9 +73,25 @@ readonly class AllClasses implements FinderInterface
     /**
      * @return ThatInterface<T>
      */
-    public function fromRaw(string $raw): ThatInterface
+    public function fromRaw(string $raw, string $pathname = ''): ThatInterface
     {
-        $this->ruleBuilder->addRaw($raw);
+        $this->ruleBuilder->addRaw($raw, $pathname);
+
+        return new FinderBuilder($this->ruleBuilder, $this->abstractExpr);
+    }
+
+    /**
+     * @param array<array-key,string> $raws
+     *
+     * @return ThatInterface<T>
+     */
+    public function fromRawMultiple(array $raws): ThatInterface
+    {
+        foreach ($raws as $pathname => $raw) {
+            $this
+                ->ruleBuilder
+                ->addRaw($raw, is_string($pathname) ? $pathname : '');
+        }
 
         return new FinderBuilder($this->ruleBuilder, $this->abstractExpr);
     }

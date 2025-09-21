@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
@@ -60,10 +62,16 @@ final class ToUseStrictTypesTest extends TestCase
             $rules,
             'Resource <promote>Foo</promote> must use declaration <promote>strict_types=1</promote>',
         );
+    }
 
+    #[DataProvider('getScriptTypeProvider')]
+    public function testShouldFailToUserStrictTypeWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
         $rules = $this
             ->allScripts()
-            ->fromRaw('<?php namespace Foo; $foo=1;')
+            ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
                     ->toUseStrictTypes(),
@@ -71,7 +79,23 @@ final class ToUseStrictTypesTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            'Resource <promote>Foo</promote> must use declaration <promote>strict_types=1</promote>',
+            sprintf(
+                'Resource <promote>%s</promote> must use declaration <promote>strict_types=1</promote>',
+                $exceptName,
+            ),
         );
+    }
+
+    public static function getScriptTypeProvider(): Generator
+    {
+        yield 'script with namespace' => [
+            '<?php namespace Foo; $foo = 1;',
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            '<?php $foo = 1;',
+            'tmp/run_0.php',
+        ];
     }
 }

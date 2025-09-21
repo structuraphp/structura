@@ -101,7 +101,7 @@ final class AnalyseService
                 $classname,
             );
 
-            $this->fromOutput($ruleValueObject->finder);
+            $this->fromOutput($ruleValueObject->finder, $ruleValueObject->raws);
             $this->thatOutput($ruleValueObject->that);
             $this->shouldOutput($assertBuilder);
 
@@ -115,13 +115,16 @@ final class AnalyseService
         }
     }
 
-    private function fromOutput(?Finder $finder): void
+    /**
+     * @param array<string,string> $raws
+     */
+    private function fromOutput(?Finder $finder, array $raws = []): void
     {
         if ($finder instanceof Finder) {
-            $this->prints[] = $finder->count() . ' classes from';
+            $this->prints[] = $finder->count() . ' classe(s) from';
             $this->prints[] = ' - dirs';
         } else {
-            $this->prints[] = 'Class from';
+            $this->prints[] = count($raws) . ' classe(s) from';
             $this->prints[] = ' - raw value';
         }
     }

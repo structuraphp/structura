@@ -88,7 +88,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
-                $script->namespace ?? '',
+                $script->namespace ?? $script->getFileBasename(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),
             ),

@@ -86,8 +86,10 @@ class DependsOnlyOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testShouldFailDependsOnlyOnFunctionWithScript(string $raw): void
-    {
+    public function testShouldFailDependsOnlyOnFunctionWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
@@ -103,7 +105,7 @@ class DependsOnlyOnFunctionTest extends TestCase
             $rules,
             \sprintf(
                 'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
-                'Foo',
+                $exceptName,
                 'strtoupper, mb_.+',
                 'array_merge, strtolower',
             ),
@@ -126,7 +128,7 @@ class DependsOnlyOnFunctionTest extends TestCase
 
     public static function getScriptWithFunction(): Generator
     {
-        yield 'script' => [
+        yield 'script with namespace' => [
             <<<'PHP'
             <?php
 
@@ -137,6 +139,19 @@ class DependsOnlyOnFunctionTest extends TestCase
                 strtolower("FOO");
             }
             PHP,
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            <<<'PHP'
+            <?php
+
+            function bar() {
+                array_merge([], []);
+                strtolower("FOO");
+            }
+            PHP,
+            'tmp/run_0.php',
         ];
     }
 }

@@ -24,7 +24,7 @@ class FinderBuilder extends ThatBuilder implements ThatInterface
         $expression = new $this->abstractExpr();
         $closure($expression);
 
-        $this->ruleBuilder->addThat($expression);
+        $this->ruleBuilder->setThat($expression);
 
         return new ThatBuilder($this->ruleBuilder, $this->abstractExpr);
     }

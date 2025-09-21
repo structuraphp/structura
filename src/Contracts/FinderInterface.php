@@ -24,5 +24,5 @@ interface FinderInterface
     /**
      * @return ThatInterface<T>
      */
-    public function fromRaw(string $raw): ThatInterface;
+    public function fromRaw(string $raw, string $pathname = ''): ThatInterface;
 }
