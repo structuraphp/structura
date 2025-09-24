@@ -30,14 +30,27 @@ final class AndTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            <<<TXT
+            to implement <promote>ArrayAccess</promote>
+               & to implement <promote>Iterator</promote>
+            TXT
+        );
     }
 
     public function testShouldFailToAnd(): void
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw('<?php class Foo implements \ArrayAccess {}')
+            ->fromRawMultiple([
+                <<<PHP
+                <?php class Foo implements \\Iterator {}
+                PHP,
+                <<<PHP
+                <?php class Bar implements \\ArrayAccess {}
+                PHP,
+            ])
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->and(
@@ -50,7 +63,9 @@ final class AndTest extends TestCase
         self::assertRulesViolation(
             $rules,
             'Resource <promote>Foo</promote> must implement <promote>ArrayAccess</promote>, '
-            . 'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>',
+            . 'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>, '
+            . 'Resource <promote>Bar</promote> must implement <promote>ArrayAccess</promote>, '
+            . 'Resource <promote>Bar</promote> must implement <promote>Iterator</promote>',
         );
     }
 }

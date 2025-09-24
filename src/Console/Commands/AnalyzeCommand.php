@@ -45,7 +45,7 @@ final class AnalyzeCommand extends Command
         $structuraConfig = $this->getStructuraConfig();
 
         $analyseService = new AnalyseService($structuraConfig);
-        $analyseValueObject = $analyseService->analyse();
+        $analyseService->analyse();
 
         return self::SUCCESS;
     }

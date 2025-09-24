@@ -30,7 +30,7 @@ class Except
 
     /**
      * @param null|string $className if anonymous class then null
-     * @param class-string<Expr|ExprInterface> $expr
+     * @param class-string<AbstractExpr|ExprInterface> $expr
      */
     public function isExcept(?string $className, string $expr): bool
     {

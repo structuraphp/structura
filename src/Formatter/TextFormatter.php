@@ -6,10 +6,10 @@ namespace StructuraPhp\Structura\Formatter;
 
 use DateTime;
 use Exception;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Console\Enums\StyleCustom;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
-use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -149,9 +149,9 @@ final class TextFormatter implements ErrorFormatterInterface
         }
     }
 
-    private function thatOutput(?Expr $builder): void
+    private function thatOutput(?AbstractExpr $builder): void
     {
-        if (!$builder instanceof Expr) {
+        if (!$builder instanceof AbstractExpr) {
             return;
         }
 

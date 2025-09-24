@@ -121,7 +121,21 @@ final class TestDto extends TestBuilder
 }
 ```
 
-### fromDir() and fromRaw()
+### toBeClasses() and allScripts()
+
+There are two types of analysis:
+
+```php
+// Analysis of classes. A class MUST be present, otherwise an exception is raised.
+$this->allClasses()
+
+// Analysis of all PHP scripts.
+$this->allScripts()
+```
+
+If you choose script analysis, all PHP code can be analysed, but only rules can be used.
+
+### fromDir(), fromRaw() and fromRawMultiple()
 
 Start with the `fromDir()` method, which takes the path of the files to be analysed.
 It can take a second closure parameter
@@ -134,10 +148,12 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
 )
 ```
 
-`fromRaw()` method can be used to test PHP code in the form of a string:
+`fromRaw()` method can be used to test PHP code in the form of a string.
+You can provide a file name as the second parameter. If it is null, it will be set by default with the following pattern : `tmp\run_<count>.php`
 
 ```php
-->fromRaw('<?php
+->fromRaw(
+    raw: '<?php
             
     use ArrayAccess;
     use Depend\Bap;
@@ -145,11 +161,23 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
             
     class Foo implements \Stringable {
         public function __construct(ArrayAccess $arrayAccess) {}
+    
+        public function __toString(): string {
+            return $this->arrayAccess[\'foo\'] ?? throw new \Exception();
+        }
+    }',
+    pathname: 'path/example_1.php'
+)
+```
 
-    public function __toString(): string {
-        return $this->arrayAccess['foo'] ?? throw new \Exception();
-    }
-}')
+`fromRawMultiple()` method can be used to test PHP code in the form of a string.
+You can provide a file name as an array key. If it is numeric, it will be set by default with the following pattern: `tmp\run_<count>.php`
+
+```php
+->fromRawMultiple([
+    'path/example_1.php' => '<?php /* ... */',
+    'path/example_2.php' => '<?php /* ... */',
+])
 ```
 
 ### that()
@@ -157,7 +185,10 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
 Specifies rules for targeting class analysis, optional functionality:
 
 ```php
+// with allClasses()
 ->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
+// with allScript()
+->that(static fn(ExprScript $expr): ExprScript => $expr->toBeClasses())
 ```
 
 ### except()
@@ -181,6 +212,7 @@ Ignores class rules, can be used as a baseline, optional functionality:
 List of architecture rules, required functionality:
 
 ```php
+// with allClasses()
 ->should(static fn(Expr $expr): Expr => $expr
     ->toBeFinal()
     ->toBeReadonly()
@@ -189,6 +221,8 @@ List of architecture rules, required functionality:
     ->toHaveMethod('fromArray')
     ->toImplement(\JsonSerializable::class)
 )
+// with allScript()
+->should(static fn(ExprScript $expr): ExprScript => $expr)
 ```
 
 ## First run
@@ -206,14 +240,22 @@ php bin/structura analyze
   - [toBeAnonymousClasses()](#tobeanonymousclasses)
   - [toBeClasses()](#tobeclasses)
   - [toBeEnums()](#tobeenums)
+  - [toBeBackedEnums()](#tobebackedenums)
   - [toBeFinal()](#tobefinal)
   - [toBeInterfaces()](#tobeinterfaces)
   - [toBeInvokable()](#tobeinvokable)
   - [toBeReadonly()](#tobereadonly)
   - [toBeTraits()](#tobetraits)
+  - [toBeAttribute()](#tobeattribute)
 - 🔗 Dependencies
   - [dependsOnlyOn()](#dependsonlyon)
+  - [dependsOnlyOnAttribut()](#dependsonlyonattribut)
+  - [dependsOnlyOnImplementation()](#dependsonlyonimplementation)
+  - [dependsOnlyOnInheritance()](#dependsonlyoninheritance)
+  - [dependsOnlyOnUseTrait()](#dependsonlyonusetrait)
   - [toNotDependsOn()](#tonotdependson)
+  - [dependsOnFunction()](#dependsonfunction)
+  - [toNotDependsOnFunction()](#tonotdependsonfunction)
 - 🧲 Relation
   - [toExtend()](#toextend)
   - [toExtendsNothing()](#toextendsnothing)
@@ -223,6 +265,9 @@ php bin/structura analyze
   - [toUseTrait()](#tousetrait)
   - [toNotUseTrait()](#tonotusetrait)
   - [toOnlyUseTrait()](#toonlyusetrait)
+  - [toHaveAttribute()](#tohaveattribute)
+  - [toHaveNoAttribute()](#tohavenoattribute)
+  - [toHaveOnlyAttribute()](#tohaveonlyattribute)
 - 🔌 Method
   - [toHaveMethod()](#tohavemethod)
   - [toHaveConstructor()](#tohaveconstructor)
@@ -231,9 +276,15 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveCorresponding()](#tohavecorresponding)
+  - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
+  - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
+  - [toHaveCorrespondingInterface()](#tohavecorrespondinginterface)
+  - [toHaveCorrespondingTrait()](#tohavecorrespondingtrait)
   - [toUseStrictTypes()](#tousestricttypes)
   - [toUseDeclare()](#tousedeclare)
-  - [toHaveAttribute()](#tohaveattribute)
+  - [toBeInOneOfTheNamespaces()](#tobeinoneofthenamespaces)
+  - [notToBeInOneOfTheNamespaces()](#nottobeinoneofthenamespaces)
 - 🗜️ Operators
   - [and()](#and)
   - [or()](#or)
@@ -273,12 +324,31 @@ $this
 
 ### toBeEnums()
 
+Must be a valid Unit Enum or Backed Enum.
+
 ```php
 $this
   ->allClasses()
   ->fromRaw('<?php enum Foo {}')
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeEnums(),
+  );
+```
+
+### toBeBackedEnums()
+
+Must be a backed enumeration, if `ScalarType` is not specified, `int` and `string` are accepted.
+
+https://www.php.net/manual/en/language.enumerations.backed.php
+
+```php
+use StructuraPhp\Structura\Enums\ScalarType;
+
+$this
+  ->allClasses()
+  ->fromRaw('<?php enum Foo: string {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeBackedEnums(ScalarType::String),
   );
 ```
 
@@ -337,7 +407,41 @@ $this
   );
 ```
 
+### toBeAttribute()
+
+- Must be a [syntax-compliant attribute](https://www.php.net/manual/en/language.attributes.classes.php), 
+- Must be instantiable by a [class reflection](https://www.php.net/manual/fr/language.attributes.reflection.php),
+- And uses [valid flags](https://www.php.net/manual/en/class.attribute.php#attribute.constants.target-class).
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+  );
+```
+
+```php
+<?php
+
+[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] // OK
+class Foo {
+
+}
+
+#[Custom] // KO
+class Bar {
+
+}
+
+(new ReflectionClass(Bar::class))->getAttributes()[0]->newInstance();
+// Fatal error: Uncaught Error: Attribute class "Custom" not found
+```
+
 ### dependsOnlyOn()
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
 
 ```php
 $this
@@ -350,12 +454,65 @@ $this
   );
 ```
 
-You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
-dependencies
+### dependsOnlyOnAttribut()
 
-If you use the rule
-classes ([toExtend()](#toextend), [toImplement()](#toimplement), [toOnlyImplement()](#toonlyimplement), [toHaveAttribute()](#tohaveattribute), [toOnlyUseTrait()](#toonlyusetrait), [toUseTrait()](#tousetrait)),
-they are included by default in the permitted dependencies.
+If you use the rule classes [toHaveAttribute()](#tohaveattribute), they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnAttribut(
+        names: [\Attribute::class, /* ... */],
+        patterns: ['Attributes\Custom.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnImplementation()
+
+If you use the rule classes [toImplement()](#toimplement) and [toOnlyImplement()](#toonlyimplement) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnImplementation(
+        names: [\ArrayAccess::class, /* ... */],
+        patterns: ['Contracts\Dto.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnInheritance()
+
+If you use the rule classes [toExtend()](#toextend) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnInheritance(
+        names: [Controller::class, /* ... */],
+        patterns: ['Controllers\Admin.+', /* ... */],
+    )
+  );
+```
+
+### dependsOnlyOnUseTrait()
+
+If you use the rule classes [toUseTrait()](#tousetrait) and [toOnlyUseTrait()](#toonlyusetrait) they are included by default in the permitted dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnUseTrait(
+        names: [\HasFactor::class, /* ... */],
+        patterns: ['Concerns\Models.+', /* ... */],
+    )
+  );
+```
 
 ### toNotDependsOn()
 
@@ -370,8 +527,39 @@ $this
   );
 ```
 
-You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select
-dependencies
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### dependsOnFunction()
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['strtolower', /* ... */],
+        patterns: ['array_.+', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
+
+### toNotDependsOnFunction()
+
+Prohibit the use of function.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnFunction(
+        names: ['goto', /* ... */],
+        patterns: ['.+exec', /* ... */],
+    )
+  );
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies
 
 ### toExtend()
 
@@ -445,6 +633,33 @@ $this
   ->should(fn(Expr $expr) => $expr->toOnlyUseTrait(Bar::class));
 ```
 
+### toHaveAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
+```
+
+### toHaveNoAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveNoAttribute());
+```
+
+### toHaveOnlyAttribute()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php #[\Deprecated] class Foo {}')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyAttribute(Deprecated::class));
+```
+
 ### toHaveMethod()
 
 ```php
@@ -488,6 +703,51 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
 ```
 
+### toHaveCorresponding()
+
+Check the correspondence between a class/enum/interface/trait and a mask.
+To build the mask, you have access to the description of the current class.
+
+Correspondence rules can be used in many scenarios, such as:
+- If a model has a repository interface,
+- If a model has a policy with the same name,
+- If your controllers have associated queries or resources,
+- ...
+
+For example, you can check whether each unit test class has a corresponding class in your project :
+
+```php
+$this
+    ->allClasses()
+    ->fromDir('tests/Unit')
+    ->should(
+        static fn(Expr $assert): Expr => $assert
+            ->toHaveCorrespondingClass(
+                static fn (ClassDescription $classDescription): string => preg_replace(
+                    '/^(.+?)\\\Tests\\\Unit\\\(.+?)(Test)$/',
+                    '$1\\\$2',
+                    $classDescription->namespace,
+                )
+            ),
+    );
+```
+
+### toHaveCorrespondingClass()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a class.
+
+### toHaveCorrespondingEnum()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an enum.
+
+### toHaveCorrespondingInterface()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with an interface.
+
+### toHaveCorrespondingTrait()
+
+Similar to [toHaveCorresponding](#tohavecorresponding), but for matching with a trait.
+
 ### toUseStrictTypes()
 
 ```php
@@ -506,14 +766,47 @@ $this
   ->should(fn(Expr $expr) => $expr->toUseDeclare('encoding', 'ISO-8859-1'));
 ```
 
-### toHaveAttribute()
+### toBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes contained in a namespace.
+
+> Information !
+> 
+> Anonymous classes cannot have namespaces
 
 ```php
 $this
   ->allClasses()
-  ->fromRaw('<?php #[\Deprecated] class Foo {}')
-  ->should(fn(Expr $expr) => $expr->toHaveAttribute(Deprecated::class));
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->toBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
 ```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
+
+### notToBeInOneOfTheNamespaces()
+
+Allows you to specifically target classes not contained in a namespace.
+
+> Information !
+>
+> Anonymous classes cannot have namespaces
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('tests')
+  ->that(
+    fn(Expr $expr) => $expr
+      ->notToBeInOneOfTheNamespaces('Tests\Unit.+')
+  )
+  ->should(fn(Expr $expr) => $expr /* our rules */);
+```
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
 
 ## and()
 
@@ -556,7 +849,10 @@ $this
 
 ## Custom assert
 
-To create a custom rule, implement the StructuraPhp\StructuraContracts\ExprInterface interface:
+To create a custom rule :
+
+- for class analysis, implement the `StructuraPhp\Structura\Contracts\ExprInterface` interface
+- for script analysis, implement the `StructuraPhp\Structura\Contracts\ExprScriptInterface` interface.
 
 ```php
 <?php

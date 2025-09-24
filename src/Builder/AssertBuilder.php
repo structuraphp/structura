@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Builder;
 
+use InvalidArgumentException;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Contracts\ExprInterface;
-use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 
 /**
  * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
@@ -43,17 +46,32 @@ class AssertBuilder
 
     public function addViolation(
         string $key,
-        Expr|ExprInterface $assert,
-        ClassDescription $class,
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
     ): self {
         $this->pass[$key] = 0;
-        if ($assert instanceof ExprInterface) {
-            $this->violations[$key][] = $assert->getViolation($class);
-        } else {
-            $this->violations[$key] = $assert->getViolations($class);
+        if ($assert instanceof ExprScriptInterface) {
+            $this->violations[$key][] = $assert->getViolation($description);
+
+            return $this;
         }
 
-        return $this;
+        if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
+            $this->violations[$key][] = $assert->getViolation($description);
+
+            return $this;
+        }
+
+        if ($assert instanceof AbstractExpr) {
+            $this->violations[$key] = array_merge(
+                $this->violations[$key] ?? [],
+                $assert->getViolations($description),
+            );
+
+            return $this;
+        }
+
+        throw new InvalidArgumentException();
     }
 
     public function addWarning(?string $classname, string $key): self

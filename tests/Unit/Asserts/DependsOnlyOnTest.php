@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOn::class)]
@@ -23,7 +24,7 @@ final class DependsOnlyOnTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithDependsProvider')]
-    public function testDependsOnlyOn(string $raw): void
+    public function testDependsOnlyOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
@@ -43,7 +44,47 @@ final class DependsOnlyOnTest extends TestCase
                     ),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'depends only on these namespaces <promote>%s, %s, %s, [2+]</promote>',
+                ArrayAccess::class,
+                Exception::class,
+                Stringable::class,
+            ),
+        );
+    }
+
+    #[DataProvider('getScriptWithDependsProvider')]
+    public function testDependsOnlyOnWithScript(string $raw): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOn(
+                        names: [
+                            ArrayAccess::class,
+                            Exception::class,
+                            Stringable::class,
+                        ],
+                        patterns: [
+                            'Depend\(Bar|Bap)',
+                            'Stri.+',
+                        ],
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'depends only on these namespaces <promote>%s, %s, %s, [2+]</promote>',
+                ArrayAccess::class,
+                Exception::class,
+                Stringable::class,
+            ),
+        );
     }
 
     #[DataProvider('getClassLikeWithDependsProvider')]
@@ -60,10 +101,39 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s, %s, %s, [1+]',
+                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                'Depend\Bap',
                 ArrayAccess::class,
                 'Depend\Bar',
                 Exception::class,
+                Stringable::class,
+            ),
+        );
+    }
+
+    #[DataProvider('getScriptWithDependsProvider')]
+    public function testShouldFailDependsOnlyOnWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                $exceptName,
+                'Depend\Bap',
+                ArrayAccess::class,
+                'Depend\Bar',
+                Exception::class,
+                Stringable::class,
             ),
         );
     }
@@ -78,9 +148,9 @@ final class DependsOnlyOnTest extends TestCase
             use Depend\Bap;
             use Depend\Bar;
             
-            class Foo implements \Stringable {
+            class Foo {
                 public function __construct(ArrayAccess $arrayAccess) {
-                    
+                    \Stringable::class;
                 }
 
                 public function __toString(): string {
@@ -88,6 +158,49 @@ final class DependsOnlyOnTest extends TestCase
                 }
             }
             PHP,
+        ];
+    }
+
+    public static function getScriptWithDependsProvider(): Generator
+    {
+        yield 'script with namespace' => [
+            <<<'PHP'
+            <?php
+
+            namespace Foo;
+
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            function foo(ArrayAccess $arrayAccess) {
+                \Stringable::class;
+            }
+
+            function bar(): string {
+                return $this->arrayAccess['foo'] ?? throw new \Exception();
+            }
+            PHP,
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            <<<'PHP'
+            <?php
+
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            function foo(ArrayAccess $arrayAccess) {
+                \Stringable::class;
+            }
+
+            function bar(): string {
+                return $this->arrayAccess['foo'] ?? throw new \Exception();
+            }
+            PHP,
+            'tmp/run_0.php',
         ];
     }
 }

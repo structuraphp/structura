@@ -29,7 +29,7 @@ final class ToExtendNothingTest extends TestCase
                 static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass($rules, 'to extend nothing');
     }
 
     #[DataProvider('getClassLikeExtends')]

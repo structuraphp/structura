@@ -29,7 +29,10 @@ final class ToHaveSuffixTest extends TestCase
                     ->toHaveSuffix('Controller'),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to have suffix <promote>Controller</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutSuffixProvider')]

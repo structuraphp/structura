@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace StructuraPhp\Structura\Tests\Unit\Formatter;
 
 use PHPUnit\Framework\TestCase;
@@ -8,6 +10,9 @@ use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use Symfony\Component\Console\Output\BufferedOutput;
 
+/**
+ * @coversNothing
+ */
 class TextFormatterTest extends TestCase
 {
     public function testFormat(): void
@@ -26,22 +31,22 @@ class TextFormatterTest extends TestCase
         $buffer = new BufferedOutput();
 
         $out = $text->formatErrors($result, $buffer);
-        self::assertEquals(1, $out);
+        self::assertSame(1, $out);
 
         $expected = <<<'EOF'
          ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        24 classes from
+        40 classes from
          - dirs
         That
          - to implement StructuraPhp\Structura\Contracts\ExprInterface
         Should
          ✔ to be classes
-         ✘ to not depends on these namespaces StructuraPhp\Structura\ValueObjects\ClassDescription 23 error(s)
+         ✘ to not depends on these namespaces StructuraPhp\Structura\ValueObjects\ClassDescription 34 error(s)
          ✔ to have method __toString
          ✔ to use declare strict_types=1
          ✔ to have prefix To 1 warning(s)
          ✔ to extend nothing
-         ✘ to not use trait 3 error(s)
+         ✘ to not use trait 7 error(s)
          ✔ to have method __construct
 
          ERROR  Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
@@ -54,11 +59,11 @@ class TextFormatterTest extends TestCase
          ✔ to have suffix Controller
          ✔ to extend StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase
          ✘ to have method __construct 2 error(s)
-         ✔ depends only on these namespaces StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [2+]
+         ✘ depends only on these namespaces StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+] 2 error(s)
 
          PASS  Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
-        2 classes from
-         - dirs
+        Class from
+         - raw value
         Should
          ✔ to extend InvalidArgumentException
            | to extend Exception
@@ -66,7 +71,7 @@ class TextFormatterTest extends TestCase
              & to extend BadMethodCallException
 
          PASS  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        69 classes from
+        109 classes from
          - dirs
         That
         Should
@@ -74,6 +79,7 @@ class TextFormatterTest extends TestCase
         EOF;
 
         $expected = explode(PHP_EOL, $expected);
+
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
         foreach ($expected as $key => $line) {

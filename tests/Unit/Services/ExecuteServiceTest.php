@@ -78,7 +78,7 @@ final class ExecuteServiceTest extends TestCase
         );
         self::assertSame(1, $violation->line);
         self::assertSame(ToExtend::class, $violation->assertClassname);
-        self::assertNull($violation->pathname);
+        self::assertSame($violation->pathname, 'tmp/run_0.php');
         self::assertSame('', $violation->messageCustom);
 
         $warning = $result->getWarnings();

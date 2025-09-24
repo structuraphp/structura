@@ -4,17 +4,29 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
+use StructuraPhp\Structura\AbstractExpr;
+use StructuraPhp\Structura\Enums\DescriptorType;
 use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use Symfony\Component\Finder\Finder;
 
 final readonly class RuleValuesObject
 {
+    /**
+     * @param array<string, string> $raws
+     */
     public function __construct(
-        public string $raw,
+        public array $raws,
         public ?Finder $finder,
-        public ?Expr $that,
+        public ?AbstractExpr $that,
         public ?Except $except,
-        public Expr $should,
+        public AbstractExpr $should,
     ) {}
+
+    public function getDescriptorType(): DescriptorType
+    {
+        return $this->should instanceof Expr
+            ? DescriptorType::ClassLike
+            : DescriptorType::Script;
+    }
 }

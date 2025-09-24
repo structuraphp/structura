@@ -23,7 +23,7 @@ final class AnalyseService
 
     private int $countWarning = 0;
 
-    /** @var array<int,AnalyseTestValueObject> $analyseTestValueObjects  */
+    /** @var array<int,AnalyseTestValueObject> */
     private array $analyseTestValueObjects = [];
 
     /** @var array<int,ViolationsByTest> */
@@ -31,8 +31,7 @@ final class AnalyseService
 
     public function __construct(
         private readonly StructuraConfig $structuraConfig,
-    ) {
-    }
+    ) {}
 
     public function analyse(): AnalyseValueObject
     {

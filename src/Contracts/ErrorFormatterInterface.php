@@ -9,8 +9,9 @@ use Symfony\Component\Console\Output\Output;
 
 interface ErrorFormatterInterface
 {
-    const SUCCESS = 0;
-    const ERROR = 1;
+    public const SUCCESS = 0;
+
+    public const ERROR = 1;
 
     public function formatErrors(
         AnalyseValueObject $analyseValueObject,

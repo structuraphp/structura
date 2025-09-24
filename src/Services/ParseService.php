@@ -12,9 +12,13 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use StructuraPhp\Structura\Enums\DescriptorType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\Visitors\ClassDescriptionVisitor;
-use StructuraPhp\Structura\Visitors\NamespaceVisitor;
+use StructuraPhp\Structura\Visitors\DependenciesVisitor;
+use StructuraPhp\Structura\Visitors\FunctionVisitor;
+use StructuraPhp\Structura\Visitors\ScriptDescriptionVisitor;
 use Symfony\Component\Finder\Finder;
 
 final readonly class ParseService
@@ -23,26 +27,35 @@ final readonly class ParseService
 
     private NodeTraverser $nodeTraverser;
 
+    private ScriptDescriptionVisitor $scriptDescriptionVisitor;
+
     private ClassDescriptionVisitor $classDescriptionVisitor;
 
-    private NamespaceVisitor $namespaceVisitor;
+    private DependenciesVisitor $dependenciesVisitor;
 
-    public function __construct()
-    {
+    private FunctionVisitor $functionVisitor;
+
+    public function __construct(
+        private DescriptorType $descriptorType = DescriptorType::Script,
+    ) {
         $this->parser = (new ParserFactory())->createForHostVersion();
 
+        $this->scriptDescriptionVisitor = new ScriptDescriptionVisitor();
         $this->classDescriptionVisitor = new ClassDescriptionVisitor();
-        $this->namespaceVisitor = new NamespaceVisitor();
+        $this->dependenciesVisitor = new DependenciesVisitor();
+        $this->functionVisitor = new FunctionVisitor();
 
         $this->nodeTraverser = new NodeTraverser(
             new NameResolver(),
+            $this->scriptDescriptionVisitor,
             $this->classDescriptionVisitor,
-            $this->namespaceVisitor,
+            $this->dependenciesVisitor,
+            $this->functionVisitor,
         );
     }
 
     /**
-     * @return Generator<ClassDescription>
+     * @return Generator<ClassDescription|ScriptDescription>
      */
     public function parse(Finder $finder): Generator
     {
@@ -52,9 +65,9 @@ final readonly class ParseService
     }
 
     /**
-     * @return Generator<ClassDescription>
+     * @return Generator<ClassDescription|ScriptDescription>
      */
-    public function parseRaw(string $raw, ?string $pathname = null): Generator
+    public function parseRaw(string $raw, string $pathname): Generator
     {
         try {
             /** @var array<int,Stmt> $ast */
@@ -62,17 +75,23 @@ final readonly class ParseService
 
             $this->nodeTraverser->traverse($ast);
 
-            $class = $this->classDescriptionVisitor->getClass()
-                ?? throw new InvalidArgumentException();
+            $script = $this->descriptorType === DescriptorType::ClassLike
+                ? $this->classDescriptionVisitor->getClass()
+                : $this->scriptDescriptionVisitor->getScript();
+
+            $script ?? throw new InvalidArgumentException();
         } catch (Error|InvalidArgumentException $e) {
             echo \sprintf('Parse error: %s%s', $e->getMessage(), PHP_EOL);
 
             return null;
         }
 
-        yield $class
-            ->setDependencies(
-                array_keys($this->namespaceVisitor->getDependencies()),
+        yield $script
+            ->setClassDependencies(
+                array_keys($this->dependenciesVisitor->getDependencies()),
+            )
+            ->setFunctionDependencies(
+                $this->functionVisitor->getDependencies(),
             )
             ->setFilePathname($pathname);
     }

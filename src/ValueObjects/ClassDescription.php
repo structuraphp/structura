@@ -11,14 +11,10 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\DependenciesType;
 
-final class ClassDescription
+final class ClassDescription extends ScriptDescription
 {
-    /** @var array<int,string> */
-    private array $dependencies = [];
-
-    private ?string $fileBasename = null;
-
     /**
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
@@ -28,10 +24,11 @@ final class ClassDescription
      * @param null|array<ClassMethod> $methods
      */
     public function __construct(
+        ?string $namespace,
+        ?Declare_ $declare,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
-        public readonly ?string $namespace,
         public readonly ?Identifier $scalarType,
         public readonly ?array $interfaces,
         public readonly null|array|Name $extends,
@@ -39,37 +36,8 @@ final class ClassDescription
         public readonly ?int $flags,
         public readonly ClassType $classType,
         public readonly ?array $methods,
-        public readonly ?Declare_ $declare,
-    ) {}
-
-    /**
-     * @return array<int,string>
-     */
-    public function getDependencies(): array
-    {
-        return $this->dependencies;
-    }
-
-    /**
-     * @param array<int,string> $dependencies
-     */
-    public function setDependencies(array $dependencies): self
-    {
-        $this->dependencies = $dependencies;
-
-        return $this;
-    }
-
-    public function getFileBasename(): ?string
-    {
-        return $this->fileBasename;
-    }
-
-    public function setFilePathname(?string $fileBasename): self
-    {
-        $this->fileBasename = $fileBasename;
-
-        return $this;
+    ) {
+        parent::__construct($namespace, $declare);
     }
 
     public function isExtendable(): bool
@@ -144,6 +112,27 @@ final class ClassDescription
         return false;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getExtendNames(): array
+    {
+        if ($this->extends instanceof Name) {
+            return [$this->extends->toString()];
+        }
+
+        if ($this->extends === null) {
+            return [];
+        }
+
+        $extends = [];
+        foreach ($this->extends as $extend) {
+            $extends[] = $extend->toString();
+        }
+
+        return $extends;
+    }
+
     public function hasInterface(string $name): bool
     {
         if ($this->interfaces === [] || $this->interfaces === null) {
@@ -191,6 +180,21 @@ final class ClassDescription
         return $interfaces;
     }
 
+    /**
+     * @return array<int, string>
+     */
+    public function getAttributeNames(): array
+    {
+        $attributeNames = [];
+        foreach ($this->attrGroups as $attrGroup) {
+            foreach ($attrGroup->attrs as $attr) {
+                $attributeNames[] = $attr->name->toString();
+            }
+        }
+
+        return $attributeNames;
+    }
+
     public function hasDeclare(
         string $key,
         string $value,
@@ -216,8 +220,10 @@ final class ClassDescription
      *
      * @return array<int,string>
      */
-    public function getDependenciesByPatterns(array $patterns): array
-    {
+    public function getDependenciesByPatterns(
+        array $patterns,
+        DependenciesType $type = DependenciesType::All,
+    ): array {
         $matches = [];
         if ($patterns === []) {
             return [];
@@ -228,7 +234,7 @@ final class ClassDescription
         /** @var array<int,string>|false $match */
         $match = preg_grep(
             '/^' . $this->customPregQuote($pattern) . '$/',
-            $this->getDependencies(),
+            $this->getDependenciesByType($type),
         );
 
         if ($match !== false) {
@@ -239,17 +245,61 @@ final class ClassDescription
     }
 
     /**
-     * @param array<int,string> $allowedCharacters
+     * @param array<int,string> $patterns
+     *
+     * @return array<int,string>
      */
-    private function customPregQuote(
-        string $subject,
-        array $allowedCharacters = ['^', '$', '\\'],
-    ): string {
-        $mapping = [];
-        foreach ($allowedCharacters as $char) {
-            $mapping[$char] = '\\' . $char;
+    public function getDependenciesFunctionByPatterns(
+        array $patterns,
+    ): array {
+        $matches = [];
+        if ($patterns === []) {
+            return [];
         }
 
-        return strtr($subject, $mapping);
+        $pattern = implode('|', $patterns);
+
+        /** @var array<int,string>|false $match */
+        $match = preg_grep(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->getFunctionDependencies(),
+        );
+
+        if ($match !== false) {
+            return array_merge($matches, $match);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * @param array<int,string> $patterns
+     */
+    public function hasNamespaceByPatterns(array $patterns): bool
+    {
+        if ($patterns === []) {
+            return false;
+        }
+
+        $pattern = implode('|', $patterns);
+
+        return (bool) preg_match(
+            '/^' . $this->customPregQuote($pattern) . '$/',
+            $this->namespace ?? '',
+        );
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function getDependenciesByType(DependenciesType $dependenciesType): array
+    {
+        return match ($dependenciesType) {
+            DependenciesType::All => $this->getClassDependencies(),
+            DependenciesType::Attributes => $this->getAttributeNames(),
+            DependenciesType::Traits => $this->getTraitNames(),
+            DependenciesType::Extends => $this->getExtendNames(),
+            DependenciesType::Interfaces => $this->getInterfaceNames(),
+        };
     }
 }

@@ -30,7 +30,10 @@ final class ToOnlyImplementTest extends TestCase
                     ->toOnlyImplement(Stringable::class),
             );
 
-        self::assertRulesPass($rules);
+        self::assertRulesPass(
+            $rules,
+            'to only implement <promote>Stringable</promote>',
+        );
     }
 
     #[DataProvider('getClassLikeWithoutImplement')]
