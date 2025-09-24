@@ -13,7 +13,6 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
-use StructuraPhp\Structura\Tests\Fixture\Exceptions\UserException;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversMethod(Expr::class, 'or')]
@@ -68,12 +67,10 @@ final class OrTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            sprintf(
-                'Resource <promote>%s</promote> must extend by <promote>ArrayIterator</promote>, '
-                . 'Resource <promote>%s</promote> must extend by <promote>AppendIterator</promote>',
-                UserException::class,
-                UserException::class,
-            ),
+            'Resource <promote>Foo</promote> must extend by <promote>ArrayIterator</promote>, '
+            . 'Resource <promote>Foo</promote> must extend by <promote>AppendIterator</promote>, '
+            . 'Resource <promote>Bar</promote> must extend by <promote>ArrayIterator</promote>, '
+            . 'Resource <promote>Bar</promote> must extend by <promote>AppendIterator</promote>',
         );
     }
 
@@ -83,25 +80,11 @@ final class OrTest extends TestCase
             [
                 <<<PHP
                 <?php
-                
-                declare(strict_types=1);
-                
-                namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
-                
-                use InvalidArgumentException;
-                
-                class InvalidException extends InvalidArgumentException {}
+                class Foo extends \\InvalidArgumentException {}
                 PHP,
                 <<<PHP
                 <?php
-                
-                declare(strict_types=1);
-                
-                namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
-                
-                use Exception;
-                
-                class UserException extends Exception {}
+                class Bar extends \\Exception {}
                 PHP,
             ],
         ];

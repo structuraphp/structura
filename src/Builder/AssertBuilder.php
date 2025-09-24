@@ -63,7 +63,10 @@ class AssertBuilder
         }
 
         if ($assert instanceof AbstractExpr) {
-            $this->violations[$key] = $assert->getViolations($description);
+            $this->violations[$key] = array_merge(
+                $this->violations[$key] ?? [],
+                $assert->getViolations($description),
+            );
 
             return $this;
         }
