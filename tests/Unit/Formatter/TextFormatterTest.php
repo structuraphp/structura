@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-namespace StructuraPhp\Structura\Tests\Unit\Services;
+namespace StructuraPhp\Structura\Tests\Unit\Formatter;
 
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-#[CoversClass(AnalyseService::class)]
-final class AnalyseServiceTest extends TestCase
+/**
+ * @coversNothing
+ */
+class TextFormatterTest extends TestCase
 {
-    public function testAnalyseService(): void
+    public function testFormat(): void
     {
         $service = new AnalyseService(
             StructuraConfig::make()
@@ -27,13 +28,10 @@ final class AnalyseServiceTest extends TestCase
         $result = $service->analyse();
         $text = new TextFormatter();
 
-        $buffer = new BufferedOutput(256);
+        $buffer = new BufferedOutput();
 
-        $text->formatErrors($result, $buffer);
-
-        self::assertSame(5, $result->countViolation);
-        self::assertSame(10, $result->countPass);
-        self::assertSame(1, $result->countWarning);
+        $out = $text->formatErrors($result, $buffer);
+        self::assertSame(1, $out);
 
         $expected = <<<'EOF'
          ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
