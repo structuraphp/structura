@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 #[CoversClass(AnalyseService::class)]
@@ -27,7 +28,8 @@ final class AnalyseServiceTest extends TestCase
         $result = $service->analyse();
         $text = new TextFormatter();
 
-        $buffer = new BufferedOutput(256);
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
 
         $text->formatErrors($result, $buffer);
 
@@ -36,44 +38,44 @@ final class AnalyseServiceTest extends TestCase
         self::assertSame(1, $result->countWarning);
 
         $expected = <<<'EOF'
-         ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        40 classes from
+        <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
+        40 classe(s) from
          - dirs
         That
-         - to implement StructuraPhp\Structura\Contracts\ExprInterface
+         - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
         Should
-         ✔ to be classes
-         ✘ to not depends on these namespaces StructuraPhp\Structura\ValueObjects\ClassDescription 34 error(s)
-         ✔ to have method __toString
-         ✔ to use declare strict_types=1
-         ✔ to have prefix To 1 warning(s)
-         ✔ to extend nothing
-         ✘ to not use trait 7 error(s)
-         ✔ to have method __construct
+         <green>✔</green> to be classes
+         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>34 error(s)</fire>
+         <green>✔</green> to have method <promote>__toString</promote>
+         <green>✔</green> to use declare <promote>strict_types=1</promote>
+         <green>✔</green> to have prefix <promote>To</promote> <warning>1 warning(s)</warning>
+         <green>✔</green> to extend nothing
+         <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
+         <green>✔</green> to have method <promote>__construct</promote>
 
-         ERROR  Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
-        3 classes from
+        <violation> ERROR </violation> Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
+        3 classe(s) from
          - dirs
         Should
-         ✔ to be classes
-         ✔ to use declare strict_types=1
-         ✘ to not use trait 1 error(s)
-         ✔ to have suffix Controller
-         ✔ to extend StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase
-         ✘ to have method __construct 2 error(s)
-         ✘ depends only on these namespaces StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+] 2 error(s)
+         <green>✔</green> to be classes
+         <green>✔</green> to use declare <promote>strict_types=1</promote>
+         <fire>✘</fire> to not use trait <fire>1 error(s)</fire>
+         <green>✔</green> to have suffix <promote>Controller</promote>
+         <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
+         <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
+         <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+]</promote> <fire>2 error(s)</fire>
 
-         PASS  Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
-        Class from
+        <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
+        2 classe(s) from
          - raw value
         Should
-         ✔ to extend InvalidArgumentException
-           | to extend Exception
-           | to extend DomainException
-             & to extend BadMethodCallException
+         <green>✔</green> to extend <promote>InvalidArgumentException</promote>
+           | to extend <promote>Exception</promote>
+           | to extend <promote>DomainException</promote>
+             & to extend <promote>BadMethodCallException</promote>
 
-         PASS  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        109 classes from
+        <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
+        109 classe(s) from
          - dirs
         That
         Should

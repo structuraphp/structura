@@ -35,7 +35,7 @@ class TextFormatterTest extends TestCase
 
         $expected = <<<'EOF'
          ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        40 classes from
+        40 classe(s) from
          - dirs
         That
          - to implement StructuraPhp\Structura\Contracts\ExprInterface
@@ -50,7 +50,7 @@ class TextFormatterTest extends TestCase
          ✔ to have method __construct
 
          ERROR  Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
-        3 classes from
+        3 classe(s) from
          - dirs
         Should
          ✔ to be classes
@@ -62,7 +62,7 @@ class TextFormatterTest extends TestCase
          ✘ depends only on these namespaces StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+] 2 error(s)
 
          PASS  Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
-        Class from
+        2 classe(s) from
          - raw value
         Should
          ✔ to extend InvalidArgumentException
@@ -71,7 +71,7 @@ class TextFormatterTest extends TestCase
              & to extend BadMethodCallException
 
          PASS  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        109 classes from
+        109 classe(s) from
          - dirs
         That
         Should

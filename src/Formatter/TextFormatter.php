@@ -34,7 +34,7 @@ final class TextFormatter implements ErrorFormatterInterface
                 $data->textDox,
                 $data->classname,
             );
-            $this->fromOutput($data->ruleValueObject->finder);
+            $this->fromOutput($data->ruleValueObject->finder, $data->ruleValueObject->raws);
             $this->thatOutput($data->ruleValueObject->that);
             $this->shouldOutput($data->assertBuilder);
             $this->prints[] = '';
@@ -138,13 +138,16 @@ final class TextFormatter implements ErrorFormatterInterface
             : $now;
     }
 
-    private function fromOutput(?Finder $finder): void
+    /**
+     * @param array<string,string> $raws
+     */
+    private function fromOutput(?Finder $finder, array $raws = []): void
     {
         if ($finder instanceof Finder) {
-            $this->prints[] = $finder->count() . ' classes from';
+            $this->prints[] = $finder->count() . ' classe(s) from';
             $this->prints[] = ' - dirs';
         } else {
-            $this->prints[] = 'Class from';
+            $this->prints[] = count($raws) . ' classe(s) from';
             $this->prints[] = ' - raw value';
         }
     }
