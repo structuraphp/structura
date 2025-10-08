@@ -75,7 +75,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        109 classe(s) from
+        111 classe(s) from
          - dirs
         That
         Should

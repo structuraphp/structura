@@ -4,78 +4,46 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Formatter;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Formatter\TextFormatter;
-use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Tests\DataProvider\FormatterDataProvider;
+use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-/**
- * @coversNothing
- */
+#[CoversClass(TextFormatter::class)]
 class TextFormatterTest extends TestCase
 {
-    public function testFormat(): void
+    #[DataProviderExternal(FormatterDataProvider::class, 'getAnalyseValueObject')]
+    public function testOutput(AnalyseValueObject $except): void
     {
-        $service = new AnalyseService(
-            StructuraConfig::make()
-                ->archiRootNamespace(
-                    'StructuraPhp\Structura\Tests\Feature',
-                    'tests/Feature',
-                ),
-        );
-
-        $result = $service->analyse();
         $text = new TextFormatter();
 
-        $buffer = new BufferedOutput();
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
 
-        $out = $text->formatErrors($result, $buffer);
-        self::assertSame(1, $out);
+        $text->formatErrors($except, $buffer);
 
         $expected = <<<'EOF'
-         ERROR  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        40 classe(s) from
-         - dirs
-        That
-         - to implement StructuraPhp\Structura\Contracts\ExprInterface
-        Should
-         ✔ to be classes
-         ✘ to not depends on these namespaces StructuraPhp\Structura\ValueObjects\ClassDescription 34 error(s)
-         ✔ to have method __toString
-         ✔ to use declare strict_types=1
-         ✔ to have prefix To 1 warning(s)
-         ✔ to extend nothing
-         ✘ to not use trait 7 error(s)
-         ✔ to have method __construct
-
-         ERROR  Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
-        3 classe(s) from
-         - dirs
-        Should
-         ✔ to be classes
-         ✔ to use declare strict_types=1
-         ✘ to not use trait 1 error(s)
-         ✔ to have suffix Controller
-         ✔ to extend StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase
-         ✘ to have method __construct 2 error(s)
-         ✘ depends only on these namespaces StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+] 2 error(s)
-
-         PASS  Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
-        2 classe(s) from
+        <violation> ERROR </violation> Asserts architecture rules in TestAssert
+        1 classe(s) from
          - raw value
-        Should
-         ✔ to extend InvalidArgumentException
-           | to extend Exception
-           | to extend DomainException
-             & to extend BadMethodCallException
-
-         PASS  Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        109 classe(s) from
-         - dirs
         That
+         - to be classes
         Should
+         <green>✔</green> to extend <promote>y</promote>
+         <green>✔</green> to be readonly <warning>1 warning(s)</warning>
+         <fire>✘</fire> to be final <fire>1 error(s)</fire>
 
+
+        <violation> ERROR LIST </violation>
+
+        Resource <promote>x</promote> must be a final class
+        example.php:1
+
+        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <warning>1 warning</warning> (21 assertion)
         EOF;
 
         $expected = explode(PHP_EOL, $expected);
@@ -83,7 +51,7 @@ class TextFormatterTest extends TestCase
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
         foreach ($expected as $key => $line) {
-            self::assertSame($line, $fetch[$key]);
+            self::assertSame($line, $fetch[$key], sprintf('Error line %d', $key));
         }
     }
 }

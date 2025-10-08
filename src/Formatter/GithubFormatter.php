@@ -7,13 +7,14 @@ namespace StructuraPhp\Structura\Formatter;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
 class GithubFormatter implements ErrorFormatterInterface
 {
-    public function formatErrors(AnalyseValueObject $analyseValueObject, Output $output): int
+    public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
     {
         /** @var ViolationsByTest $violationsByTests */
         $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);

@@ -7,11 +7,10 @@ namespace StructuraPhp\Structura\Formatter;
 use DateTime;
 use Exception;
 use StructuraPhp\Structura\AbstractExpr;
-use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Console\Enums\StyleCustom;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
-use Symfony\Component\Console\Output\Output;
+use StructuraPhp\Structura\ValueObjects\AssertValueObject;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
@@ -23,12 +22,14 @@ final class TextFormatter implements ErrorFormatterInterface
     /** @var array<int,string> */
     private array $prints = [];
 
-    public function formatErrors(AnalyseValueObject $analyseValueObject, Output $output): int
-    {
+    public function formatErrors(
+        AnalyseValueObject $analyseValueObject,
+        OutputInterface $output,
+    ): int {
         foreach ($analyseValueObject->analyseTestValueObjects as $data) {
             $this->prints[] = \sprintf(
                 '%s %s in %s',
-                $data->assertBuilder->countAssertsFailure() === 0
+                $data->assertValueObject->countAssertsFailure() === 0
                     ? '<pass> PASS </pass>'
                     : '<violation> ERROR </violation>',
                 $data->textDox,
@@ -36,7 +37,7 @@ final class TextFormatter implements ErrorFormatterInterface
             );
             $this->fromOutput($data->ruleValueObject->finder, $data->ruleValueObject->raws);
             $this->thatOutput($data->ruleValueObject->that);
-            $this->shouldOutput($data->assertBuilder);
+            $this->shouldOutput($data->assertValueObject);
             $this->prints[] = '';
         }
 
@@ -165,19 +166,19 @@ final class TextFormatter implements ErrorFormatterInterface
         }
     }
 
-    private function shouldOutput(AssertBuilder $assertBuilder): void
+    private function shouldOutput(AssertValueObject $assertValueObject): void
     {
         $this->prints[] = 'Should';
 
-        foreach ($assertBuilder->getPass() as $message => $isPass) {
+        foreach ($assertValueObject->pass as $message => $isPass) {
             if ($isPass === 0) {
                 $this->prints[] = \sprintf(
                     ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
                     $message,
-                    $assertBuilder->countViolation($message),
+                    $assertValueObject->countViolation($message),
                 );
             } else {
-                $countWarning = $assertBuilder->countWarning($message);
+                $countWarning = $assertValueObject->countWarning($message);
                 $warning = $countWarning !== 0
                     ? sprintf(' <warning>%d warning(s)</warning>', $countWarning)
                     : '';

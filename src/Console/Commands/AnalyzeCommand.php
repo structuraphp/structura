@@ -8,11 +8,16 @@ use Closure;
 use InvalidArgumentException;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
+use StructuraPhp\Structura\Enums\FormatterType;
+use StructuraPhp\Structura\Formatter\GithubFormatter;
+use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -23,6 +28,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class AnalyzeCommand extends Command
 {
     private AnalyzeDto $analyzeDto;
+
+    public function getFormatter(InputInterface $input): ErrorFormatterInterface
+    {
+        return match ($input->getOption('error-format')) {
+            FormatterType::Text->value => new TextFormatter(),
+            FormatterType::Github->value => new GithubFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -45,9 +59,25 @@ final class AnalyzeCommand extends Command
         $structuraConfig = $this->getStructuraConfig();
 
         $analyseService = new AnalyseService($structuraConfig);
-        $analyseService->analyse();
+        $result = $analyseService->analyse();
+
+        $formatter = $this->getFormatter($input);
+        $formatter->formatErrors($result, $output);
 
         return self::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addOption(
+                name: 'error-format',
+                shortcut: 'f',
+                mode: InputOption::VALUE_OPTIONAL,
+                description: 'Select output format',
+                default: 'text',
+                suggestedValues: ['text', 'github'],
+            );
     }
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto

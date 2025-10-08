@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Contracts;
 
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
-use Symfony\Component\Console\Output\Output;
+use Symfony\Component\Console\Output\OutputInterface;
 
 interface ErrorFormatterInterface
 {
@@ -15,6 +15,6 @@ interface ErrorFormatterInterface
 
     public function formatErrors(
         AnalyseValueObject $analyseValueObject,
-        Output $output,
+        OutputInterface $output,
     ): int;
 }

@@ -87,23 +87,21 @@ final class AnalyseService
         foreach ($instance->getRules() as $expectationFilter) {
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
             $executeService = new ExecuteService($ruleValueObject);
-            $assertBuilder = $executeService->assert();
+            $assertValueObject = $executeService->assert()->getAssertValueObject();
 
-            $this->countPass += $assertBuilder->countAssertsSuccess();
-            $this->countViolation += $assertBuilder->countAssertsFailure();
-            $this->countWarning += $assertBuilder->countAssertsWarning();
+            $this->countPass += $assertValueObject->countAssertsSuccess();
+            $this->countViolation += $assertValueObject->countAssertsFailure();
+            $this->countWarning += $assertValueObject->countAssertsWarning();
 
             $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
                 textDox: $testDox,
                 classname: $classname,
                 ruleValueObject: $ruleValueObject,
-                assertBuilder: $assertBuilder,
+                assertValueObject: $assertValueObject,
             );
 
-            $violations = $assertBuilder->getViolations();
-
-            if ($violations !== []) {
-                $this->violationsByTests[] = $violations;
+            if ($assertValueObject->violations !== []) {
+                $this->violationsByTests[] = $assertValueObject->violations;
             }
         }
     }
