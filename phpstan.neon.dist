@@ -16,8 +16,3 @@ parameters:
         - tests
 
     tmpDir: build/phpStan
-
-    ignoreErrors:
-        -
-            identifier: property.onlyWritten
-            path: src/Builder/AssertBuilder.php

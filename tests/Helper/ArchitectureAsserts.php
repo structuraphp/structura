@@ -32,31 +32,35 @@ trait ArchitectureAsserts
     /**
      * @no-named-arguments
      */
-    final protected static function assertRulesPass(RuleBuilder $ruleBuilder, string $message): void
-    {
+    final protected static function assertRulesPass(
+        RuleBuilder $ruleBuilder,
+        string $message,
+    ): void {
         $executeService = new ExecuteService($ruleBuilder->getRuleObject());
-        $assertBuilder = $executeService->assert();
+        $assert = $executeService->assert()->getAssertValueObject();
 
-        $violations = $assertBuilder->getViolations();
-        $pass = $assertBuilder->getPass();
-        foreach ($pass as $key => $value) {
+        foreach ($assert->pass as $key => $value) {
             Assert::assertTrue(
                 (bool) $value,
-                implode(', ', $violations[$key] ?? []),
+                implode(', ', $assert->violations[$key] ?? []),
             );
             Assert::assertSame($key, $message);
         }
     }
 
-    final protected static function assertRulesViolation(RuleBuilder $ruleBuilder, string $message): void
-    {
+    final protected static function assertRulesViolation(
+        RuleBuilder $ruleBuilder,
+        string $message,
+    ): void {
         $executeService = new ExecuteService($ruleBuilder->getRuleObject());
-        $assertBuilder = $executeService->assert();
+        $assert = $executeService->assert()->getAssertValueObject();
 
-        $violations = $assertBuilder->getViolations();
-        foreach ($assertBuilder->getPass() as $key => $value) {
+        foreach ($assert->pass as $key => $value) {
             Assert::assertFalse((bool) $value, $message);
-            Assert::assertSame(implode(', ', $violations[$key] ?? []), $message);
+            Assert::assertSame(
+                implode(', ', $assert->violations[$key] ?? []),
+                $message,
+            );
         }
     }
 }
