@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Console\Commands;
 use Closure;
 use Exception;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\MakeTestDto;
 use StructuraPhp\Structura\Services\MakeTestService;
@@ -23,6 +24,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class MakeTestCommand extends Command
 {
+    use Version;
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -31,6 +34,8 @@ final class MakeTestCommand extends Command
         if (!\file_exists($dto->configPath)) {
             return self::INVALID;
         }
+
+        $io->writeln($this->getInfos($dto->configPath));
 
         $nameResponse = $io->ask('Test name');
         if (!is_string($nameResponse) || $nameResponse === '') {
@@ -47,9 +52,6 @@ final class MakeTestCommand extends Command
         }
 
         $archiConfig = $this->getStructuraConfig($dto->configPath);
-
-        $io->writeln(\sprintf('Runtime: %-5s PHP %s', '', PHP_VERSION));
-        $io->writeln(\sprintf('Configuration: %s', $dto->configPath));
 
         $makeService = new MakeTestService($archiConfig);
 

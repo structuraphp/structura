@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
@@ -27,6 +28,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class AnalyzeCommand extends Command
 {
+    use Version;
+
     private AnalyzeDto $analyzeDto;
 
     public function getFormatter(InputInterface $input): ErrorFormatterInterface
@@ -52,8 +55,7 @@ final class AnalyzeCommand extends Command
             return self::SUCCESS;
         }
 
-        $io->writeln(\sprintf('Runtime: %-5s PHP %s', '', PHP_VERSION));
-        $io->writeln(\sprintf('Configuration: %s', $this->analyzeDto->configPath));
+        $io->writeln($this->getInfos($this->analyzeDto->configPath));
         $io->newLine();
 
         $structuraConfig = $this->getStructuraConfig();
