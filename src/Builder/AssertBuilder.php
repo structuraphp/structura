@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\ValueObjects\AssertValueObject;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 
@@ -84,52 +85,13 @@ class AssertBuilder
         return $this;
     }
 
-    public function countViolation(string $key): int
+    public function getAssertValueObject(): AssertValueObject
     {
-        return \count($this->violations[$key] ?? []);
-    }
-
-    public function countWarning(string $key): int
-    {
-        return \count($this->warnings[$key] ?? []);
-    }
-
-    public function countAssertsSuccess(): int
-    {
-        return array_count_values($this->pass)[1] ?? 0;
-    }
-
-    public function countAssertsFailure(): int
-    {
-        return array_count_values($this->pass)[0] ?? 0;
-    }
-
-    public function countAssertsWarning(): int
-    {
-        return array_count_values($this->pass)[2] ?? 0;
-    }
-
-    /**
-     * @return array<string,int>
-     */
-    public function getPass(): array
-    {
-        return $this->pass;
-    }
-
-    /**
-     * @return ViolationsByTest
-     */
-    public function getViolations(): array
-    {
-        return $this->violations;
-    }
-
-    /**
-     * @return array<string, array<int, string>>
-     */
-    public function getWarnings(): array
-    {
-        return $this->warnings;
+        return new AssertValueObject(
+            $this->pass,
+            $this->violations,
+            $this->exceptions,
+            $this->warnings,
+        );
     }
 }

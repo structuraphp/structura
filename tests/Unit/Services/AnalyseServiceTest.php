@@ -7,7 +7,10 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 #[CoversClass(AnalyseService::class)]
 final class AnalyseServiceTest extends TestCase
@@ -23,6 +26,12 @@ final class AnalyseServiceTest extends TestCase
         );
 
         $result = $service->analyse();
+        $text = new TextFormatter();
+
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
+
+        $text->formatErrors($result, $buffer);
 
         self::assertSame(5, $result->countViolation);
         self::assertSame(10, $result->countPass);
@@ -66,13 +75,19 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        105 classe(s) from
+        111 classe(s) from
          - dirs
         That
         Should
 
         EOF;
 
-        self::assertSame($expected, implode(PHP_EOL, $result->prints));
+        $expected = explode(PHP_EOL, $expected);
+
+        $fetch = explode(PHP_EOL, $buffer->fetch());
+
+        foreach ($expected as $key => $line) {
+            self::assertSame($line, $fetch[$key]);
+        }
     }
 }

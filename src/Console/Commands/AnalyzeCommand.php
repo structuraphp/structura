@@ -5,24 +5,22 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
-use DateTime;
-use Exception;
 use InvalidArgumentException;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
-use StructuraPhp\Structura\Console\Enums\StyleCustom;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
+use StructuraPhp\Structura\Enums\FormatterType;
+use StructuraPhp\Structura\Formatter\GithubFormatter;
+use StructuraPhp\Structura\Formatter\TextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
-use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * @phpstan-import-type ViolationsByTest from AnalyseValueObject
- */
 #[AsCommand(
     name: 'analyze',
     description: 'Test archi',
@@ -31,21 +29,13 @@ final class AnalyzeCommand extends Command
 {
     private AnalyzeDto $analyzeDto;
 
-    /** @var array<int,string> */
-    private array $prints = [];
-
-    public function styleCustom(OutputInterface $output): OutputInterface
+    public function getFormatter(InputInterface $input): ErrorFormatterInterface
     {
-        foreach (StyleCustom::cases() as $style) {
-            $output
-                ->getFormatter()
-                ->setStyle(
-                    $style->value,
-                    $style->getOutputFormatterStyle(),
-                );
-        }
-
-        return $output;
+        return match ($input->getOption('error-format')) {
+            FormatterType::Text->value => new TextFormatter(),
+            FormatterType::Github->value => new GithubFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -68,21 +58,26 @@ final class AnalyzeCommand extends Command
 
         $structuraConfig = $this->getStructuraConfig();
 
-        $timeStart = microtime(true);
-
         $analyseService = new AnalyseService($structuraConfig);
-        $analyseValueObject = $analyseService->analyse();
+        $result = $analyseService->analyse();
 
-        $this->failedOutput(array_merge(...$analyseValueObject->violationsByTests));
-        $this->assertionsResumeOutput($analyseValueObject);
-        $this->durationAndTimeOutput($timeStart);
-
-        $this->prints = array_merge($analyseValueObject->prints, $this->prints);
-        foreach ($this->prints as $print) {
-            $this->styleCustom($output)->writeln($print);
-        }
+        $formatter = $this->getFormatter($input);
+        $formatter->formatErrors($result, $output);
 
         return self::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addOption(
+                name: 'error-format',
+                shortcut: 'f',
+                mode: InputOption::VALUE_OPTIONAL,
+                description: 'Select output format',
+                default: 'text',
+                suggestedValues: ['text', 'github'],
+            );
     }
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto
@@ -110,73 +105,5 @@ final class AnalyzeCommand extends Command
         $closure($config);
 
         return $config;
-    }
-
-    /**
-     * @param ViolationsByTest $violationsByTests
-     */
-    private function failedOutput(array $violationsByTests): void
-    {
-        $this->prints[] = '<violation> ERROR LIST </violation>';
-        $this->prints[] = '';
-
-        foreach ($violationsByTests as $violationsByTest) {
-            foreach ($violationsByTest as $violation) {
-                $this->prints[] = $violation->messageViolation;
-                $this->prints[] = \sprintf(
-                    '%s:%d',
-                    $violation->pathname,
-                    $violation->line,
-                );
-                $this->prints[] = '';
-            }
-        }
-    }
-
-    private function assertionsResumeOutput(AnalyseValueObject $analyseDto): void
-    {
-        $data = [
-            '<green>%d passed</green>' => $analyseDto->countPass,
-            '<fire>%d failed</fire>' => $analyseDto->countViolation,
-            '<warning>%d warning</warning>' => $analyseDto->countWarning,
-        ];
-
-        $data = array_filter($data, fn (int $value): bool => $value > 0);
-
-        $print = sprintf(
-            '%-9s ' . implode(', ', array_keys($data)),
-            'Tests:',
-            ...array_values($data),
-        );
-        $print .= sprintf(
-            ' (%d assertion)',
-            $analyseDto->countPass + $analyseDto->countViolation + $analyseDto->countWarning,
-        );
-        $this->prints[] = $print;
-    }
-
-    private function durationAndTimeOutput(float $time_start): void
-    {
-        $timeEnd = microtime(true);
-        $time = $timeEnd - $time_start;
-        $now = $this->tryDuration($time);
-
-        $this->prints[] = \sprintf(
-            'Duration: %s, Memory: %d MB',
-            substr($now->format('i:s.u'), 0, -3),
-            memory_get_peak_usage(true) / 1024 / 1024,
-        );
-    }
-
-    private function tryDuration(float $time): DateTime
-    {
-        $now = DateTime::createFromFormat(
-            'U.u',
-            number_format($time, 3, '.', ''),
-        );
-
-        return $now === false
-            ? throw new Exception()
-            : $now;
     }
 }

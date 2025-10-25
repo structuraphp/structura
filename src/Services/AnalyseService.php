@@ -6,13 +6,11 @@ namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Attributes\TestDox;
-use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
-use Symfony\Component\Finder\Finder;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
@@ -25,8 +23,8 @@ final class AnalyseService
 
     private int $countWarning = 0;
 
-    /** @var array<int,string> */
-    private array $prints = [];
+    /** @var array<int,AnalyseTestValueObject> */
+    private array $analyseTestValueObjects = [];
 
     /** @var array<int,ViolationsByTest> */
     private array $violationsByTests = [];
@@ -37,17 +35,20 @@ final class AnalyseService
 
     public function analyse(): AnalyseValueObject
     {
+        $timeStart = microtime(true);
+
         /** @var class-string<TestBuilder> $ruleClassname */
         foreach ($this->structuraConfig->getRules() as $ruleClassname) {
             $this->executeTests($ruleClassname);
         }
 
         return new AnalyseValueObject(
+            timeStart: $timeStart,
             countPass: $this->countPass,
             countViolation: $this->countViolation,
             countWarning: $this->countWarning,
             violationsByTests: $this->violationsByTests,
-            prints: $this->prints,
+            analyseTestValueObjects: $this->analyseTestValueObjects,
         );
     }
 
@@ -86,84 +87,21 @@ final class AnalyseService
         foreach ($instance->getRules() as $expectationFilter) {
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
             $executeService = new ExecuteService($ruleValueObject);
-            $assertBuilder = $executeService->assert();
+            $assertValueObject = $executeService->assert()->getAssertValueObject();
 
-            $this->countPass += $assertBuilder->countAssertsSuccess();
-            $this->countViolation += $assertBuilder->countAssertsFailure();
-            $this->countWarning += $assertBuilder->countAssertsWarning();
+            $this->countPass += $assertValueObject->countAssertsSuccess();
+            $this->countViolation += $assertValueObject->countAssertsFailure();
+            $this->countWarning += $assertValueObject->countAssertsWarning();
 
-            $this->prints[] = \sprintf(
-                '%s %s in %s',
-                $assertBuilder->countAssertsFailure() === 0
-                    ? '<pass> PASS </pass>'
-                    : '<violation> ERROR </violation>',
-                $testDox,
-                $classname,
+            $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
+                textDox: $testDox,
+                classname: $classname,
+                ruleValueObject: $ruleValueObject,
+                assertValueObject: $assertValueObject,
             );
 
-            $this->fromOutput($ruleValueObject->finder, $ruleValueObject->raws);
-            $this->thatOutput($ruleValueObject->that);
-            $this->shouldOutput($assertBuilder);
-
-            $this->prints[] = '';
-
-            $violations = $assertBuilder->getViolations();
-
-            if ($violations !== []) {
-                $this->violationsByTests[] = $violations;
-            }
-        }
-    }
-
-    /**
-     * @param array<string,string> $raws
-     */
-    private function fromOutput(?Finder $finder, array $raws = []): void
-    {
-        if ($finder instanceof Finder) {
-            $this->prints[] = $finder->count() . ' classe(s) from';
-            $this->prints[] = ' - dirs';
-        } else {
-            $this->prints[] = count($raws) . ' classe(s) from';
-            $this->prints[] = ' - raw value';
-        }
-    }
-
-    private function thatOutput(?AbstractExpr $builder): void
-    {
-        if (!$builder instanceof AbstractExpr) {
-            return;
-        }
-
-        $this->prints[] = 'That';
-
-        foreach ($builder as $expr) {
-            $this->prints[] = \sprintf(' - %s', $expr);
-        }
-    }
-
-    private function shouldOutput(AssertBuilder $assertBuilder): void
-    {
-        $this->prints[] = 'Should';
-
-        foreach ($assertBuilder->getPass() as $message => $isPass) {
-            if ($isPass === 0) {
-                $this->prints[] = \sprintf(
-                    ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
-                    $message,
-                    $assertBuilder->countViolation($message),
-                );
-            } else {
-                $countWarning = $assertBuilder->countWarning($message);
-                $warning = $countWarning !== 0
-                    ? sprintf(' <warning>%d warning(s)</warning>', $countWarning)
-                    : '';
-
-                $this->prints[] = \sprintf(
-                    ' <green>✔</green> %s%s',
-                    $message,
-                    $warning,
-                );
+            if ($assertValueObject->violations !== []) {
+                $this->violationsByTests[] = $assertValueObject->violations;
             }
         }
     }
