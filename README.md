@@ -233,6 +233,12 @@ To run the architecture tests, execute the following command:
 php bin/structura analyze
 ```
 
+### Cli options
+
+- `--format-error=<FORMAT>`
+  - `text`: Default. For human consumption.
+  - `github`: Creates GitHub Actions compatible output.
+
 ## Assertions
 
 - 🧬 Types
