@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'make',
+    name: 'make:test',
     description: 'Make test',
 )]
 final class MakeTestCommand extends Command
@@ -37,29 +37,33 @@ final class MakeTestCommand extends Command
 
         $io->writeln($this->getInfos($dto->configPath));
 
-        $nameResponse = $io->ask('Test name');
-        if (!is_string($nameResponse) || $nameResponse === '') {
-            $io->error('Test name is required');
-
-            return self::INVALID;
-        }
-
-        $pathResponse = $io->ask('Path', 'src');
-        if (!is_string($pathResponse) || $pathResponse === '') {
-            $io->error('Path is required');
-
-            return self::INVALID;
-        }
-
         $archiConfig = $this->getStructuraConfig($dto->configPath);
 
         $makeService = new MakeTestService($archiConfig);
 
         try {
+            $nameResponse = $io->ask(
+                'What is the name of the test class (e.g. "NamespaceName\ClassName")?',
+            );
+            $name = $makeService->getNamespace($nameResponse);
+
+            /** @var string $pathResponse */
+            $pathResponse = $io->ask(
+                'Source code path that your test will analyze',
+                'src',
+            );
+            $path = $makeService->getPath($pathResponse);
+        } catch (Exception $exception) {
+            $io->error($exception->getMessage());
+
+            return self::INVALID;
+        }
+
+        try {
             $makeValueObject = $makeService->make(
                 new MakeTestValueObject(
-                    testClassName: $nameResponse,
-                    path: $pathResponse,
+                    testClassName: $name,
+                    path: $path,
                 ),
             );
 
@@ -71,9 +75,12 @@ final class MakeTestCommand extends Command
         }
 
         $io->info(
-            \sprintf(
-                'Test file %s is added now. Run composer dump-autoload',
-                $makeValueObject->className,
+            sprintf(
+                <<<'INFO'
+                Test file is added now, run composer dump-autoload.
+                file://%s
+                INFO,
+                $makeValueObject->filename,
             ),
         );
 

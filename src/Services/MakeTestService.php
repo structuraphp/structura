@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Services;
 
+use InvalidArgumentException;
 use RuntimeException;
+use StructuraPhp\Structura\Concerns\Pipe;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\ValueObjects\GenerateTestValueObject;
 use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
@@ -13,6 +15,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class MakeTestService
 {
+    use Pipe;
+
     private const STUB_FILENAME = '%s/Stubs/test.php.dist';
 
     public function __construct(
@@ -26,9 +30,8 @@ final readonly class MakeTestService
             throw new RuntimeException('Root namespace not found');
         }
 
-        $className = str_starts_with($dto->testClassName, 'Test')
-            ? $dto->testClassName
-            : 'Test' . $dto->testClassName;
+        $parts = explode('\\', $dto->testClassName);
+        $className = array_pop($parts);
 
         $content = str_replace(
             [
@@ -37,7 +40,7 @@ final readonly class MakeTestService
                 '{{ path }}',
             ],
             [
-                $rootNamespace->namespace,
+                implode('\\', [$rootNamespace->namespace, ...$parts]),
                 $className,
                 $dto->path,
             ],
@@ -49,24 +52,79 @@ final readonly class MakeTestService
         return new GenerateTestValueObject(
             content: $content,
             filename: \sprintf(
-                '%s/%s/%s.php',
+                '%s/%s.php',
                 getcwd(),
-                $rootNamespace->directory,
-                $className,
+                implode('/', [$rootNamespace->directory, ...$parts, $className]),
             ),
-            className: $className,
         );
     }
 
     public function generate(GenerateTestValueObject $makeValueObject): void
     {
-        if (file_exists($makeValueObject->filename)) {
+        (new Filesystem())
+            ->dumpFile($makeValueObject->filename, $makeValueObject->content);
+    }
+
+    public function getNamespace(mixed $input): string
+    {
+        if (!is_string($input) || $input === '') {
+            throw new RuntimeException('The name of the test class is required.');
+        }
+
+        /** @var callable(string): string $replace */
+        $replace = $this->pipe(
+            static fn (string $str): string => str_replace(['\\', '/'], ['\\', '\\'], $str),
+            static fn (string $str): string => preg_replace('/\\\+/', '\\', $str) ?? '',
+            static fn (string $str): string => trim($str, "\t\n\r\v\0\x0B"),
+            static fn (string $str): string => trim($str, '\\'),
+            static fn (string $str): string => preg_replace('/([^\\\]+)$/', 'Test$1', $str) ?? '',
+        );
+
+        $namespace = $replace($input);
+
+        if (!preg_match('/^(([A-Z]+[a-z0-9]*)+\\\?)+$/n', $namespace)) {
             throw new RuntimeException(
-                sprintf('File %s already exists', $makeValueObject->filename),
+                'The name of the test class must be PSR4-compliant.',
             );
         }
 
-        (new Filesystem())
-            ->dumpFile($makeValueObject->filename, $makeValueObject->content);
+        $file = sprintf(
+            '%s/%s/%s.php',
+            getcwd(),
+            $this->structuraConfig->getArchiRootNamespace()->directory ?? '',
+            str_replace('\\', DIRECTORY_SEPARATOR, $namespace),
+        );
+
+        if (file_exists($file)) {
+            throw new RuntimeException(
+                sprintf('File %s already exists', $file),
+            );
+        }
+
+        return $namespace;
+    }
+
+    public function getPath(mixed $input): string
+    {
+        if (!is_string($input) || $input === '') {
+            throw new InvalidArgumentException('Source code path is required.');
+        }
+
+        /** @var callable(string): string $replace */
+        $replace = $this->pipe(
+            static fn (string $str): string => str_replace(['\\', '/'], [DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR], $str),
+            static fn (string $str): string => preg_replace('/\/+/', DIRECTORY_SEPARATOR, $str) ?? '',
+            static fn (string $str): string => trim($str, "\t\n\r\v\0\x0B"),
+        );
+
+        $path = $replace($input);
+
+        if (!is_dir($path)) {
+            throw new RuntimeException(
+                'The source code path does not exist.',
+            );
+        }
+
+        return $path;
     }
 }
