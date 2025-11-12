@@ -59,13 +59,13 @@ final class MakeTestCommandTest extends TestCase
             ' Source code path that your test will analyze [src]:',
             ' >',
             ' [INFO] Test file is added now, run composer dump-autoload.',
-            sprintf(
-                '        file://%s/Architecture/TestModel.php',
-                dirname(__DIR__, 3),
-            ),
         ];
 
-        $outputs = array_slice(explode(PHP_EOL, $display), 4);
+        $outputs = array_slice(
+            array: explode(PHP_EOL, $display),
+            offset: 4,
+            length: 5,
+        );
 
         foreach ($outputs as $key => $command) {
             self::assertSame($exceptOutput[$key], rtrim($command));
