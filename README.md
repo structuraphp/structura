@@ -61,7 +61,7 @@ After creating and completing your configuration file, you can use the command t
 architecture tests:
 
 ```shell
-php bin/structura make
+php bin/structura make:test
 ```
 
 Here's a simple example of architecture testing for your DTOs:

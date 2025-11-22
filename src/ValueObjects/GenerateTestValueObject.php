@@ -9,6 +9,5 @@ final readonly class GenerateTestValueObject
     public function __construct(
         public string $content,
         public string $filename,
-        public string $className,
     ) {}
 }
