@@ -235,9 +235,12 @@ php bin/structura analyze
 
 ### Cli options
 
-- `--format-error=<FORMAT>`
+- `-f, --error-format[=ERROR-FORMAT]`
   - `text`: Default. For human consumption.
   - `github`: Creates GitHub Actions compatible output.
+- `-p, --progress-format[=PROGRESS-FORMAT]`
+  - `text`: Default. For human consumption.
+  - `bar`: For progress bar.
 
 ## Assertions
 

@@ -33,7 +33,26 @@ final class AnalyseService
         private readonly StructuraConfig $structuraConfig,
     ) {}
 
-    public function analyse(): AnalyseValueObject
+    /**
+     * @param class-string<TestBuilder> $ruleClassname
+     */
+    public function analyse(
+        float $timeStart,
+        string $ruleClassname,
+    ): AnalyseValueObject {
+        $this->executeTests($ruleClassname);
+
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: $this->countPass,
+            countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
+            violationsByTests: $this->violationsByTests,
+            analyseTestValueObjects: $this->analyseTestValueObjects,
+        );
+    }
+
+    public function analyses(): AnalyseValueObject
     {
         $timeStart = microtime(true);
 

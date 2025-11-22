@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace StructuraPhp\Structura\Formatter;
+namespace StructuraPhp\Structura\Formatter\Error;
 
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  */
-class GithubFormatter implements ErrorFormatterInterface
+class ErrorGithubFormatter implements ErrorFormatterInterface
 {
     public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
     {
