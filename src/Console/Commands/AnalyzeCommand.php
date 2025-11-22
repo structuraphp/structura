@@ -10,10 +10,16 @@ use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
-use StructuraPhp\Structura\Enums\FormatterType;
-use StructuraPhp\Structura\Formatter\GithubFormatter;
-use StructuraPhp\Structura\Formatter\TextFormatter;
+use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\Enums\ErrorFormatterType;
+use StructuraPhp\Structura\Enums\ProgressFormatterType;
+use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -30,16 +36,11 @@ final class AnalyzeCommand extends Command
 {
     use Version;
 
-    private AnalyzeDto $analyzeDto;
+    public const ERROR_FORMAT_OPTION = 'error-format';
 
-    public function getFormatter(InputInterface $input): ErrorFormatterInterface
-    {
-        return match ($input->getOption('error-format')) {
-            FormatterType::Text->value => new TextFormatter(),
-            FormatterType::Github->value => new GithubFormatter(),
-            default => throw new InvalidArgumentException(),
-        };
-    }
+    public const PROGRESS_FORMAT_OPTION = 'progress-format';
+
+    private AnalyzeDto $analyzeDto;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -60,11 +61,32 @@ final class AnalyzeCommand extends Command
 
         $structuraConfig = $this->getStructuraConfig();
 
-        $analyseService = new AnalyseService($structuraConfig);
-        $result = $analyseService->analyse();
+        $progressFormatter = $this->getProgressFormatter($input);
 
-        $formatter = $this->getFormatter($input);
-        $formatter->formatErrors($result, $output);
+        $rules = $structuraConfig->getRules();
+        $progressFormatter->progressStart($io, count($rules));
+
+        $results = [];
+
+        /** @var class-string<TestBuilder> $ruleClassname */
+        foreach ($rules as $ruleClassname) {
+            $analyseService = new AnalyseService($structuraConfig);
+            $analyseResult = $analyseService
+                ->analyse(
+                    microtime(true),
+                    $ruleClassname,
+                );
+
+            $progressFormatter->progressAdvance($io, $analyseResult);
+            $results[] = $analyseResult;
+        }
+
+        $result = $this->getValuesInfo($results);
+
+        $progressFormatter->progressFinish($io);
+
+        $errorFormatter = $this->getErrorFormatter($input);
+        $errorFormatter->formatErrors($result, $output);
 
         return self::SUCCESS;
     }
@@ -73,13 +95,70 @@ final class AnalyzeCommand extends Command
     {
         $this
             ->addOption(
-                name: 'error-format',
+                name: self::ERROR_FORMAT_OPTION,
                 shortcut: 'f',
                 mode: InputOption::VALUE_OPTIONAL,
-                description: 'Select output format',
-                default: 'text',
-                suggestedValues: ['text', 'github'],
+                description: 'Select output error format',
+                default: ErrorFormatterType::Text->value,
+                suggestedValues: array_column(ErrorFormatterType::cases(), 'value'),
+            )
+            ->addOption(
+                name: self::PROGRESS_FORMAT_OPTION,
+                shortcut: 'p',
+                mode: InputOption::VALUE_OPTIONAL,
+                description: 'Select output progress format',
+                default: ProgressFormatterType::Text->value,
+                suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
             );
+    }
+
+    private function getErrorFormatter(InputInterface $input): ErrorFormatterInterface
+    {
+        return match ($input->getOption(self::ERROR_FORMAT_OPTION)) {
+            ErrorFormatterType::Text->value => new ErrorTextFormatter(),
+            ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
+    }
+
+    private function getProgressFormatter(InputInterface $input): ProgressFormatterInterface
+    {
+        return match ($input->getOption(self::PROGRESS_FORMAT_OPTION)) {
+            ProgressFormatterType::Text->value => new ProgressTextFormatter(),
+            ProgressFormatterType::Bar->value => new ProgressBarFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
+    }
+
+    /**
+     * @param array<int,AnalyseValueObject> $results
+     */
+    private function getValuesInfo(array $results): AnalyseValueObject
+    {
+        $timeStart = 0;
+        $countPass = 0;
+        $countViolation = 0;
+        $countWarning = 0;
+        $violationsByTests = [];
+        $analyseTestValueObjects = [];
+
+        foreach ($results as $result) {
+            $timeStart += $result->timeStart;
+            $countPass += $result->countPass;
+            $countViolation += $result->countViolation;
+            $countWarning += $result->countWarning;
+            $violationsByTests[] = $result->violationsByTests;
+            $analyseTestValueObjects[] = $result->analyseTestValueObjects;
+        }
+
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: $countPass,
+            countViolation: $countViolation,
+            countWarning: $countWarning,
+            violationsByTests: array_merge(...$violationsByTests),
+            analyseTestValueObjects: array_merge(...$analyseTestValueObjects),
+        );
     }
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto

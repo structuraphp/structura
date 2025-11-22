@@ -7,7 +7,7 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
-use StructuraPhp\Structura\Formatter\TextFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -25,13 +25,13 @@ final class AnalyseServiceTest extends TestCase
                 ),
         );
 
-        $result = $service->analyse();
-        $text = new TextFormatter();
+        $result = $service->analyses();
+        $formatter = new ProgressTextFormatter();
 
         $buffer = new BufferedOutput(formatter: new OutputFormatter());
         $buffer->setDecorated(true);
 
-        $text->formatErrors($result, $buffer);
+        $formatter->progressAdvance($buffer, $result);
 
         self::assertSame(5, $result->countViolation);
         self::assertSame(10, $result->countPass);
@@ -75,7 +75,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        113 classe(s) from
+        117 classe(s) from
          - dirs
         That
         Should

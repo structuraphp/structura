@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace StructuraPhp\Structura\Tests\Unit\Formatter;
+namespace StructuraPhp\Structura\Tests\Unit\Formatter\Error;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Formatter\GithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
 use StructuraPhp\Structura\Tests\DataProvider\FormatterDataProvider;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-#[CoversClass(GithubFormatter::class)]
-class GithubFormatterTest extends TestCase
+#[CoversClass(ErrorGithubFormatter::class)]
+class ErrorGithubFormatterTest extends TestCase
 {
     #[DataProviderExternal(FormatterDataProvider::class, 'getAnalyseValueObject')]
     public function testOutput(AnalyseValueObject $except): void
     {
-        $text = new GithubFormatter();
+        $text = new ErrorGithubFormatter();
 
         $buffer = new BufferedOutput();
 
