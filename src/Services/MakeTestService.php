@@ -53,7 +53,7 @@ final readonly class MakeTestService
             content: $content,
             filename: \sprintf(
                 '%s/%s.php',
-                getcwd(),
+                (string) getcwd(),
                 implode('/', [$rootNamespace->directory, ...$parts, $className]),
             ),
         );
@@ -90,7 +90,7 @@ final readonly class MakeTestService
 
         $file = sprintf(
             '%s/%s/%s.php',
-            getcwd(),
+            (string) getcwd(),
             $this->structuraConfig->getArchiRootNamespace()->directory ?? '',
             str_replace('\\', DIRECTORY_SEPARATOR, $namespace),
         );

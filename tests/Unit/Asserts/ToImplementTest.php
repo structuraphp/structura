@@ -36,6 +36,15 @@ final class ToImplementTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithImplement(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class implements \Stringable {};'];
+
+        yield 'class' => ['<?php class Foo implements \Stringable {}'];
+
+        yield 'enum' => ['<?php enum Foo implements \Stringable {};'];
+    }
+
     #[DataProvider('getClassLikeWithoutImplement')]
     public function testShouldFailToImplement(string $raw, string $exceptName = 'Foo'): void
     {
@@ -55,15 +64,6 @@ final class ToImplementTest extends TestCase
                 Stringable::class,
             ),
         );
-    }
-
-    public static function getClassLikeWithImplement(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class implements \Stringable {};'];
-
-        yield 'class' => ['<?php class Foo implements \Stringable {}'];
-
-        yield 'enum' => ['<?php enum Foo implements \Stringable {};'];
     }
 
     public static function getClassLikeWithoutImplement(): Generator

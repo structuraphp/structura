@@ -33,6 +33,17 @@ final class ToHaveNoAttributeTest extends TestCase
         self::assertRulesPass($rules, 'to have no attribute');
     }
 
+    public static function getClassLikeWithoutAttribute(): Generator
+    {
+        yield 'class' => ['<?php class Foo {}'];
+
+        yield 'enum' => ['<?php enum Foo {}'];
+
+        yield 'interface' => ['<?php interface Foo {}'];
+
+        yield 'trait' => ['<?php trait Foo {}'];
+    }
+
     #[DataProvider('getClassLikeWithAttribute')]
     public function testShouldFailToHaveAttribute(string $raw, string $exceptName = 'Foo'): void
     {
@@ -62,16 +73,5 @@ final class ToHaveNoAttributeTest extends TestCase
         yield 'interface' => ['<?php #[Attribute] interface Foo {}'];
 
         yield 'trait' => ['<?php #[Attribute] trait Foo {}'];
-    }
-
-    public static function getClassLikeWithoutAttribute(): Generator
-    {
-        yield 'class' => ['<?php class Foo {}'];
-
-        yield 'enum' => ['<?php enum Foo {}'];
-
-        yield 'interface' => ['<?php interface Foo {}'];
-
-        yield 'trait' => ['<?php trait Foo {}'];
     }
 }

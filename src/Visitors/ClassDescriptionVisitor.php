@@ -45,10 +45,11 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
         if ($node instanceof ClassLike && !$this->class instanceof ClassDescription) {
             $this->class = new ClassDescription(
+                namespace: $node->namespacedName?->toString() ?? '',
+                declare: $this->declare,
                 name: $node->name?->name,
                 attrGroups: $node->attrGroups,
                 lines: $node->getLine(),
-                namespace: $node->namespacedName?->toString() ?? '',
                 scalarType: $node instanceof Enum_
                     ? $node->scalarType
                     : null,
@@ -64,7 +65,6 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                     : null,
                 classType: $this->getClassType($node),
                 methods: $node->getMethods(),
-                declare: $this->declare,
             );
         }
 

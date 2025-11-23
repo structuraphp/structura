@@ -21,10 +21,10 @@ consistent code structure.
 
 ### PHP version
 
-| Version PHP     | Structura 0.x |
-|-----------------|---------------|
-| <= 8.1          | ✗ Unsupported |
-| 8.2 / 8.3 / 8.4 | ✓ Supported   |
+| Version PHP           | Structura 0.x |
+|-----------------------|---------------|
+| <= 8.1                | ✗ Unsupported |
+| 8.2 / 8.3 / 8.4 / 8.5 | ✓ Supported   |
 
 ## Installation
 

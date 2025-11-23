@@ -3,7 +3,7 @@ name: PHP Tests
 on: [push]
 
 env:
-  LATEST_PHP_VERSION: '8.4'
+  LATEST_PHP_VERSION: '8.5'
 
 jobs:
   build:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [8.2, 8.3, 8.4]
+        php-version: [8.2, 8.3, 8.4, 8.5]
 
     steps:
     - name: Pull repository

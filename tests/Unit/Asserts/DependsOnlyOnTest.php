@@ -56,7 +56,7 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testDependsOnlyOnWithScript(string $raw): void
+    public function testDependsOnlyOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
@@ -111,6 +111,29 @@ final class DependsOnlyOnTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithDependsProvider(): Generator
+    {
+        yield 'class' => [
+            <<<'PHP'
+            <?php
+            
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            class Foo {
+                public function __construct(ArrayAccess $arrayAccess) {
+                    \Stringable::class;
+                }
+
+                public function __toString(): string {
+                    return $this->arrayAccess['foo'] ?? throw new \Exception();
+                }
+            }
+            PHP,
+        ];
+    }
+
     #[DataProvider('getScriptWithDependsProvider')]
     public function testShouldFailDependsOnlyOnWithScript(
         string $raw,
@@ -136,29 +159,6 @@ final class DependsOnlyOnTest extends TestCase
                 Stringable::class,
             ),
         );
-    }
-
-    public static function getClassLikeWithDependsProvider(): Generator
-    {
-        yield 'class' => [
-            <<<'PHP'
-            <?php
-            
-            use ArrayAccess;
-            use Depend\Bap;
-            use Depend\Bar;
-            
-            class Foo {
-                public function __construct(ArrayAccess $arrayAccess) {
-                    \Stringable::class;
-                }
-
-                public function __toString(): string {
-                    return $this->arrayAccess['foo'] ?? throw new \Exception();
-                }
-            }
-            PHP,
-        ];
     }
 
     public static function getScriptWithDependsProvider(): Generator

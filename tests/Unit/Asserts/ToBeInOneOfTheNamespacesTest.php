@@ -36,6 +36,17 @@ class ToBeInOneOfTheNamespacesTest extends TestCase
         );
     }
 
+    public static function getClassLikeForPass(): Generator
+    {
+        yield 'class' => ['<?php namespace Acme\Bar; class Foo {}'];
+
+        yield 'enum' => ['<?php namespace Acme\Bar; enum Foo {}'];
+
+        yield 'interface' => ['<?php namespace Acme\Bar; interface Foo {}'];
+
+        yield 'trait' => ['<?php namespace Acme\Bar; trait Foo {}'];
+    }
+
     #[DataProvider('getClasseLikeForFail')]
     public function testShouldFailToBeInOneOfTheNamespaces(
         string $raw,
@@ -57,17 +68,6 @@ class ToBeInOneOfTheNamespacesTest extends TestCase
                 'Acme\Foo',
             ),
         );
-    }
-
-    public static function getClassLikeForPass(): Generator
-    {
-        yield 'class' => ['<?php namespace Acme\Bar; class Foo {}'];
-
-        yield 'enum' => ['<?php namespace Acme\Bar; enum Foo {}'];
-
-        yield 'interface' => ['<?php namespace Acme\Bar; interface Foo {}'];
-
-        yield 'trait' => ['<?php namespace Acme\Bar; trait Foo {}'];
     }
 
     public static function getClasseLikeForFail(): Generator

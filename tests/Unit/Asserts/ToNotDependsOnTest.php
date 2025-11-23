@@ -49,7 +49,7 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testToNotDependsOnWithScript(string $raw): void
+    public function testToNotDependsOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
@@ -101,6 +101,29 @@ final class ToNotDependsOnTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithNoDependsProvider(): Generator
+    {
+        yield 'class' => [
+            <<<'PHP'
+            <?php
+            
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            class Foo {
+                public function __construct(ArrayAccess $arrayAccess) {
+                    \Stringable::class;
+                }
+
+                public function __toString(): string {
+                    return $this->arrayAccess['foo'] ?? throw new \Exception();
+                }
+            }
+            PHP,
+        ];
+    }
+
     #[DataProvider('getScriptWithNoDependsProvider')]
     public function testShouldFailToNotDependsOnWithScript(
         string $raw,
@@ -131,29 +154,6 @@ final class ToNotDependsOnTest extends TestCase
                 Exception::class,
             ),
         );
-    }
-
-    public static function getClassLikeWithNoDependsProvider(): Generator
-    {
-        yield 'class' => [
-            <<<'PHP'
-            <?php
-            
-            use ArrayAccess;
-            use Depend\Bap;
-            use Depend\Bar;
-            
-            class Foo {
-                public function __construct(ArrayAccess $arrayAccess) {
-                    \Stringable::class;
-                }
-
-                public function __toString(): string {
-                    return $this->arrayAccess['foo'] ?? throw new \Exception();
-                }
-            }
-            PHP,
-        ];
     }
 
     public static function getScriptWithNoDependsProvider(): Generator

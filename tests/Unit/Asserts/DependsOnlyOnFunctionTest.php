@@ -21,7 +21,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testDependsOnlyOnFunctionWithClass(string $raw): void
+    public function testDependsOnlyOnFunctionWithClass(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allClasses()
@@ -41,7 +41,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testDependsOnlyOnFunctionWithScript(string $raw): void
+    public function testDependsOnlyOnFunctionWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
@@ -85,6 +85,20 @@ class DependsOnlyOnFunctionTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithFunction(): Generator
+    {
+        yield 'anonymous class' => [
+            '<?php
+             new class {
+                public function __invoke() {
+                    array_merge([], []);
+                    strtolower("FOO");
+                }
+            };',
+            'Anonymous',
+        ];
+    }
+
     #[DataProvider('getScriptWithFunction')]
     public function testShouldFailDependsOnlyOnFunctionWithScript(
         string $raw,
@@ -110,20 +124,6 @@ class DependsOnlyOnFunctionTest extends TestCase
                 'array_merge, strtolower',
             ),
         );
-    }
-
-    public static function getClassLikeWithFunction(): Generator
-    {
-        yield 'anonymous class' => [
-            '<?php
-             new class {
-                public function __invoke() {
-                    array_merge([], []);
-                    strtolower("FOO");
-                }
-            };',
-            'Anonymous',
-        ];
     }
 
     public static function getScriptWithFunction(): Generator

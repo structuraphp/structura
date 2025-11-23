@@ -20,6 +20,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->phpVersion(PhpVersion::PHP_82);
 
     $rectorConfig->skip([
+        __DIR__ . '/tests/Fixture',
         SymplifyQuoteEscapeRector::class,
         RemoveUnusedPrivatePropertyRector::class,
         RemoveUnusedPrivateMethodParameterRector::class => [

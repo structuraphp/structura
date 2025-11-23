@@ -31,7 +31,7 @@ final class ClassDescription extends ScriptDescription
         public readonly int $lines,
         public readonly ?Identifier $scalarType,
         public readonly ?array $interfaces,
-        public readonly null|array|Name $extends,
+        public readonly array|Name|null $extends,
         public readonly array $traits,
         public readonly ?int $flags,
         public readonly ClassType $classType,

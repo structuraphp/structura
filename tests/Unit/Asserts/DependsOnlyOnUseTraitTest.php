@@ -44,6 +44,19 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithTrait(): Generator
+    {
+        yield 'without trait' => ['<?php class Foo {}'];
+
+        yield 'without trait and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
+
+        yield 'with pattern' => ['<?php class Foo { use \Dependencies\Acme\Foo; }'];
+
+        yield 'with name and pattern' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, \Dependencies\Acme\Foo; }'];
+    }
+
     #[DataProvider('getClassLikeWithoutTrait')]
     public function testShouldFailToExtendsWithInterface(string $raw): void
     {
@@ -66,19 +79,6 @@ final class DependsOnlyOnUseTraitTest extends TestCase
                 'Dependencies\Acme\.*',
             ),
         );
-    }
-
-    public static function getClassLikeWithTrait(): Generator
-    {
-        yield 'without trait' => ['<?php class Foo {}'];
-
-        yield 'without trait and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
-
-        yield 'with name' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
-
-        yield 'with pattern' => ['<?php class Foo { use \Dependencies\Acme\Foo; }'];
-
-        yield 'with name and pattern' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, \Dependencies\Acme\Foo; }'];
     }
 
     public static function getClassLikeWithoutTrait(): Generator
