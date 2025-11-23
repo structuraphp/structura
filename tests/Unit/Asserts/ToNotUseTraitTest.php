@@ -34,6 +34,17 @@ final class ToNotUseTraitTest extends TestCase
         self::assertRulesPass($rules, 'to not use trait');
     }
 
+    public static function getClassLikeWithoutTrait(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class {};'];
+
+        yield 'class' => ['<?php class Foo {}'];
+
+        yield 'enum' => ['<?php enum Foo {};'];
+
+        yield 'interface' => ['<?php interface Foo {}'];
+    }
+
     /**
      * @param class-string $exceptName
      */
@@ -85,16 +96,5 @@ final class ToNotUseTraitTest extends TestCase
         yield 'enum' => ['<?php enum Foo { use \HasFactory; };', 'Foo'];
 
         yield 'interface' => ['<?php interface Foo { use \HasFactory; }', 'Foo'];
-    }
-
-    public static function getClassLikeWithoutTrait(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class {};'];
-
-        yield 'class' => ['<?php class Foo {}'];
-
-        yield 'enum' => ['<?php enum Foo {};'];
-
-        yield 'interface' => ['<?php interface Foo {}'];
     }
 }

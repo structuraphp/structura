@@ -85,6 +85,20 @@ class NotDependsOnFunctionTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithFunction(): Generator
+    {
+        yield 'anonymous class' => [
+            '<?php
+             new class {
+                public function __invoke() {
+                    array_merge([], []);
+                    strtolower("FOO");
+                }
+            };',
+            'Anonymous',
+        ];
+    }
+
     #[DataProvider('getScriptWithFunction')]
     public function testShouldFailNotDependsOnFunctionWithScript(
         string $raw,
@@ -110,20 +124,6 @@ class NotDependsOnFunctionTest extends TestCase
                 'array_merge, strtolower',
             ),
         );
-    }
-
-    public static function getClassLikeWithFunction(): Generator
-    {
-        yield 'anonymous class' => [
-            '<?php
-             new class {
-                public function __invoke() {
-                    array_merge([], []);
-                    strtolower("FOO");
-                }
-            };',
-            'Anonymous',
-        ];
     }
 
     public static function getScriptWithFunction(): Generator

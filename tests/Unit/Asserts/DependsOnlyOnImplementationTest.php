@@ -40,6 +40,21 @@ final class DependsOnlyOnImplementationTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithInheritance(): Generator
+    {
+        yield 'without implements' => ['<?php class Foo {}'];
+
+        yield 'without implements and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php class Foo implements \ArrayAccess {}'];
+
+        yield 'with pattern' => ['<?php class Foo implements \Dependencies\Acme\Foo {}'];
+
+        yield 'with name and pattern' => [
+            '<?php class Foo implements \ArrayAccess, \Dependencies\Acme\Foo {}',
+        ];
+    }
+
     #[DataProvider('getClassLikeWithoutInheritance')]
     public function testShouldFailToExtendsWithInterface(string $raw): void
     {
@@ -63,21 +78,6 @@ final class DependsOnlyOnImplementationTest extends TestCase
                 'BadImplements',
             ),
         );
-    }
-
-    public static function getClassLikeWithInheritance(): Generator
-    {
-        yield 'without implements' => ['<?php class Foo {}'];
-
-        yield 'without implements and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
-
-        yield 'with name' => ['<?php class Foo implements \ArrayAccess {}'];
-
-        yield 'with pattern' => ['<?php class Foo implements \Dependencies\Acme\Foo {}'];
-
-        yield 'with name and pattern' => [
-            '<?php class Foo implements \ArrayAccess, \Dependencies\Acme\Foo {}',
-        ];
     }
 
     public static function getClassLikeWithoutInheritance(): Generator

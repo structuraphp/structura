@@ -32,6 +32,13 @@ final class ToExtendNothingTest extends TestCase
         self::assertRulesPass($rules, 'to extend nothing');
     }
 
+    public static function getClassLikeExtendsNothing(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class {};'];
+
+        yield 'class' => ['<?php class Foo {}'];
+    }
+
     #[DataProvider('getClassLikeExtends')]
     public function testShouldFailToExtendsNothing(string $raw, string $exceptName = 'Foo'): void
     {
@@ -46,13 +53,6 @@ final class ToExtendNothingTest extends TestCase
             $rules,
             \sprintf('Resource <promote>%s</promote> must extend nothing', $exceptName),
         );
-    }
-
-    public static function getClassLikeExtendsNothing(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class {};'];
-
-        yield 'class' => ['<?php class Foo {}'];
     }
 
     public static function getClassLikeExtends(): Generator
