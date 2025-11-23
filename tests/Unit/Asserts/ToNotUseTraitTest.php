@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
-use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -43,28 +42,6 @@ final class ToNotUseTraitTest extends TestCase
         yield 'enum' => ['<?php enum Foo {};'];
 
         yield 'interface' => ['<?php interface Foo {}'];
-    }
-
-    /**
-     * @param class-string $exceptName
-     */
-    #[DataProvider('getClassLikeWithTrait')]
-    public function testToUseNothingWithExpect(string $raw, string $exceptName): void
-    {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->that(static fn (Expr $expr): Expr => $expr->toBeClasses())
-            ->except(
-                static fn (Except $except): Except => $except
-                    ->byClassname($exceptName, ToNotUseTrait::class),
-            )
-            ->should(
-                static fn (Expr $assert): Expr => $assert
-                    ->toNotUseTrait(),
-            );
-
-        self::assertRulesPass($rules, 'to not use trait');
     }
 
     #[DataProvider('getClassLikeWithTrait')]

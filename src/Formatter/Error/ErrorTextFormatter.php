@@ -102,9 +102,9 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         $now = $this->tryDuration($time);
 
         $this->prints[] = \sprintf(
-            'Duration: %s, Memory: %d MB',
+            'Duration: %s, Memory: %s MB',
             substr($now->format('i:s.u'), 0, -3),
-            memory_get_peak_usage(true) / 1024 / 1024,
+            (string) memory_get_peak_usage(true) / 1024 / 1024,
         );
     }
 
