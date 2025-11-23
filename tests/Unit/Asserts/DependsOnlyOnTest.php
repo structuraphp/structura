@@ -56,7 +56,7 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testDependsOnlyOnWithScript(string $raw): void
+    public function testDependsOnlyOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()

@@ -49,7 +49,7 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testToNotDependsOnWithScript(string $raw): void
+    public function testToNotDependsOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()

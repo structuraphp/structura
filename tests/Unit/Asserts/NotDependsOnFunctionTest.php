@@ -21,7 +21,7 @@ class NotDependsOnFunctionTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testNotDependsOnFunctionWithClass(string $raw): void
+    public function testNotDependsOnFunctionWithClass(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allClasses()
@@ -41,7 +41,7 @@ class NotDependsOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testNotDependsOnFunctionWithScript(string $raw): void
+    public function testNotDependsOnFunctionWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
