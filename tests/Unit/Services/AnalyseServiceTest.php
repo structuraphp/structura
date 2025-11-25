@@ -34,7 +34,7 @@ final class AnalyseServiceTest extends TestCase
         $formatter->progressAdvance($buffer, $result);
 
         self::assertSame(5, $result->countViolation);
-        self::assertSame(10, $result->countPass);
+        self::assertSame(12, $result->countPass);
         self::assertSame(1, $result->countWarning);
 
         $expected = <<<'EOF'
@@ -63,7 +63,9 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
-         <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface, [1+]</promote> <fire>2 error(s)</fire>
+         <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Models\User</promote> <fire>1 error(s)</fire>
+         <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
+         <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
         <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
         2 classe(s) from

@@ -33,6 +33,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes): null
     {
         $this->class = null;
+        $this->declare = null;
 
         return null;
     }

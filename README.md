@@ -1,7 +1,7 @@
 # Structura
 
-[![License](https://img.shields.io/github/license/soosyze/soosyze.svg)](https://github.com/soosyze/soosyze/blob/master/LICENSE "LICENSE")
-[![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#version-php "PHP version 8.2 minimum")
+[![License](https://img.shields.io/github/license/structuraphp/structura.svg)](https://github.com/structuraphp/structura/blob/main/LICENSE "LICENSE")
+[![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#php-version "PHP version 8.2 minimum")
 
 ## About
 

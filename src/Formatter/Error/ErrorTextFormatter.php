@@ -25,7 +25,10 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     ): int {
         $violations = array_merge(...$analyseValueObject->violationsByTests);
 
-        $this->failedOutput($violations);
+        if ($violations !== []) {
+            $this->failedOutput($violations);
+        }
+
         $this->assertionsResumeOutput($analyseValueObject);
         $this->durationAndTimeOutput($analyseValueObject->timeStart);
 
@@ -33,7 +36,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
             $this->styleCustom($output)->writeln($print);
         }
 
-        return $violations === []
+        return $violations !== []
             ? self::SUCCESS
             : self::ERROR;
     }

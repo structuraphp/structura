@@ -20,7 +20,10 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
 
     public function getScript(): ?ScriptDescription
     {
-        return $this->script;
+        $script = $this->script;
+        $this->script = null;
+
+        return $script;
     }
 
     /**
@@ -29,6 +32,8 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes): null
     {
         $this->script = null;
+        $this->declare = null;
+        $this->namespace = null;
 
         return null;
     }
