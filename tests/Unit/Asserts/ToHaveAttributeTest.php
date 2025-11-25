@@ -36,6 +36,17 @@ final class ToHaveAttributeTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithAttribute(): Generator
+    {
+        yield 'class' => ['<?php #[Attribute] class Foo {}'];
+
+        yield 'enum' => ['<?php #[Attribute] enum Foo {}'];
+
+        yield 'interface' => ['<?php #[Attribute] interface Foo {}'];
+
+        yield 'trait' => ['<?php #[Attribute] trait Foo {}'];
+    }
+
     #[DataProvider('getClassLikeWithoutAttribute')]
     public function testShouldFailToHaveAttribute(string $raw, string $exceptName = 'Foo'): void
     {
@@ -54,17 +65,6 @@ final class ToHaveAttributeTest extends TestCase
                 $exceptName,
             ),
         );
-    }
-
-    public static function getClassLikeWithAttribute(): Generator
-    {
-        yield 'class' => ['<?php #[Attribute] class Foo {}'];
-
-        yield 'enum' => ['<?php #[Attribute] enum Foo {}'];
-
-        yield 'interface' => ['<?php #[Attribute] interface Foo {}'];
-
-        yield 'trait' => ['<?php #[Attribute] trait Foo {}'];
     }
 
     public static function getClassLikeWithoutAttribute(): Generator

@@ -19,7 +19,7 @@ final class TestException extends TestBuilder
     {
         $this
             ->allClasses()
-            ->fromDir('tests/Fixture/Exceptions')
+            ->fromRawMultiple($this->getClassLikeProvider())
             ->should(
                 static fn (Expr $expr): Expr => $expr
                     ->or(
@@ -33,5 +33,36 @@ final class TestException extends TestBuilder
                             ),
                     ),
             );
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private function getClassLikeProvider(): array
+    {
+        return [
+            <<<PHP
+            <?php
+                
+            declare(strict_types=1);
+                
+            namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
+                
+            use InvalidArgumentException;
+                
+            class InvalidException extends InvalidArgumentException {}
+            PHP,
+            <<<PHP
+            <?php
+                
+            declare(strict_types=1);
+                
+            namespace StructuraPhp\\Structura\\Tests\\Fixture\\Exceptions;
+                
+            use Exception;
+                
+            class UserException extends Exception {}
+            PHP,
+        ];
     }
 }

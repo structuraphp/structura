@@ -30,7 +30,7 @@ class ThatBuilder implements ShouldInterface
         $expression = new $this->abstractExpr();
         $closure($expression);
 
-        $this->ruleBuilder->addShould($expression);
+        $this->ruleBuilder->setShould($expression);
 
         return $this->ruleBuilder;
     }
@@ -40,7 +40,7 @@ class ThatBuilder implements ShouldInterface
         $exception = new Except();
         $closure($exception);
 
-        $this->ruleBuilder->addExpect($exception);
+        $this->ruleBuilder->setExpect($exception);
 
         return $this;
     }

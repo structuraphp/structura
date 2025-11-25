@@ -36,6 +36,19 @@ final class ToHaveMethodTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithMethod(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class { public function bar() {} };'];
+
+        yield 'class' => ['<?php class Foo { public function bar() {} }'];
+
+        yield 'enum' => ['<?php enum Foo { public function bar() {} }'];
+
+        yield 'interface' => ['<?php interface Foo { public function bar(); }'];
+
+        yield 'trait' => ['<?php trait Foo { public function bar() {} }'];
+    }
+
     #[DataProvider('getClassLikeWithoutMethod')]
     public function testShouldFailToHaveMethod(string $raw, string $exceptName = 'Foo'): void
     {
@@ -67,18 +80,5 @@ final class ToHaveMethodTest extends TestCase
         yield 'interface' => ['<?php interface Foo {}'];
 
         yield 'trait' => ['<?php trait Foo {}'];
-    }
-
-    public static function getClassLikeWithMethod(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class { public function bar() {} };'];
-
-        yield 'class' => ['<?php class Foo { public function bar() {} }'];
-
-        yield 'enum' => ['<?php enum Foo { public function bar() {} }'];
-
-        yield 'interface' => ['<?php interface Foo { public function bar(); }'];
-
-        yield 'trait' => ['<?php trait Foo { public function bar() {} }'];
     }
 }

@@ -33,19 +33,19 @@ final class ExecuteServiceTest extends TestCase
             );
 
         $service = new ExecuteService($rulesBuilder->getRuleObject());
-        $result = $service->assert();
+        $result = $service->assert()->getAssertValueObject();
 
-        self::assertSame([self::KEY => 1], $result->getPass());
+        self::assertSame([self::KEY => 1], $result->pass);
         self::assertSame(1, $result->countAssertsSuccess());
         self::assertSame(0, $result->countAssertsFailure());
         self::assertSame(0, $result->countAssertsWarning());
         self::assertSame(0, $result->countWarning(self::KEY));
         self::assertSame(0, $result->countViolation(self::KEY));
 
-        $violation = $result->getViolations();
+        $violation = $result->violations;
         self::assertEmpty($violation);
 
-        $warning = $result->getWarnings();
+        $warning = $result->warnings;
         self::assertEmpty($warning);
     }
 
@@ -60,16 +60,16 @@ final class ExecuteServiceTest extends TestCase
             );
 
         $service = new ExecuteService($rulesBuilder->getRuleObject());
-        $result = $service->assert();
+        $result = $service->assert()->getAssertValueObject();
 
-        self::assertSame([self::KEY => 0], $result->getPass());
+        self::assertSame([self::KEY => 0], $result->pass);
         self::assertSame(0, $result->countAssertsSuccess());
         self::assertSame(1, $result->countAssertsFailure());
         self::assertSame(0, $result->countAssertsWarning());
         self::assertSame(0, $result->countWarning(self::KEY));
         self::assertSame(1, $result->countViolation(self::KEY));
 
-        $violation = $result->getViolations()[self::KEY][0] ?? null;
+        $violation = $result->violations[self::KEY][0] ?? null;
 
         self::assertInstanceOf(ViolationValueObject::class, $violation);
         self::assertSame(
@@ -78,10 +78,10 @@ final class ExecuteServiceTest extends TestCase
         );
         self::assertSame(1, $violation->line);
         self::assertSame(ToExtend::class, $violation->assertClassname);
-        self::assertNull($violation->pathname);
+        self::assertSame($violation->pathname, 'tmp/run_0.php');
         self::assertSame('', $violation->messageCustom);
 
-        $warning = $result->getWarnings();
+        $warning = $result->warnings;
         self::assertEmpty($warning);
     }
 
@@ -104,19 +104,19 @@ final class ExecuteServiceTest extends TestCase
             );
 
         $service = new ExecuteService($rulesBuilder->getRuleObject());
-        $result = $service->assert();
+        $result = $service->assert()->getAssertValueObject();
 
-        self::assertSame([self::KEY => 1], $result->getPass());
+        self::assertSame([self::KEY => 1], $result->pass);
         self::assertSame(1, $result->countAssertsSuccess());
         self::assertSame(0, $result->countAssertsFailure());
         self::assertSame(0, $result->countAssertsWarning());
         self::assertSame(0, $result->countWarning(self::KEY));
         self::assertSame(0, $result->countViolation(self::KEY));
 
-        $violation = $result->getViolations();
+        $violation = $result->violations;
         self::assertEmpty($violation);
 
-        $warning = $result->getWarnings();
+        $warning = $result->warnings;
         self::assertEmpty($warning);
     }
 
@@ -139,19 +139,19 @@ final class ExecuteServiceTest extends TestCase
             );
 
         $service = new ExecuteService($rulesBuilder->getRuleObject());
-        $result = $service->assert();
+        $result = $service->assert()->getAssertValueObject();
 
-        self::assertSame([self::KEY => 2], $result->getPass());
+        self::assertSame([self::KEY => 2], $result->pass);
         self::assertSame(0, $result->countAssertsSuccess());
         self::assertSame(0, $result->countAssertsFailure());
         self::assertSame(1, $result->countAssertsWarning());
         self::assertSame(1, $result->countWarning(self::KEY));
         self::assertSame(0, $result->countViolation(self::KEY));
 
-        $violation = $result->getViolations();
+        $violation = $result->violations;
         self::assertEmpty($violation);
 
-        $warning = $result->getWarnings();
+        $warning = $result->warnings;
         self::assertSame([self::KEY => ['Foo']], $warning);
     }
 }

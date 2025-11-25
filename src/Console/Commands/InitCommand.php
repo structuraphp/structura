@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Console\Commands;
 
+use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Console\Dtos\InitDto;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,6 +19,8 @@ use Symfony\Component\Filesystem\Filesystem;
 )]
 final class InitCommand extends Command
 {
+    use Version;
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -30,6 +33,8 @@ final class InitCommand extends Command
 
             return self::INVALID;
         }
+
+        $io->writeln($this->getInfos());
 
         /** @var bool $response */
         $response = $io->ask(

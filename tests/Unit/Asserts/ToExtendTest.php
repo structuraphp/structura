@@ -37,6 +37,13 @@ final class ToExtendTest extends TestCase
         );
     }
 
+    public static function getClassLikeExtends(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class extends \Exception {};'];
+
+        yield 'class' => ['<?php class Foo extends \Exception {}'];
+    }
+
     #[DataProvider('getClassLikeExtendsNothing')]
     public function testShouldFailToExtends(string $raw, string $exceptName = 'Foo'): void
     {
@@ -62,12 +69,5 @@ final class ToExtendTest extends TestCase
         yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
-    }
-
-    public static function getClassLikeExtends(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class extends \Exception {};'];
-
-        yield 'class' => ['<?php class Foo extends \Exception {}'];
     }
 }

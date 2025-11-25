@@ -21,7 +21,7 @@ class NotDependsOnFunctionTest extends TestCase
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testNotDependsOnFunctionWithClass(string $raw): void
+    public function testNotDependsOnFunctionWithClass(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allClasses()
@@ -41,7 +41,7 @@ class NotDependsOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testNotDependsOnFunctionWithScript(string $raw): void
+    public function testNotDependsOnFunctionWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
@@ -85,9 +85,25 @@ class NotDependsOnFunctionTest extends TestCase
         );
     }
 
-    #[DataProvider('getScriptWithFunction')]
-    public function testShouldFailNotDependsOnFunctionWithScript(string $raw): void
+    public static function getClassLikeWithFunction(): Generator
     {
+        yield 'anonymous class' => [
+            '<?php
+             new class {
+                public function __invoke() {
+                    array_merge([], []);
+                    strtolower("FOO");
+                }
+            };',
+            'Anonymous',
+        ];
+    }
+
+    #[DataProvider('getScriptWithFunction')]
+    public function testShouldFailNotDependsOnFunctionWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
@@ -103,30 +119,16 @@ class NotDependsOnFunctionTest extends TestCase
             $rules,
             \sprintf(
                 'Resource <promote>%s</promote> must not depends on functions %s but depends on %s',
-                'Foo',
+                $exceptName,
                 'strtolower, array_.+',
                 'array_merge, strtolower',
             ),
         );
     }
 
-    public static function getClassLikeWithFunction(): Generator
-    {
-        yield 'anonymous class' => [
-            '<?php
-             new class {
-                public function __invoke() {
-                    array_merge([], []);
-                    strtolower("FOO");
-                }
-            };',
-            'Anonymous',
-        ];
-    }
-
     public static function getScriptWithFunction(): Generator
     {
-        yield 'script' => [
+        yield 'script with namespace' => [
             <<<'PHP'
             <?php
 
@@ -137,6 +139,19 @@ class NotDependsOnFunctionTest extends TestCase
                 strtolower("FOO");
             }
             PHP,
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            <<<'PHP'
+            <?php
+
+            function bar() {
+                array_merge([], []);
+                strtolower("FOO");
+            }
+            PHP,
+            'tmp/run_0.php',
         ];
     }
 }

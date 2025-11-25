@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Console\Commands;
 use Closure;
 use Exception;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\MakeTestDto;
 use StructuraPhp\Structura\Services\MakeTestService;
@@ -18,11 +19,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'make',
+    name: 'make:test',
     description: 'Make test',
 )]
 final class MakeTestCommand extends Command
 {
+    use Version;
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -32,32 +35,35 @@ final class MakeTestCommand extends Command
             return self::INVALID;
         }
 
-        $nameResponse = $io->ask('Test name');
-        if (!is_string($nameResponse) || $nameResponse === '') {
-            $io->error('Test name is required');
-
-            return self::INVALID;
-        }
-
-        $pathResponse = $io->ask('Path', 'src');
-        if (!is_string($pathResponse) || $pathResponse === '') {
-            $io->error('Path is required');
-
-            return self::INVALID;
-        }
+        $io->writeln($this->getInfos($dto->configPath));
 
         $archiConfig = $this->getStructuraConfig($dto->configPath);
-
-        $io->writeln(\sprintf('Runtime: %-5s PHP %s', '', PHP_VERSION));
-        $io->writeln(\sprintf('Configuration: %s', $dto->configPath));
 
         $makeService = new MakeTestService($archiConfig);
 
         try {
+            $nameResponse = $io->ask(
+                'What is the name of the test class (e.g. "NamespaceName\ClassName")?',
+            );
+            $name = $makeService->getNamespace($nameResponse);
+
+            /** @var string $pathResponse */
+            $pathResponse = $io->ask(
+                'Source code path that your test will analyze',
+                'src',
+            );
+            $path = $makeService->getPath($pathResponse);
+        } catch (Exception $exception) {
+            $io->error($exception->getMessage());
+
+            return self::INVALID;
+        }
+
+        try {
             $makeValueObject = $makeService->make(
                 new MakeTestValueObject(
-                    testClassName: $nameResponse,
-                    path: $pathResponse,
+                    testClassName: $name,
+                    path: $path,
                 ),
             );
 
@@ -69,9 +75,12 @@ final class MakeTestCommand extends Command
         }
 
         $io->info(
-            \sprintf(
-                'Test file %s is added now. Run composer dump-autoload',
-                $makeValueObject->className,
+            sprintf(
+                <<<'INFO'
+                Test file is added now, run composer dump-autoload.
+                file://%s
+                INFO,
+                $makeValueObject->filename,
             ),
         );
 

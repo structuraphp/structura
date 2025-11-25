@@ -56,7 +56,7 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testDependsOnlyOnWithScript(string $raw): void
+    public function testDependsOnlyOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
@@ -111,30 +111,6 @@ final class DependsOnlyOnTest extends TestCase
         );
     }
 
-    #[DataProvider('getScriptWithDependsProvider')]
-    public function testShouldFailDependsOnlyOnWithScript(string $raw): void
-    {
-        $rules = $this
-            ->allScripts()
-            ->fromRaw($raw)
-            ->should(
-                static fn (ExprScript $assert): ExprScript => $assert
-                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
-            );
-
-        self::assertRulesViolation(
-            $rules,
-            \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
-                'Depend\Bap',
-                ArrayAccess::class,
-                'Depend\Bar',
-                Exception::class,
-                Stringable::class,
-            ),
-        );
-    }
-
     public static function getClassLikeWithDependsProvider(): Generator
     {
         yield 'class' => [
@@ -158,9 +134,36 @@ final class DependsOnlyOnTest extends TestCase
         ];
     }
 
+    #[DataProvider('getScriptWithDependsProvider')]
+    public function testShouldFailDependsOnlyOnWithScript(
+        string $raw,
+        string $exceptName,
+    ): void {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                $exceptName,
+                'Depend\Bap',
+                ArrayAccess::class,
+                'Depend\Bar',
+                Exception::class,
+                Stringable::class,
+            ),
+        );
+    }
+
     public static function getScriptWithDependsProvider(): Generator
     {
-        yield 'script' => [
+        yield 'script with namespace' => [
             <<<'PHP'
             <?php
 
@@ -178,6 +181,26 @@ final class DependsOnlyOnTest extends TestCase
                 return $this->arrayAccess['foo'] ?? throw new \Exception();
             }
             PHP,
+            'Foo',
+        ];
+
+        yield 'script without namespace' => [
+            <<<'PHP'
+            <?php
+
+            use ArrayAccess;
+            use Depend\Bap;
+            use Depend\Bar;
+            
+            function foo(ArrayAccess $arrayAccess) {
+                \Stringable::class;
+            }
+
+            function bar(): string {
+                return $this->arrayAccess['foo'] ?? throw new \Exception();
+            }
+            PHP,
+            'tmp/run_0.php',
         ];
     }
 }

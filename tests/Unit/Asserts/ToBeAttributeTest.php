@@ -36,22 +36,6 @@ class ToBeAttributeTest extends TestCase
         self::assertRulesPass($rules, 'to be attribute');
     }
 
-    #[DataProvider('getClasseLikeForFail')]
-    public function testShouldFailToBeAttribute(string $raw, string $exceptName = 'Foo'): void
-    {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->should(
-                static fn (Expr $assert): Expr => $assert->toBeAttribute(),
-            );
-
-        self::assertRulesViolation(
-            $rules,
-            \sprintf('Resource <promote>%s</promote> must be attributable', $exceptName),
-        );
-    }
-
     public static function getClassLikeForPass(): Generator
     {
         yield 'default parameter' => [
@@ -68,6 +52,22 @@ class ToBeAttributeTest extends TestCase
             '<?php #[Attribute(Attribute::TARGET_CLASS_CONSTANT | Attribute::TARGET_PARAMETER)] class Foo {};',
             Attribute::TARGET_PARAMETER | Attribute::TARGET_CLASS_CONSTANT,
         ];
+    }
+
+    #[DataProvider('getClasseLikeForFail')]
+    public function testShouldFailToBeAttribute(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeAttribute(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf('Resource <promote>%s</promote> must be attributable', $exceptName),
+        );
     }
 
     public static function getClasseLikeForFail(): Generator
