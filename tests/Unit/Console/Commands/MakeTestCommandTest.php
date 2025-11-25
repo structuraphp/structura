@@ -51,19 +51,33 @@ final class MakeTestCommandTest extends TestCase
                 '--config' => $this->config,
             ]);
 
-        $display = $this->commandTester->getDisplay();
+        $display = rtrim($this->commandTester->getDisplay());
 
-        self::assertStringContainsString(
-            '[INFO] Test file TestModel is added now',
-            $display,
+        $exceptOutput = [
+            ' What is the name of the test class (e.g. "NamespaceName\ClassName")?:',
+            ' >',
+            ' Source code path that your test will analyze [src]:',
+            ' >',
+            ' [INFO] Test file is added now, run composer dump-autoload.',
+        ];
+
+        $outputs = array_slice(
+            array: explode(PHP_EOL, $display),
+            offset: 4,
+            length: 5,
         );
+
+        foreach ($outputs as $key => $command) {
+            self::assertSame($exceptOutput[$key], rtrim($command));
+        }
+
         self::assertSame(Command::SUCCESS, $statusCode);
     }
 
     public function testMakeTestFail(): void
     {
         $statusCode = $this->commandTester
-            ->setInputs([''])
+            ->setInputs(['', ''])
             ->execute([
                 '--config' => $this->config,
             ]);
@@ -71,7 +85,7 @@ final class MakeTestCommandTest extends TestCase
         $display = $this->commandTester->getDisplay();
 
         self::assertStringContainsString(
-            '[ERROR] Test name is required',
+            '[ERROR] The name of the test class is required',
             $display,
         );
         self::assertSame(Command::INVALID, $statusCode);
@@ -93,6 +107,6 @@ final class MakeTestCommandTest extends TestCase
         $display = $this->commandTester->getDisplay();
 
         self::assertStringContainsString('already exists', $display);
-        self::assertSame(Command::FAILURE, $statusCode);
+        self::assertSame(Command::INVALID, $statusCode);
     }
 }

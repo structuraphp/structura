@@ -40,6 +40,25 @@ final class ToUseTraitTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithTrait(): Generator
+    {
+        yield 'anonymous class' => [
+            '<?php new class { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
+        ];
+
+        yield 'class' => [
+            '<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
+        ];
+
+        yield 'enum' => [
+            '<?php enum Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
+        ];
+
+        yield 'interface' => [
+            '<?php interface Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
+        ];
+    }
+
     #[DataProvider('getClassLikeWithoutTrait')]
     public function testShouldFailToExtendsWithInterface(
         string $raw,
@@ -61,25 +80,6 @@ final class ToUseTraitTest extends TestCase
                 HasFactory::class,
             ),
         );
-    }
-
-    public static function getClassLikeWithTrait(): Generator
-    {
-        yield 'anonymous class' => [
-            '<?php new class { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
-        ];
-
-        yield 'class' => [
-            '<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
-        ];
-
-        yield 'enum' => [
-            '<?php enum Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
-        ];
-
-        yield 'interface' => [
-            '<?php interface Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }',
-        ];
     }
 
     public static function getClassLikeWithoutTrait(): Generator

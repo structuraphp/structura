@@ -32,6 +32,15 @@ final class ToImplementNothingTest extends TestCase
         self::assertRulesPass($rules, 'to implement nothing');
     }
 
+    public static function getClassLikeImplementsNothing(): Generator
+    {
+        yield 'anonymous class' => ['<?php new class {};'];
+
+        yield 'class' => ['<?php class Foo {}'];
+
+        yield 'enum' => ['<?php enum Foo {}'];
+    }
+
     #[DataProvider('getClassLikeImplements')]
     public function testShouldFailToImplementsNothing(string $raw, string $exceptName = 'Foo'): void
     {
@@ -50,15 +59,6 @@ final class ToImplementNothingTest extends TestCase
                 $exceptName,
             ),
         );
-    }
-
-    public static function getClassLikeImplementsNothing(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class {};'];
-
-        yield 'class' => ['<?php class Foo {}'];
-
-        yield 'enum' => ['<?php enum Foo {}'];
     }
 
     public static function getClassLikeImplements(): Generator

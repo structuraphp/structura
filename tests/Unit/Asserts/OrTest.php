@@ -7,11 +7,12 @@ namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 use AppendIterator;
 use ArrayIterator;
 use Exception;
+use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Expr;
-use StructuraPhp\Structura\Tests\Fixture\Exceptions\UserException;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversMethod(Expr::class, 'or')]
@@ -19,11 +20,15 @@ final class OrTest extends TestCase
 {
     use ArchitectureAsserts;
 
-    public function testShouldOr(): void
+    /**
+     * @param array<int,string> $raws
+     */
+    #[DataProvider('getClassLikeProvider')]
+    public function testShouldOr(array $raws): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir('tests/Fixture/Exceptions')
+            ->fromRawMultiple($raws)
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->or(
@@ -42,11 +47,15 @@ final class OrTest extends TestCase
         );
     }
 
-    public function testShouldFailToOr(): void
+    /**
+     * @param array<int,string> $raws
+     */
+    #[DataProvider('getClassLikeProvider')]
+    public function testShouldFailToOr(array $raws): void
     {
         $rules = $this
             ->allClasses()
-            ->fromDir('tests/Fixture/Exceptions')
+            ->fromRawMultiple($raws)
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->or(
@@ -58,12 +67,26 @@ final class OrTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            sprintf(
-                'Resource <promote>%s</promote> must extend by <promote>ArrayIterator</promote>, '
-                . 'Resource <promote>%s</promote> must extend by <promote>AppendIterator</promote>',
-                UserException::class,
-                UserException::class,
-            ),
+            'Resource <promote>Foo</promote> must extend by <promote>ArrayIterator</promote>, '
+            . 'Resource <promote>Foo</promote> must extend by <promote>AppendIterator</promote>, '
+            . 'Resource <promote>Bar</promote> must extend by <promote>ArrayIterator</promote>, '
+            . 'Resource <promote>Bar</promote> must extend by <promote>AppendIterator</promote>',
         );
+    }
+
+    public static function getClassLikeProvider(): Generator
+    {
+        yield [
+            [
+                <<<PHP
+                <?php
+                class Foo extends \\InvalidArgumentException {}
+                PHP,
+                <<<PHP
+                <?php
+                class Bar extends \\Exception {}
+                PHP,
+            ],
+        ];
     }
 }

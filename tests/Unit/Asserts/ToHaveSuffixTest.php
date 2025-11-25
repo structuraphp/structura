@@ -35,6 +35,17 @@ final class ToHaveSuffixTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithSuffixProvider(): Generator
+    {
+        yield 'class' => ['<?php class FooController {}'];
+
+        yield 'enum' => ['<?php enum FooController {}'];
+
+        yield 'interface' => ['<?php interface FooController {}'];
+
+        yield 'trait' => ['<?php trait FooController {}'];
+    }
+
     #[DataProvider('getClassLikeWithoutSuffixProvider')]
     public function testShouldFailToHaveSuffix(string $raw, string $exceptName = 'Foo'): void
     {
@@ -53,17 +64,6 @@ final class ToHaveSuffixTest extends TestCase
                 $exceptName,
             ),
         );
-    }
-
-    public static function getClassLikeWithSuffixProvider(): Generator
-    {
-        yield 'class' => ['<?php class FooController {}'];
-
-        yield 'enum' => ['<?php enum FooController {}'];
-
-        yield 'interface' => ['<?php interface FooController {}'];
-
-        yield 'trait' => ['<?php trait FooController {}'];
     }
 
     public static function getClassLikeWithoutSuffixProvider(): Generator

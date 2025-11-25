@@ -40,6 +40,21 @@ final class DependsOnlyOnAttributTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithInheritance(): Generator
+    {
+        yield 'without attributs' => ['<?php class Foo {}'];
+
+        yield 'without attributs and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php #[\SensitiveParameter] class Foo {}'];
+
+        yield 'with pattern' => ['<?php #[\Dependencies\Acme\Foo] class Foo {}'];
+
+        yield 'with name and pattern' => [
+            '<?php #[\Dependencies\Acme\Foo] #[\SensitiveParameter] class Foo {}',
+        ];
+    }
+
     #[DataProvider('getClassLikeWithoutInheritance')]
     public function testShouldFailToExtendsWithInterface(string $raw): void
     {
@@ -63,21 +78,6 @@ final class DependsOnlyOnAttributTest extends TestCase
                 'BadAttribute',
             ),
         );
-    }
-
-    public static function getClassLikeWithInheritance(): Generator
-    {
-        yield 'without attributs' => ['<?php class Foo {}'];
-
-        yield 'without attributs and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
-
-        yield 'with name' => ['<?php #[\SensitiveParameter] class Foo {}'];
-
-        yield 'with pattern' => ['<?php #[\Dependencies\Acme\Foo] class Foo {}'];
-
-        yield 'with name and pattern' => [
-            '<?php #[\Dependencies\Acme\Foo] #[\SensitiveParameter] class Foo {}',
-        ];
     }
 
     public static function getClassLikeWithoutInheritance(): Generator

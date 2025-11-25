@@ -12,8 +12,11 @@ use Symfony\Component\Finder\Finder;
 
 final readonly class RuleValuesObject
 {
+    /**
+     * @param array<string, string> $raws
+     */
     public function __construct(
-        public string $raw,
+        public array $raws,
         public ?Finder $finder,
         public ?AbstractExpr $that,
         public ?Except $except,

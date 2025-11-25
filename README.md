@@ -1,7 +1,7 @@
 # Structura
 
-[![License](https://img.shields.io/github/license/soosyze/soosyze.svg)](https://github.com/soosyze/soosyze/blob/master/LICENSE "LICENSE")
-[![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#version-php "PHP version 8.2 minimum")
+[![License](https://img.shields.io/github/license/structuraphp/structura.svg)](https://github.com/structuraphp/structura/blob/main/LICENSE "LICENSE")
+[![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#php-version "PHP version 8.2 minimum")
 
 ## About
 
@@ -21,10 +21,10 @@ consistent code structure.
 
 ### PHP version
 
-| Version PHP     | Structura 0.x |
-|-----------------|---------------|
-| <= 8.1          | ✗ Unsupported |
-| 8.2 / 8.3 / 8.4 | ✓ Supported   |
+| Version PHP           | Structura 0.x |
+|-----------------------|---------------|
+| <= 8.1                | ✗ Unsupported |
+| 8.2 / 8.3 / 8.4 / 8.5 | ✓ Supported   |
 
 ## Installation
 
@@ -61,7 +61,7 @@ After creating and completing your configuration file, you can use the command t
 architecture tests:
 
 ```shell
-php bin/structura make
+php bin/structura make:test
 ```
 
 Here's a simple example of architecture testing for your DTOs:
@@ -135,7 +135,7 @@ $this->allScripts()
 
 If you choose script analysis, all PHP code can be analysed, but only rules can be used.
 
-### fromDir() and fromRaw()
+### fromDir(), fromRaw() and fromRawMultiple()
 
 Start with the `fromDir()` method, which takes the path of the files to be analysed.
 It can take a second closure parameter
@@ -148,10 +148,12 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
 )
 ```
 
-`fromRaw()` method can be used to test PHP code in the form of a string:
+`fromRaw()` method can be used to test PHP code in the form of a string.
+You can provide a file name as the second parameter. If it is null, it will be set by default with the following pattern : `tmp\run_<count>.php`
 
 ```php
-->fromRaw('<?php
+->fromRaw(
+    raw: '<?php
             
     use ArrayAccess;
     use Depend\Bap;
@@ -159,11 +161,23 @@ to [customise the finder](https://symfony.com/doc/current/components/finder.html
             
     class Foo implements \Stringable {
         public function __construct(ArrayAccess $arrayAccess) {}
+    
+        public function __toString(): string {
+            return $this->arrayAccess[\'foo\'] ?? throw new \Exception();
+        }
+    }',
+    pathname: 'path/example_1.php'
+)
+```
 
-    public function __toString(): string {
-        return $this->arrayAccess['foo'] ?? throw new \Exception();
-    }
-}')
+`fromRawMultiple()` method can be used to test PHP code in the form of a string.
+You can provide a file name as an array key. If it is numeric, it will be set by default with the following pattern: `tmp\run_<count>.php`
+
+```php
+->fromRawMultiple([
+    'path/example_1.php' => '<?php /* ... */',
+    'path/example_2.php' => '<?php /* ... */',
+])
 ```
 
 ### that()
@@ -218,6 +232,15 @@ To run the architecture tests, execute the following command:
 ```shell
 php bin/structura analyze
 ```
+
+### Cli options
+
+- `-f, --error-format[=ERROR-FORMAT]`
+  - `text`: Default. For human consumption.
+  - `github`: Creates GitHub Actions compatible output.
+- `-p, --progress-format[=PROGRESS-FORMAT]`
+  - `text`: Default. For human consumption.
+  - `bar`: For progress bar.
 
 ## Assertions
 

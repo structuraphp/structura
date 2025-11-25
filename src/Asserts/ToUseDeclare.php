@@ -55,7 +55,7 @@ final readonly class ToUseDeclare implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
-                $script->namespace ?? '',
+                $script->namespace ?? $script->getFileBasename(),
                 $this->key,
                 $this->value,
             ),

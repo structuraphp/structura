@@ -11,13 +11,14 @@ final readonly class AnalyseValueObject
 {
     /**
      * @param array<int,ViolationsByTest> $violationsByTests
-     * @param array<int,string> $prints
+     * @param array<int,AnalyseTestValueObject> $analyseTestValueObjects
      */
     public function __construct(
+        public float $timeStart,
         public int $countPass,
         public int $countViolation,
         public int $countWarning,
         public array $violationsByTests,
-        public array $prints = [],
+        public array $analyseTestValueObjects,
     ) {}
 }

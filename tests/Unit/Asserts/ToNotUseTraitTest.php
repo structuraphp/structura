@@ -10,7 +10,6 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
-use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -34,26 +33,15 @@ final class ToNotUseTraitTest extends TestCase
         self::assertRulesPass($rules, 'to not use trait');
     }
 
-    /**
-     * @param class-string $exceptName
-     */
-    #[DataProvider('getClassLikeWithTrait')]
-    public function testToUseNothingWithExpect(string $raw, string $exceptName): void
+    public static function getClassLikeWithoutTrait(): Generator
     {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->that(static fn (Expr $expr): Expr => $expr->toBeClasses())
-            ->except(
-                static fn (Except $except): Except => $except
-                    ->byClassname($exceptName, ToNotUseTrait::class),
-            )
-            ->should(
-                static fn (Expr $assert): Expr => $assert
-                    ->toNotUseTrait(),
-            );
+        yield 'anonymous class' => ['<?php new class {};'];
 
-        self::assertRulesPass($rules, 'to not use trait');
+        yield 'class' => ['<?php class Foo {}'];
+
+        yield 'enum' => ['<?php enum Foo {};'];
+
+        yield 'interface' => ['<?php interface Foo {}'];
     }
 
     #[DataProvider('getClassLikeWithTrait')]
@@ -85,16 +73,5 @@ final class ToNotUseTraitTest extends TestCase
         yield 'enum' => ['<?php enum Foo { use \HasFactory; };', 'Foo'];
 
         yield 'interface' => ['<?php interface Foo { use \HasFactory; }', 'Foo'];
-    }
-
-    public static function getClassLikeWithoutTrait(): Generator
-    {
-        yield 'anonymous class' => ['<?php new class {};'];
-
-        yield 'class' => ['<?php class Foo {}'];
-
-        yield 'enum' => ['<?php enum Foo {};'];
-
-        yield 'interface' => ['<?php interface Foo {}'];
     }
 }

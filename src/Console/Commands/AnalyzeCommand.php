@@ -5,48 +5,42 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Console\Commands;
 
 use Closure;
-use DateTime;
-use Exception;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
-use StructuraPhp\Structura\Console\Enums\StyleCustom;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
+use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\Enums\ErrorFormatterType;
+use StructuraPhp\Structura\Enums\ProgressFormatterType;
+use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * @phpstan-import-type ViolationsByTest from AnalyseValueObject
- */
 #[AsCommand(
     name: 'analyze',
     description: 'Test archi',
 )]
 final class AnalyzeCommand extends Command
 {
+    use Version;
+
+    public const ERROR_FORMAT_OPTION = 'error-format';
+
+    public const PROGRESS_FORMAT_OPTION = 'progress-format';
+
     private AnalyzeDto $analyzeDto;
-
-    /** @var array<int,string> */
-    private array $prints = [];
-
-    public function styleCustom(OutputInterface $output): OutputInterface
-    {
-        foreach (StyleCustom::cases() as $style) {
-            $output
-                ->getFormatter()
-                ->setStyle(
-                    $style->value,
-                    $style->getOutputFormatterStyle(),
-                );
-        }
-
-        return $output;
-    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -62,27 +56,107 @@ final class AnalyzeCommand extends Command
             return self::SUCCESS;
         }
 
-        $io->writeln(\sprintf('Runtime: %-5s PHP %s', '', PHP_VERSION));
-        $io->writeln(\sprintf('Configuration: %s', $this->analyzeDto->configPath));
+        $io->writeln($this->getInfos($this->analyzeDto->configPath));
         $io->newLine();
 
         $structuraConfig = $this->getStructuraConfig();
 
-        $timeStart = microtime(true);
+        $progressFormatter = $this->getProgressFormatter($input);
 
-        $analyseService = new AnalyseService($structuraConfig);
-        $analyseValueObject = $analyseService->analyse();
+        $rules = $structuraConfig->getRules();
+        $progressFormatter->progressStart($io, count($rules));
 
-        $this->failedOutput(array_merge(...$analyseValueObject->violationsByTests));
-        $this->assertionsResumeOutput($analyseValueObject);
-        $this->durationAndTimeOutput($timeStart);
+        $results = [];
 
-        $this->prints = array_merge($analyseValueObject->prints, $this->prints);
-        foreach ($this->prints as $print) {
-            $this->styleCustom($output)->writeln($print);
+        /** @var class-string<TestBuilder> $ruleClassname */
+        foreach ($rules as $ruleClassname) {
+            $analyseService = new AnalyseService($structuraConfig);
+            $analyseResult = $analyseService
+                ->analyse(
+                    microtime(true),
+                    $ruleClassname,
+                );
+
+            $progressFormatter->progressAdvance($io, $analyseResult);
+            $results[] = $analyseResult;
         }
 
+        $result = $this->getValuesInfo($results);
+
+        $progressFormatter->progressFinish($io);
+
+        $errorFormatter = $this->getErrorFormatter($input);
+        $errorFormatter->formatErrors($result, $output);
+
         return self::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addOption(
+                name: self::ERROR_FORMAT_OPTION,
+                shortcut: 'f',
+                mode: InputOption::VALUE_OPTIONAL,
+                description: 'Select output error format',
+                default: ErrorFormatterType::Text->value,
+                suggestedValues: array_column(ErrorFormatterType::cases(), 'value'),
+            )
+            ->addOption(
+                name: self::PROGRESS_FORMAT_OPTION,
+                shortcut: 'p',
+                mode: InputOption::VALUE_OPTIONAL,
+                description: 'Select output progress format',
+                default: ProgressFormatterType::Text->value,
+                suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
+            );
+    }
+
+    private function getErrorFormatter(InputInterface $input): ErrorFormatterInterface
+    {
+        return match ($input->getOption(self::ERROR_FORMAT_OPTION)) {
+            ErrorFormatterType::Text->value => new ErrorTextFormatter(),
+            ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
+    }
+
+    private function getProgressFormatter(InputInterface $input): ProgressFormatterInterface
+    {
+        return match ($input->getOption(self::PROGRESS_FORMAT_OPTION)) {
+            ProgressFormatterType::Text->value => new ProgressTextFormatter(),
+            ProgressFormatterType::Bar->value => new ProgressBarFormatter(),
+            default => throw new InvalidArgumentException(),
+        };
+    }
+
+    /**
+     * @param array<int,AnalyseValueObject> $results
+     */
+    private function getValuesInfo(array $results): AnalyseValueObject
+    {
+        $countPass = 0;
+        $countViolation = 0;
+        $countWarning = 0;
+        $violationsByTests = [];
+        $analyseTestValueObjects = [];
+
+        foreach ($results as $result) {
+            $countPass += $result->countPass;
+            $countViolation += $result->countViolation;
+            $countWarning += $result->countWarning;
+            $violationsByTests[] = $result->violationsByTests;
+            $analyseTestValueObjects[] = $result->analyseTestValueObjects;
+        }
+
+        return new AnalyseValueObject(
+            timeStart: $results[0]->timeStart ?? 0,
+            countPass: $countPass,
+            countViolation: $countViolation,
+            countWarning: $countWarning,
+            violationsByTests: array_merge(...$violationsByTests),
+            analyseTestValueObjects: array_merge(...$analyseTestValueObjects),
+        );
     }
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto
@@ -110,73 +184,5 @@ final class AnalyzeCommand extends Command
         $closure($config);
 
         return $config;
-    }
-
-    /**
-     * @param ViolationsByTest $violationsByTests
-     */
-    private function failedOutput(array $violationsByTests): void
-    {
-        $this->prints[] = '<violation> ERROR LIST </violation>';
-        $this->prints[] = '';
-
-        foreach ($violationsByTests as $violationsByTest) {
-            foreach ($violationsByTest as $violation) {
-                $this->prints[] = $violation->messageViolation;
-                $this->prints[] = \sprintf(
-                    '%s:%d',
-                    $violation->pathname,
-                    $violation->line,
-                );
-                $this->prints[] = '';
-            }
-        }
-    }
-
-    private function assertionsResumeOutput(AnalyseValueObject $analyseDto): void
-    {
-        $data = [
-            '<green>%d passed</green>' => $analyseDto->countPass,
-            '<fire>%d failed</fire>' => $analyseDto->countViolation,
-            '<warning>%d warning</warning>' => $analyseDto->countWarning,
-        ];
-
-        $data = array_filter($data, fn (int $value): bool => $value > 0);
-
-        $print = sprintf(
-            '%-9s ' . implode(', ', array_keys($data)),
-            'Tests:',
-            ...array_values($data),
-        );
-        $print .= sprintf(
-            ' (%d assertion)',
-            $analyseDto->countPass + $analyseDto->countViolation + $analyseDto->countWarning,
-        );
-        $this->prints[] = $print;
-    }
-
-    private function durationAndTimeOutput(float $time_start): void
-    {
-        $timeEnd = microtime(true);
-        $time = $timeEnd - $time_start;
-        $now = $this->tryDuration($time);
-
-        $this->prints[] = \sprintf(
-            'Duration: %s, Memory: %d MB',
-            substr($now->format('i:s.u'), 0, -3),
-            memory_get_peak_usage(true) / 1024 / 1024,
-        );
-    }
-
-    private function tryDuration(float $time): DateTime
-    {
-        $now = DateTime::createFromFormat(
-            'U.u',
-            number_format($time, 3, '.', ''),
-        );
-
-        return $now === false
-            ? throw new Exception()
-            : $now;
     }
 }

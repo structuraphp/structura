@@ -12,6 +12,7 @@ use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\Tests\Unit\Concerns\ArrTest;
+use StructuraPhp\Structura\Tests\Unit\Concerns\Console\VersionTest;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorrespondingTrait::class)]
@@ -22,6 +23,7 @@ class ToHaveCorrespondingTraitTest extends TestCase
 
     private const CORRESPONDENCE_ERROR = [
         ArrTest::class => 'StructuraPhp\Structura\Concerns\ArrError',
+        VersionTest::class => 'StructuraPhp\Structura\Concerns\Console\VersionError',
     ];
 
     public function testToHaveCorrespondingTrait(): void

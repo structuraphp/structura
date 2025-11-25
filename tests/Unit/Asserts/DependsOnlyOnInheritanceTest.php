@@ -44,6 +44,21 @@ final class DependsOnlyOnInheritanceTest extends TestCase
         );
     }
 
+    public static function getClassLikeWithInheritance(): Generator
+    {
+        yield 'without extends' => ['<?php class Foo {}'];
+
+        yield 'without extends and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php class Foo extends \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}'];
+
+        yield 'with pattern' => ['<?php class Foo extends \Dependencies\Acme\Foo {}'];
+
+        yield 'with name and pattern' => [
+            '<?php interface Foo extends \Dependencies\Acme\Foo, \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}',
+        ];
+    }
+
     #[DataProvider('getClassLikeWithoutInheritance')]
     public function testShouldFailToExtendsWithInterface(string $raw): void
     {
@@ -67,21 +82,6 @@ final class DependsOnlyOnInheritanceTest extends TestCase
                 'BadExtends',
             ),
         );
-    }
-
-    public static function getClassLikeWithInheritance(): Generator
-    {
-        yield 'without extends' => ['<?php class Foo {}'];
-
-        yield 'without extends and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
-
-        yield 'with name' => ['<?php class Foo extends \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}'];
-
-        yield 'with pattern' => ['<?php class Foo extends \Dependencies\Acme\Foo {}'];
-
-        yield 'with name and pattern' => [
-            '<?php interface Foo extends \Dependencies\Acme\Foo, \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}',
-        ];
     }
 
     public static function getClassLikeWithoutInheritance(): Generator

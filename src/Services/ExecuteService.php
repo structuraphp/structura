@@ -21,26 +21,35 @@ final class ExecuteService
 {
     private AssertBuilder $builder;
 
-    public function __construct(private readonly RuleValuesObject $ruleValuesObject) {}
+    private ParseService $parseService;
 
-    public function assert(): AssertBuilder
+    public function __construct(private readonly RuleValuesObject $ruleValuesObject)
     {
-        $service = new ParseService(
+        $this->parseService = new ParseService(
             $this->ruleValuesObject->getDescriptorType(),
         );
         $this->builder = new AssertBuilder();
+    }
 
-        if ($this->ruleValuesObject->finder instanceof Finder) {
-            $description = $service->parse($this->ruleValuesObject->finder);
-        } elseif ($this->ruleValuesObject->raw !== '') {
-            $description = $service->parseRaw($this->ruleValuesObject->raw);
-        } else {
-            throw new InvalidArgumentException();
-        }
+    public function assert(): AssertBuilder
+    {
+        $description = $this->ruleValuesObject->finder instanceof Finder
+            ? $this->parseService->parse($this->ruleValuesObject->finder)
+            : $this->parseRawFiles();
 
         $this->execute($description, $this->ruleValuesObject->should);
 
         return $this->builder;
+    }
+
+    /**
+     * @return Generator<ClassDescription|ScriptDescription>
+     */
+    private function parseRawFiles(): Generator
+    {
+        foreach ($this->ruleValuesObject->raws as $path => $raw) {
+            yield from $this->parseService->parseRaw($raw, $path);
+        }
     }
 
     /**

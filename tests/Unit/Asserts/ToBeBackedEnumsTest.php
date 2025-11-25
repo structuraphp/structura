@@ -39,28 +39,6 @@ class ToBeBackedEnumsTest extends TestCase
         );
     }
 
-    #[DataProvider('getClasseLikeForFail')]
-    public function testShouldFailToBackedEnums(
-        string $raw,
-        ?ScalarType $scalarType,
-        string $exceptName = 'Foo',
-    ): void {
-        $rules = $this
-            ->allClasses()
-            ->fromRaw($raw)
-            ->should(
-                static fn (Expr $assert): Expr => $assert->toBeBackedEnums($scalarType),
-            );
-
-        $messageViolation = \sprintf(
-            'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
-            $exceptName,
-            $scalarType->value ?? 'int or string',
-        );
-
-        self::assertRulesViolation($rules, $messageViolation);
-    }
-
     public static function getClassLikeForPass(): Generator
     {
         yield 'backed string' => [
@@ -82,6 +60,28 @@ class ToBeBackedEnumsTest extends TestCase
             '<?php enum Foo: int {}',
             null,
         ];
+    }
+
+    #[DataProvider('getClasseLikeForFail')]
+    public function testShouldFailToBackedEnums(
+        string $raw,
+        ?ScalarType $scalarType,
+        string $exceptName = 'Foo',
+    ): void {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeBackedEnums($scalarType),
+            );
+
+        $messageViolation = \sprintf(
+            'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
+            $exceptName,
+            $scalarType->value ?? 'int or string',
+        );
+
+        self::assertRulesViolation($rules, $messageViolation);
     }
 
     public static function getClasseLikeForFail(): Generator

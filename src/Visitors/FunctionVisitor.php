@@ -85,6 +85,7 @@ final class FunctionVisitor extends NodeVisitorAbstract
      */
     public function beforeTraverse(array $nodes): null
     {
+        $this->namespace = [];
         $this->dependencies = [];
 
         return null;

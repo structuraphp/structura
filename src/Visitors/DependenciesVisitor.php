@@ -104,6 +104,11 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         // clean dependencies
         $this->namespace = [];
         $this->dependencies = [];
+        $this->interfaces = [];
+        $this->inheritance = [];
+        $this->traits = [];
+        $this->attributes = [];
+        $this->classDeep = 0;
 
         return $output;
     }
@@ -114,6 +119,11 @@ final class DependenciesVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes): null
     {
         $this->dependencies = [];
+        $this->interfaces = [];
+        $this->inheritance = [];
+        $this->traits = [];
+        $this->attributes = [];
+        $this->classDeep = 0;
 
         return null;
     }
