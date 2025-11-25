@@ -233,7 +233,7 @@ final class ClassDescription extends ScriptDescription
 
         /** @var array<int,string>|false $match */
         $match = preg_grep(
-            '/^' . $this->customPregQuote($pattern) . '$/',
+            '/^(?:' . $this->customPregQuote($pattern) . ')$/',
             $this->getDependenciesByType($type),
         );
 

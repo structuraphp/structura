@@ -19,6 +19,10 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
         /** @var ViolationsByTest $violationsByTests */
         $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);
 
+        if ($violationsByTests === []) {
+            return self::SUCCESS;
+        }
+
         foreach ($violationsByTests as $violationsByTest) {
             foreach ($violationsByTest as $violation) {
                 $metas = [
@@ -41,8 +45,6 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
             }
         }
 
-        return $violationsByTests === []
-            ? self::SUCCESS
-            : self::ERROR;
+        return self::ERROR;
     }
 }

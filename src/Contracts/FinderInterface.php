@@ -15,7 +15,7 @@ interface FinderInterface
 {
     /**
      * @param array<int,string>|string $dirs
-     * @param null|Closure(Finder): ?Finder $closure
+     * @param null|(Closure(Finder): (Finder|void)) $closure
      *
      * @return ThatInterface<T>
      */

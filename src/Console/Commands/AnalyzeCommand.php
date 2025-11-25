@@ -135,7 +135,6 @@ final class AnalyzeCommand extends Command
      */
     private function getValuesInfo(array $results): AnalyseValueObject
     {
-        $timeStart = 0;
         $countPass = 0;
         $countViolation = 0;
         $countWarning = 0;
@@ -143,7 +142,6 @@ final class AnalyzeCommand extends Command
         $analyseTestValueObjects = [];
 
         foreach ($results as $result) {
-            $timeStart += $result->timeStart;
             $countPass += $result->countPass;
             $countViolation += $result->countViolation;
             $countWarning += $result->countWarning;
@@ -152,7 +150,7 @@ final class AnalyzeCommand extends Command
         }
 
         return new AnalyseValueObject(
-            timeStart: $timeStart,
+            timeStart: $results[0]->timeStart ?? 0,
             countPass: $countPass,
             countViolation: $countViolation,
             countWarning: $countWarning,
