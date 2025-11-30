@@ -61,7 +61,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
+                'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,

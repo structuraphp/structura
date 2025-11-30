@@ -76,7 +76,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits %s',
+                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
                 ControllerBase::class,
                 'Dependencies\Acme\.*',
                 'BadExtends',

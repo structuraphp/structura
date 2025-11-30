@@ -101,12 +101,9 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
                 'Depend\Bap',
-                ArrayAccess::class,
-                'Depend\Bar',
-                Exception::class,
-                Stringable::class,
+                'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
         );
     }
@@ -150,13 +147,10 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s, %s, %s, %s',
+                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
                 $exceptName,
                 'Depend\Bap',
-                ArrayAccess::class,
-                'Depend\Bar',
-                Exception::class,
-                Stringable::class,
+                'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
         );
     }
