@@ -77,7 +77,7 @@ class NotDependsOnFunctionTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on functions %s but depends on %s',
+                'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
                 $exceptName,
                 'strtolower, array_.+',
                 'array_merge, strtolower',
@@ -118,7 +118,7 @@ class NotDependsOnFunctionTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on functions %s but depends on %s',
+                'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
                 $exceptName,
                 'strtolower, array_.+',
                 'array_merge, strtolower',

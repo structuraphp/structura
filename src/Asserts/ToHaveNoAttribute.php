@@ -28,10 +28,11 @@ final readonly class ToHaveNoAttribute implements ExprInterface
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must not have attribute',
+                'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
+                implode(', ', $class->getAttributeNames()),
             ),
             $this::class,
             $class->lines,

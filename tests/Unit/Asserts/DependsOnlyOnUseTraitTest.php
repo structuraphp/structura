@@ -74,9 +74,10 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits BadTrait',
+                'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
                 HasFactory::class,
                 'Dependencies\Acme\.*',
+                'BadTrait',
             ),
         );
     }

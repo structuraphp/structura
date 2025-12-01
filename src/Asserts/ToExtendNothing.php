@@ -29,10 +29,11 @@ final readonly class ToExtendNothing implements ExprInterface
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must extend nothing',
+                'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
+                implode(', ', $class->getExtendNames()),
             ),
             $this::class,
             $class->lines,

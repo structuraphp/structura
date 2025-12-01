@@ -29,10 +29,11 @@ final readonly class ToBeInterfaces implements ExprInterface
     {
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must be an interface',
+                'Resource <promote>%s</promote> must be an interface but is <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
+                $class->classType->label(),
             ),
             $this::class,
             $class->lines,

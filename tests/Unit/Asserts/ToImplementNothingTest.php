@@ -55,8 +55,9 @@ final class ToImplementNothingTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not implement anything',
+                'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
                 $exceptName,
+                'BarInterface',
             ),
         );
     }
