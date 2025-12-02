@@ -7,7 +7,6 @@ namespace StructuraPhp\Structura\Services;
 use ReflectionClass;
 use ReflectionMethod;
 use StructuraPhp\Structura\Attributes\TestDox;
-use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
@@ -29,10 +28,6 @@ final class AnalyseService
     /** @var array<int,ViolationsByTest> */
     private array $violationsByTests = [];
 
-    public function __construct(
-        private readonly StructuraConfig $structuraConfig,
-    ) {}
-
     /**
      * @param class-string<TestBuilder> $ruleClassname
      */
@@ -52,12 +47,12 @@ final class AnalyseService
         );
     }
 
-    public function analyses(): AnalyseValueObject
+    public function analyses(FinderService $finderService): AnalyseValueObject
     {
         $timeStart = microtime(true);
 
         /** @var class-string<TestBuilder> $ruleClassname */
-        foreach ($this->structuraConfig->getRules() as $ruleClassname) {
+        foreach ($finderService->getClassTests() as $ruleClassname) {
             $this->executeTests($ruleClassname);
         }
 

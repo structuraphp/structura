@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -17,15 +18,18 @@ final class AnalyseServiceTest extends TestCase
 {
     public function testAnalyseService(): void
     {
-        $service = new AnalyseService(
-            StructuraConfig::make()
-                ->archiRootNamespace(
-                    'StructuraPhp\Structura\Tests\Feature',
-                    'tests/Feature',
-                ),
-        );
+        $config = StructuraConfig::make()
+            ->archiRootNamespace(
+                'StructuraPhp\Structura\Tests\Feature',
+                'tests/Feature',
+            )
+            ->getConfig();
 
-        $result = $service->analyses();
+        $finder = new FinderService($config);
+
+        $service = new AnalyseService();
+
+        $result = $service->analyses($finder);
         $formatter = new ProgressTextFormatter();
 
         $buffer = new BufferedOutput(formatter: new OutputFormatter());
@@ -77,7 +81,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        117 classe(s) from
+        119 classe(s) from
          - dirs
         That
         Should

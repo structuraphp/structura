@@ -18,8 +18,10 @@ use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -36,11 +38,9 @@ final class AnalyzeCommand extends Command
 {
     use Version;
 
-    public const ERROR_FORMAT_OPTION = 'error-format';
-
-    public const PROGRESS_FORMAT_OPTION = 'progress-format';
-
     private AnalyzeDto $analyzeDto;
+
+    private ConfigValueObject $configValueObject;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -59,18 +59,21 @@ final class AnalyzeCommand extends Command
         $io->writeln($this->getInfos($this->analyzeDto->configPath));
         $io->newLine();
 
-        $structuraConfig = $this->getStructuraConfig();
+        $this->configValueObject = $this->getConfigValueObject();
 
-        $progressFormatter = $this->getProgressFormatter($input);
+        $errorFormatter = $this->getErrorFormatter();
+        $progressFormatter = $this->getProgressFormatter();
 
-        $rules = $structuraConfig->getRules();
+        $finder = new FinderService($this->configValueObject);
+        $rules = $finder->getClassTests();
+
         $progressFormatter->progressStart($io, count($rules));
 
         $results = [];
 
         /** @var class-string<TestBuilder> $ruleClassname */
         foreach ($rules as $ruleClassname) {
-            $analyseService = new AnalyseService($structuraConfig);
+            $analyseService = new AnalyseService();
             $analyseResult = $analyseService
                 ->analyse(
                     microtime(true),
@@ -85,7 +88,6 @@ final class AnalyzeCommand extends Command
 
         $progressFormatter->progressFinish($io);
 
-        $errorFormatter = $this->getErrorFormatter($input);
         $errorFormatter->formatErrors($result, $output);
 
         return self::SUCCESS;
@@ -95,38 +97,48 @@ final class AnalyzeCommand extends Command
     {
         $this
             ->addOption(
-                name: self::ERROR_FORMAT_OPTION,
+                name: AnalyzeDto::ERROR_FORMAT_OPTION,
                 shortcut: 'f',
-                mode: InputOption::VALUE_OPTIONAL,
+                mode: InputOption::VALUE_REQUIRED,
                 description: 'Select output error format',
                 default: ErrorFormatterType::Text->value,
                 suggestedValues: array_column(ErrorFormatterType::cases(), 'value'),
             )
             ->addOption(
-                name: self::PROGRESS_FORMAT_OPTION,
+                name: AnalyzeDto::PROGRESS_FORMAT_OPTION,
                 shortcut: 'p',
-                mode: InputOption::VALUE_OPTIONAL,
+                mode: InputOption::VALUE_REQUIRED,
                 description: 'Select output progress format',
                 default: ProgressFormatterType::Text->value,
                 suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
             );
     }
 
-    private function getErrorFormatter(InputInterface $input): ErrorFormatterInterface
+    private function getErrorFormatter(): ErrorFormatterInterface
     {
-        return match ($input->getOption(self::ERROR_FORMAT_OPTION)) {
+        $format = $this->analyzeDto->errorFormat;
+
+        return match ($format) {
             ErrorFormatterType::Text->value => new ErrorTextFormatter(),
             ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
-            default => throw new InvalidArgumentException(),
+            default => $this->configValueObject->errorFormatter[$format]
+                ?? throw new InvalidArgumentException(
+                    sprintf('Unknown error format "%s"', $format),
+                ),
         };
     }
 
-    private function getProgressFormatter(InputInterface $input): ProgressFormatterInterface
+    private function getProgressFormatter(): ProgressFormatterInterface
     {
-        return match ($input->getOption(self::PROGRESS_FORMAT_OPTION)) {
+        $format = $this->analyzeDto->progressFormat;
+
+        return match ($format) {
             ProgressFormatterType::Text->value => new ProgressTextFormatter(),
             ProgressFormatterType::Bar->value => new ProgressBarFormatter(),
-            default => throw new InvalidArgumentException(),
+            default => $this->configValueObject->progressFormatter[$format]
+                ?? throw new InvalidArgumentException(
+                    sprintf('Unknown progress format "%s"', $format),
+                ),
         };
     }
 
@@ -172,7 +184,7 @@ final class AnalyzeCommand extends Command
         return AnalyzeDto::fromArray($data);
     }
 
-    private function getStructuraConfig(): StructuraConfig
+    private function getConfigValueObject(): ConfigValueObject
     {
         /** @var Closure(StructuraConfig): void|StructuraConfig $closure */
         $closure = require $this->analyzeDto->configPath;
@@ -183,6 +195,6 @@ final class AnalyzeCommand extends Command
         $config = new StructuraConfig();
         $closure($config);
 
-        return $config;
+        return $config->getConfig();
     }
 }
