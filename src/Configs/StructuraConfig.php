@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Configs;
 
-use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
+use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
-use Symfony\Component\Finder\Finder;
 
 class StructuraConfig
 {
-    /** @var array<int,class-string<TestBuilder>> */
-    private array $rules = [];
-
     /** @var array<int,string> */
-    private array $extensions;
+    private array $extensions = [];
+
+    /** @var array<string,ErrorFormatterInterface> */
+    private array $errorFormatter = [];
+
+    /** @var array<string,ProgressFormatterInterface> */
+    private array $progressFormatter = [];
 
     private ?RootNamespaceValueObject $archiRootNamespace = null;
 
@@ -23,32 +27,30 @@ class StructuraConfig
         return new self();
     }
 
+    public function setErrorFormatter(
+        string $name,
+        ErrorFormatterInterface $errorFormatter,
+    ): self {
+        $this->errorFormatter[$name] = $errorFormatter;
+
+        return $this;
+    }
+
+    public function setProgressFormatter(
+        string $name,
+        ProgressFormatterInterface $progressFormatter,
+    ): self {
+        $this->progressFormatter[$name] = $progressFormatter;
+
+        return $this;
+    }
+
     /**
      * @param array<int,string> $extensions
      */
     public function fileExtensions(array $extensions): self
     {
         $this->extensions = $extensions;
-
-        return $this;
-    }
-
-    /**
-     * @param class-string<TestBuilder> ...$classes
-     */
-    public function rules(string ...$classes): self
-    {
-        $this->rules = array_merge($this->rules, array_values($classes));
-
-        return $this;
-    }
-
-    /**
-     * @param class-string<TestBuilder> $class
-     */
-    public function rule(string $class): self
-    {
-        $this->rules[] = $class;
 
         return $this;
     }
@@ -63,57 +65,13 @@ class StructuraConfig
         return $this;
     }
 
-    /**
-     * @return array<int,class-string<TestBuilder>>
-     */
-    public function getRules(): array
+    public function getConfig(): ConfigValueObject
     {
-        $this->setRulesByRootNamespace();
-
-        return $this->rules;
-    }
-
-    public function getArchiRootNamespace(): ?RootNamespaceValueObject
-    {
-        return $this->archiRootNamespace;
-    }
-
-    /**
-     * @return array<int,string>
-     */
-    public function getExtensions(): array
-    {
-        return $this->extensions;
-    }
-
-    private function setRulesByRootNamespace(): void
-    {
-        if (!$this->archiRootNamespace instanceof RootNamespaceValueObject) {
-            return;
-        }
-
-        $directory = $this->archiRootNamespace->directory;
-        $namespace = $this->archiRootNamespace->namespace;
-
-        $finder = Finder::create()
-            ->files()
-            ->followLinks()
-            ->sortByName()
-            ->name('Test*.php')
-            ->in($directory);
-
-        foreach ($finder as $file) {
-            $pathName = $file->getPath();
-
-            if (str_starts_with($pathName, $directory)) {
-                $className = str_replace([$directory, '/'], [$namespace, '\\'], $pathName);
-                $className .= '\\' . pathinfo($file->getPathname(), \PATHINFO_FILENAME);
-
-                if (class_exists($className)) {
-                    /** @var class-string<TestBuilder> $className */
-                    $this->rule($className);
-                }
-            }
-        }
+        return new ConfigValueObject(
+            rootNamespace: $this->archiRootNamespace,
+            errorFormatter: $this->errorFormatter,
+            progressFormatter: $this->progressFormatter,
+            extensions: $this->extensions,
+        );
     }
 }

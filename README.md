@@ -14,7 +14,7 @@ consistent code structure.
 - [Make test](#make-test)
 - [First run](#first-run)
 - [Assertions](#assertions)
-- [Custom assert](#custom-assert)
+- [Customization](#customization)
 - [With PHPUnit](#with-phpunit)
 
 ## Requirements
@@ -856,7 +856,9 @@ $this
   );
 ```
 
-## Custom assert
+## Customization
+
+### Custom assert
 
 To create a custom rule :
 
@@ -907,6 +909,80 @@ $this
 ```
 
 Use [existing rules](https://github.com/structuraphp/structura/tree/main/src/Asserts) as an example.
+
+### Custom progress bar
+
+To create a custom progress bar, implement the `StructuraPhp\Structura\Contracts\ProgressFormatterInterface` interface:
+
+```php
+class CustomProgress implements ProgressFormatterInterface
+{
+    private int $max;
+    private int $counter = 0;
+
+    public function progressStart(OutputInterface $output, int $max): void
+    {
+        $this->max = $max;
+        $output->writeln('<info>Starting progress ...</info>');
+    }
+
+    public function progressAdvance(OutputInterface $output, AnalyseValueObject $analyseValueObject): void
+    {
+        $this->counter++;
+        $output->writeln(sprintf('%d/%d', $this->counter, $this->max));
+    }
+
+    public function progressFinish(OutputInterface $output): void
+    {
+        $output->writeln('<info>Finished progress ...</info>');
+    }
+}
+```
+
+Add your implementation to the configuration and run the analysis with the `--progress-format[=PROGRESS-FORMAT]` option:
+
+```php
+$config
+    ->setProgressFormatter(
+        'custom',
+        new CustomProgress()
+    );
+```
+
+The example here will display:
+
+```shell
+Starting progress ...
+1/4
+2/4
+3/4
+4/4
+Finished progress ...
+```
+
+### Custom error format
+
+To create a custom error format, mplement the `StructuraPhp\Structura\Contracts\ErrorFormatterInterface` interface:
+
+```php
+class CustomError implements ErrorFormatterInterface
+{
+    public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
+    {
+        // TODO: Implement formatErrors() method.
+    }
+}
+```
+
+Add your implementation to the configuration and run the analysis with the `--error-format[=ERROR-FORMAT]` option:
+
+```php
+$config
+    ->setErrorFormatter(
+        'custom',
+        new CustomError()
+    );
+```
 
 ## With PHPUnit
 

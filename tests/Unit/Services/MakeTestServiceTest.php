@@ -20,7 +20,8 @@ final class MakeTestServiceTest extends TestCase
                 ->archiRootNamespace(
                     'StructuraPhp\Structura\Tests\Feature',
                     'tests/Feature',
-                ),
+                )
+                ->getConfig(),
         );
 
         $makeTestValueObject = $service->make(

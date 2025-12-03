@@ -7,7 +7,7 @@ namespace StructuraPhp\Structura\Services;
 use InvalidArgumentException;
 use RuntimeException;
 use StructuraPhp\Structura\Concerns\Pipe;
-use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\GenerateTestValueObject;
 use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
@@ -20,12 +20,12 @@ final readonly class MakeTestService
     private const STUB_FILENAME = '%s/Stubs/test.php.dist';
 
     public function __construct(
-        private StructuraConfig $structuraConfig,
+        private ConfigValueObject $structuraConfig,
     ) {}
 
     public function make(MakeTestValueObject $dto): GenerateTestValueObject
     {
-        $rootNamespace = $this->structuraConfig->getArchiRootNamespace();
+        $rootNamespace = $this->structuraConfig->rootNamespace;
         if (!$rootNamespace instanceof RootNamespaceValueObject) {
             throw new RuntimeException('Root namespace not found');
         }
@@ -91,7 +91,7 @@ final readonly class MakeTestService
         $file = sprintf(
             '%s/%s/%s.php',
             (string) getcwd(),
-            $this->structuraConfig->getArchiRootNamespace()->directory ?? '',
+            $this->structuraConfig->rootNamespace->directory ?? '',
             str_replace('\\', DIRECTORY_SEPARATOR, $namespace),
         );
 
