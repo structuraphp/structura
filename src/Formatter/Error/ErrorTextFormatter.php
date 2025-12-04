@@ -36,7 +36,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
             $this->styleCustom($output)->writeln($print);
         }
 
-        return $violations !== []
+        return $violations === []
             ? self::SUCCESS
             : self::ERROR;
     }
