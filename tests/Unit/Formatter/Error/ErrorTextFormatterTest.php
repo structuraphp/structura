@@ -24,7 +24,7 @@ class ErrorTextFormatterTest extends TestCase
         $buffer = new BufferedOutput(formatter: new OutputFormatter());
         $buffer->setDecorated(true);
 
-        $text->formatErrors($except, $buffer);
+        $output = $text->formatErrors($except, $buffer);
 
         $expected = <<<'EOF'
         <violation> ERROR LIST </violation>
@@ -39,6 +39,7 @@ class ErrorTextFormatterTest extends TestCase
 
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
+        self::assertSame(ErrorTextFormatter::ERROR, $output);
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key], sprintf('Error line %d', $key));
         }

@@ -22,7 +22,7 @@ class ErrorGithubFormatterTest extends TestCase
 
         $buffer = new BufferedOutput();
 
-        $text->formatErrors($except, $buffer);
+        $output = $text->formatErrors($except, $buffer);
 
         $expected = <<<'EOF'
         ::error file=example.php,line=1,col=0::Resource <promote>x</promote> must be a final class
@@ -33,6 +33,7 @@ class ErrorGithubFormatterTest extends TestCase
 
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
+        self::assertSame(ErrorGithubFormatter::ERROR, $output);
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key]);
         }
