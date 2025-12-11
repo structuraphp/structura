@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura;
 
 use Closure;
-use Generator;
 use InvalidArgumentException;
-use IteratorAggregate;
 use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Enums\ExprType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
@@ -17,9 +16,9 @@ use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Traversable;
 
 /**
- * @implements IteratorAggregate<int,AbstractExpr|ExprInterface>
+ * @implements ExprIteratorAggregate<AbstractExpr|ExprInterface>
  */
-class AbstractExpr implements IteratorAggregate
+class AbstractExpr implements ExprIteratorAggregate
 {
     /** @var array<int,AbstractExpr|ExprInterface> */
     private array $asserts = [];
@@ -68,9 +67,6 @@ class AbstractExpr implements IteratorAggregate
         return $this;
     }
 
-    /**
-     * @return Generator<AbstractExpr|ExprInterface>
-     */
     public function getIterator(): Traversable
     {
         foreach ($this->asserts as $assert) {

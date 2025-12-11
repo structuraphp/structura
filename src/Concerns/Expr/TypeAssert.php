@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\Expr;
 
 use Attribute;
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Asserts\ToBeAttribute;
@@ -16,10 +15,12 @@ use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
 use StructuraPhp\Structura\Enums\ScalarType;
 
 /**
- * @mixin AbstractExpr
+ * @mixin ExprIteratorAggregate<ExprInterface>
  */
 trait TypeAssert
 {

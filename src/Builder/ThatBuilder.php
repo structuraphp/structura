@@ -35,9 +35,9 @@ class ThatBuilder implements ShouldInterface
         return $this->ruleBuilder;
     }
 
-    public function except(Closure $closure): ShouldInterface
+    public function except(array|string $className, Closure $closure): ShouldInterface
     {
-        $exception = new Except();
+        $exception = new Except($className);
         $closure($exception);
 
         $this->ruleBuilder->setExpect($exception);

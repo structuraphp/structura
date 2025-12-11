@@ -4,38 +4,106 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura;
 
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
+use StructuraPhp\Structura\Concerns\Expr\MethodAssert;
+use StructuraPhp\Structura\Concerns\Expr\NameAssert;
+use StructuraPhp\Structura\Concerns\Expr\OtherAssert;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
+use StructuraPhp\Structura\Concerns\ExprScript\DeclareAssert as ScriptDeclareAssert;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert as ScriptDependencyAssert;
+use StructuraPhp\Structura\Contracts\ExceptInterface;
+use StructuraPhp\Structura\Contracts\ExceptScriptInterface;
+use StructuraPhp\Structura\Contracts\Expr\DependencyAssertInterface;
+use StructuraPhp\Structura\Contracts\Expr\MethodAssertInterface;
+use StructuraPhp\Structura\Contracts\Expr\NameAssertInterface;
+use StructuraPhp\Structura\Contracts\Expr\OtherAssertInterface;
+use StructuraPhp\Structura\Contracts\Expr\RelationAssertInterface;
+use StructuraPhp\Structura\Contracts\Expr\TypeAssertInterface;
 use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
+use StructuraPhp\Structura\Contracts\ExprScript\DeclareAssertInterface as ScriptDeclareAssertInterface;
+use StructuraPhp\Structura\Contracts\ExprScript\DependencyAssertInterface as ScriptDependencyAssertInterface;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
+use Traversable;
 
-class Except
+/**
+ * @implements ExprIteratorAggregate<class-string<ExprInterface>|ExprInterface>
+ */
+class Except implements ExprIteratorAggregate, TypeAssertInterface, DependencyAssertInterface, RelationAssertInterface, MethodAssertInterface, NameAssertInterface, OtherAssertInterface, ScriptDeclareAssertInterface, ScriptDependencyAssertInterface
 {
-    /** @var array<class-string, array<int, class-string<ExprInterface>>> */
+    use TypeAssert;
+    use DependencyAssert;
+    use RelationAssert;
+    use MethodAssert;
+    use NameAssert;
+    use OtherAssert;
+    use ScriptDeclareAssert;
+    use ScriptDependencyAssert;
+
+    /** @var array<int, string> */
     private array $expects;
 
-    /**
-     * @param array<int, class-string>|class-string $className
-     * @param class-string<ExprInterface> $expression
-     */
-    public function byClassname(
-        array|string $className,
-        string $expression,
-    ): self {
-        $classNames = \is_array($className) ? $className : [$className];
+    /** @var array<int, class-string<ExprInterface>|ExprInterface> */
+    private array $asserts = [];
 
-        foreach ($classNames as $class) {
-            $this->expects[$class][] = $expression;
+    /**
+     * @param array<int, string>|string $className file path or class name (with ::class) or array of both
+     */
+    public function __construct(array|string $className)
+    {
+        $this->expects = \is_array($className) ? $className : [$className];
+    }
+
+    public function getIterator(): Traversable
+    {
+        foreach ($this->asserts as $assert) {
+            yield $assert;
         }
+    }
+
+    /**
+     * @param class-string<ExprInterface> $expr
+     */
+    public function byAssert(
+        string $expr,
+    ): self {
+        $this->asserts[] = $expr;
 
         return $this;
     }
 
-    /**
-     * @param null|string $className if anonymous class then null
-     * @param class-string<AbstractExpr|ExprInterface> $expr
-     */
-    public function isExcept(?string $className, string $expr): bool
+    public function addExpr(ExprInterface $expr): static
     {
-        return $className !== null
-            && isset($this->expects[$className])
-            && \in_array($expr, $this->expects[$className], true);
+        $this->asserts[] = $expr;
+
+        return $this;
+    }
+
+    public function isExcept(
+        AbstractExpr|ExprInterface $expr,
+        ScriptDescription $description,
+    ): bool {
+        $className = $description->namespace ?? $description->getFileBasename();
+
+        if (!in_array($className, $this->expects, true)) {
+            return false;
+        }
+
+        if (\in_array($expr::class, $this->asserts, true)) {
+            return true;
+        }
+
+        if (!$expr instanceof ExceptInterface && !$expr instanceof ExceptScriptInterface) {
+            return false;
+        }
+
+        foreach ($this->asserts as $assert) {
+            if ($assert instanceof $expr) {
+                return $assert->except($expr, $description);
+            }
+        }
+
+        return false;
     }
 }

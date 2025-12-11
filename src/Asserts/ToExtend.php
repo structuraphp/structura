@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Asserts;
 
+use InvalidArgumentException;
 use PhpParser\Node\Name\FullyQualified;
+use StructuraPhp\Structura\Contracts\ExceptInterface;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class ToExtend implements ExprInterface
+final readonly class ToExtend implements ExprInterface, ExceptInterface
 {
     public function __construct(
         private string $name,
@@ -43,5 +46,18 @@ final readonly class ToExtend implements ExprInterface
             $class->getFileBasename(),
             $this->message,
         );
+    }
+
+    public function except(ExceptInterface $expr, ScriptDescription $description): bool
+    {
+        if (!$description instanceof ClassDescription) {
+            throw new InvalidArgumentException();
+        }
+
+        if (!$expr instanceof ToExtend) {
+            throw new InvalidArgumentException();
+        }
+
+        return $expr->assert($description);
     }
 }

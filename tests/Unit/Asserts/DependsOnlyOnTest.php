@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -152,6 +153,37 @@ final class DependsOnlyOnTest extends TestCase
                 'Depend\Bap',
                 'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
+        );
+    }
+
+    #[DataProvider('getScriptWithDependsProvider')]
+    public function testExceptFDependsOnlyOnFunctionTest(
+        string $raw,
+        string $exceptName,
+    ): void {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOn(
+                        patterns: [
+                            'ArrayAccess',
+                            'Depend\Bar',
+                            'Exception',
+                            'Stringable',
+                        ],
+                    ),
+            )
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on these namespaces <promote>Depend\Bap</promote>',
         );
     }
 

@@ -101,7 +101,7 @@ final class ExecuteService
             $isExcept = $this
                 ->ruleValuesObject
                 ->except
-                ?->isExcept($description->namespace, $assert::class);
+                ?->isExcept($assert, $description);
 
             if ($isExcept === true) {
                 if (!$predicate) {
@@ -132,7 +132,7 @@ final class ExecuteService
             $isExcept = $this
                 ->ruleValuesObject
                 ->except
-                ?->isExcept($description->namespace, $assert::class);
+                ?->isExcept($assert, $description);
 
             if ($isExcept === true) {
                 if (!$predicate) {

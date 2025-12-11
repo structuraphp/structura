@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Concerns\ExprScript;
 
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
 use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
 
 /**
- * @mixin AbstractExpr
+ * @mixin ExprIteratorAggregate<ExprInterface>
  */
 trait DependencyAssert
 {

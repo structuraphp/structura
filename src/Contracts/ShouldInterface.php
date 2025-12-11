@@ -14,9 +14,11 @@ use StructuraPhp\Structura\Builder\RuleBuilder;
 interface ShouldInterface
 {
     /**
+     * @param array<int, string>|string $className file path or class name (with ::class) or array of both
+     *
      * @return ShouldInterface<T>
      */
-    public function except(Closure $closure): ShouldInterface;
+    public function except(array|string $className, Closure $closure): ShouldInterface;
 
     /**
      * @param Closure(T): (T|void) $closure

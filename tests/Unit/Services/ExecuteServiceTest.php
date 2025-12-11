@@ -95,8 +95,9 @@ final class ExecuteServiceTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo {}')
             ->except(
+                $className,
                 static fn (Except $e): Except => $e
-                    ->byClassname($className, ToExtend::class),
+                    ->byAssert(ToExtend::class),
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
@@ -130,8 +131,9 @@ final class ExecuteServiceTest extends TestCase
             ->allClasses()
             ->fromRaw('<?php class Foo extends \Exception {}')
             ->except(
+                $className,
                 static fn (Except $e): Except => $e
-                    ->byClassname($className, ToExtend::class),
+                    ->byAssert(ToExtend::class),
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert

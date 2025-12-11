@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Concerns\Expr;
 
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Asserts\ToExtendNothing;
 use StructuraPhp\Structura\Asserts\ToHaveAttribute;
@@ -16,16 +15,20 @@ use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
 use StructuraPhp\Structura\Asserts\ToUseTrait;
-use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
+use StructuraPhp\Structura\Contracts\ShadowDependenciesInterface;
 
 /**
- * @mixin AbstractExpr&Expr
+ * @mixin ExprIteratorAggregate<ExprInterface>
  */
 trait RelationAssert
 {
     public function toExtend(string $name, string $message = ''): self
     {
-        $this->extendDependencies[] = [$name];
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setExtends($name);
+        }
 
         return $this->addExpr(new ToExtend($name, $message));
     }
@@ -37,7 +40,9 @@ trait RelationAssert
 
     public function toImplement(array|string $names, string $message = ''): self
     {
-        $this->implementDependencies[] = (array) $names;
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setImplements($names);
+        }
 
         return $this->addExpr(new ToImplement($names, $message));
     }
@@ -49,14 +54,18 @@ trait RelationAssert
 
     public function toOnlyImplement(string $name, string $message = ''): self
     {
-        $this->implementDependencies[] = [$name];
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setImplements($name);
+        }
 
         return $this->addExpr(new ToOnlyImplement($name, $message));
     }
 
     public function toUseTrait(array|string $names, string $message = ''): self
     {
-        $this->traitDependencies[] = (array) $names;
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setTraits($names);
+        }
 
         return $this->addExpr(new ToUseTrait($names, $message));
     }
@@ -68,14 +77,18 @@ trait RelationAssert
 
     public function toOnlyUseTrait(string $name, string $message = ''): self
     {
-        $this->traitDependencies[] = [$name];
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setTraits($name);
+        }
 
         return $this->addExpr(new ToOnlyUseTrait($name, $message));
     }
 
     public function toHaveAttribute(string $name, string $message = ''): self
     {
-        $this->attributDependencies[] = [$name];
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setAttributs($name);
+        }
 
         return $this->addExpr(new ToHaveAttribute($name, $message));
     }
@@ -87,7 +100,9 @@ trait RelationAssert
 
     public function toHaveOnlyAttribute(string $name, string $message = ''): self
     {
-        $this->attributDependencies[] = [$name];
+        if ($this instanceof ShadowDependenciesInterface) {
+            $this->setAttributs($name);
+        }
 
         return $this->addExpr(new ToHaveOnlyAttribute($name, $message));
     }

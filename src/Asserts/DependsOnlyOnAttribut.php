@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExceptInterface;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\DependenciesType;
+use StructuraPhp\Structura\Exception\ExceptAssertionException;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnAttribut implements ExprInterface
+final readonly class DependsOnlyOnAttribut implements ExprInterface, ExceptInterface
 {
     use Arr;
 
@@ -19,8 +21,8 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
      * @param array<int,string> $patterns
      */
     public function __construct(
-        private array $names,
-        private array $patterns,
+        private array $names = [],
+        private array $patterns = [],
         private string $message = '',
     ) {}
 
@@ -66,5 +68,19 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
             $class->getFileBasename(),
             $this->message,
         );
+    }
+
+    public function except(ExceptInterface $expr, ClassDescription $description): bool
+    {
+        if (!$expr instanceof $this) {
+            throw new ExceptAssertionException($expr, $this);
+        }
+
+        $rule = new self(
+            array_merge($this->names, $expr->names),
+            array_merge($this->patterns, $expr->patterns),
+        );
+
+        return $rule->assert($description);
     }
 }

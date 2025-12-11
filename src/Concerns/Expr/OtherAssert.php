@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\Expr;
 
 use Closure;
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
@@ -13,9 +12,11 @@ use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
 
 /**
- * @mixin AbstractExpr
+ * @mixin ExprIteratorAggregate<ExprInterface>
  */
 trait OtherAssert
 {

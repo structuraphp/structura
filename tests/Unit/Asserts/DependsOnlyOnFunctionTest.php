@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -153,5 +154,42 @@ class DependsOnlyOnFunctionTest extends TestCase
             PHP,
             'tmp/run_0.php',
         ];
+    }
+
+    public function testExceptDependsOnlyOnFunctionTest(): void
+    {
+        $raw = <<<'PHP'
+            <?php
+
+            namespace Foo;
+
+            function bar() {
+                array_merge([], []);
+                strtolower("FOO");
+            }
+            PHP;
+
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOnFunction(
+                        names: ['array_merge'],
+                    ),
+            )
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->dependsOnlyOnFunction(
+                        names: 'strtolower',
+                        patterns: 'mb_.+',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on function <promote>strtolower, mb_.+</promote>',
+        );
     }
 }

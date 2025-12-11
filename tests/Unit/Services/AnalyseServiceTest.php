@@ -49,7 +49,7 @@ final class AnalyseServiceTest extends TestCase
          - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
         Should
          <green>✔</green> to be classes
-         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>34 error(s)</fire>
+         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>35 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <green>✔</green> to have prefix <promote>To</promote> <warning>1 warning(s)</warning>
@@ -81,7 +81,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        119 classe(s) from
+        125 classe(s) from
          - dirs
         That
         Should

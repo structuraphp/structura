@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExceptScriptInterface;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Exception\ExceptAssertionException;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnFunction implements ExprScriptInterface
+final readonly class DependsOnlyOnFunction implements ExprScriptInterface, ExceptScriptInterface
 {
     use Arr;
 
@@ -47,6 +49,20 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         return $description instanceof ClassDescription
             ? $this->getViolationClass($description)
             : $this->getViolationScript($description);
+    }
+
+    public function except(ExceptScriptInterface $expr, ScriptDescription $description): bool
+    {
+        if (!$expr instanceof $this) {
+            throw new ExceptAssertionException($expr, $this);
+        }
+
+        $rule = new self(
+            array_merge($this->names, $expr->names),
+            array_merge($this->patterns, $expr->patterns),
+        );
+
+        return $rule->assert($description);
     }
 
     private function getViolationClass(ClassDescription $class): ViolationValueObject

@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SensitiveParameter;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -77,6 +78,33 @@ final class DependsOnlyOnAttributTest extends TestCase
                 'Dependencies\Acme\.*',
                 'BadAttribute',
             ),
+        );
+    }
+
+    #[DataProvider('getClassLikeWithoutInheritance')]
+    public function testExceptDependsOnlyOnAttribut(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOnAttribut(
+                        patterns: ['BadAttribute'],
+                    ),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnAttribut(
+                        names: SensitiveParameter::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on attribut <promote>SensitiveParameter, Dependencies\Acme\.*</promote>',
         );
     }
 
