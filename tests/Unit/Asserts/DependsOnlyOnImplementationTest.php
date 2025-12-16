@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -77,6 +78,33 @@ final class DependsOnlyOnImplementationTest extends TestCase
                 'Dependencies\Acme\.*',
                 'BadImplements',
             ),
+        );
+    }
+
+    #[DataProvider('getClassLikeWithoutInheritance')]
+    public function testExceptDependsOnlyOnImplementation(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOnImplementation(
+                        patterns: ['BadImplements'],
+                    ),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnImplementation(
+                        names: ArrayAccess::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on inheritance <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
         );
     }
 

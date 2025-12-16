@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -53,6 +54,26 @@ final class ToBeClassesTest extends TestCase
                 $classType->label(),
             ),
         );
+    }
+
+    #[DataProvider('getClassLikeNonClasses')]
+    public function testExceptToBeClasses(
+        string $raw,
+        ClassType $classType,
+        string $exceptName = 'Foo',
+    ): void {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toBeClasses(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeClasses(),
+            );
+
+        self::assertRulesPass($rules, 'to be classes');
     }
 
     public static function getClassLikeNonClasses(): Generator

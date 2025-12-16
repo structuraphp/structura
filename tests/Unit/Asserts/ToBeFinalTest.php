@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -45,6 +46,23 @@ final class ToBeFinalTest extends TestCase
             $rules,
             \sprintf('Resource <promote>%s</promote> must be a final class', $exceptName),
         );
+    }
+
+    #[DataProvider('getClassLikeNonFinal')]
+    public function testExceptToBeFinal(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toBeFinal(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeFinal(),
+            );
+
+        self::assertRulesPass($rules, 'to be final');
     }
 
     public static function getClassLikeNonFinal(): Generator

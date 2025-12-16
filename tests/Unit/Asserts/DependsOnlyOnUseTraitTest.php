@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -78,6 +79,37 @@ final class DependsOnlyOnUseTraitTest extends TestCase
                 HasFactory::class,
                 'Dependencies\Acme\.*',
                 'BadTrait',
+            ),
+        );
+    }
+
+    #[DataProvider('getClassLikeWithoutTrait')]
+    public function testExceptDependsOnlyOnUseTrait(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOnUseTrait(
+                        patterns: ['BadTrait'],
+                    ),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to use trait on these namespaces <promote>%s, %s</promote>',
+                HasFactory::class,
+                'Dependencies\Acme\.*',
             ),
         );
     }

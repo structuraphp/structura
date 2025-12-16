@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -51,6 +52,24 @@ final class ToBeAnonymousClassesTest extends TestCase
                 $classType->label(),
             ),
         );
+    }
+
+    #[DataProvider('getClassLikeNonAnonymousClasses')]
+    public function testExceptToBeAnonymousClasses(string $raw, ClassType $classType): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert->toBeAnonymousClasses(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toBeAnonymousClasses(),
+            );
+
+        self::assertRulesPass($rules, 'to be anonymous classes');
     }
 
     public static function getClassLikeNonAnonymousClasses(): Generator

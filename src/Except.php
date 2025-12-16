@@ -24,6 +24,7 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Contracts\ExprIteratorAggregate;
 use StructuraPhp\Structura\Contracts\ExprScript\DeclareAssertInterface as ScriptDeclareAssertInterface;
 use StructuraPhp\Structura\Contracts\ExprScript\DependencyAssertInterface as ScriptDependencyAssertInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use Traversable;
 
@@ -75,7 +76,9 @@ class Except implements ExprIteratorAggregate, TypeAssertInterface, DependencyAs
 
     public function addExpr(ExprInterface $expr): static
     {
-        $this->asserts[] = $expr;
+        $this->asserts[] = $expr instanceof ExceptInterface || $expr instanceof ExceptScriptInterface
+            ? $expr
+            : $expr::class;
 
         return $this;
     }
@@ -84,7 +87,13 @@ class Except implements ExprIteratorAggregate, TypeAssertInterface, DependencyAs
         AbstractExpr|ExprInterface $expr,
         ScriptDescription $description,
     ): bool {
-        $className = $description->namespace ?? $description->getFileBasename();
+        if ($description instanceof ClassDescription) {
+            $className = $description->isAnonymous()
+                ? 'Anonymous'
+                : $description->namespace;
+        } else {
+            $className = $description->namespace ?? $description->getFileBasename();
+        }
 
         if (!in_array($className, $this->expects, true)) {
             return false;

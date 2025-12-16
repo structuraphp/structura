@@ -157,7 +157,7 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testExceptFDependsOnlyOnFunctionTest(
+    public function testExceptDependsOnlyOn(
         string $raw,
         string $exceptName,
     ): void {

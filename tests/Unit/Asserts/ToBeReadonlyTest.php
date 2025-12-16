@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -48,6 +49,23 @@ final class ToBeReadonlyTest extends TestCase
                 $exceptName,
             ),
         );
+    }
+
+    #[DataProvider('getClassLikeNonReadonly')]
+    public function testExceptToBeReadonly(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toBeReadonly(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeReadonly(),
+            );
+
+        self::assertRulesPass($rules, 'to be readonly');
     }
 
     public static function getClassLikeNonReadonly(): Generator

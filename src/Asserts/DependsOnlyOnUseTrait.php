@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExceptInterface;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\DependenciesType;
+use StructuraPhp\Structura\Exception\ExceptAssertionException;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnUseTrait implements ExprInterface
+final readonly class DependsOnlyOnUseTrait implements ExprInterface, ExceptInterface
 {
     use Arr;
 
@@ -66,5 +68,19 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
             $class->getFileBasename(),
             $this->message,
         );
+    }
+
+    public function except(ExceptInterface $expr, ClassDescription $description): bool
+    {
+        if (!$expr instanceof $this) {
+            throw new ExceptAssertionException($expr, $this);
+        }
+
+        $rule = new self(
+            array_merge($this->names, $expr->names),
+            array_merge($this->patterns, $expr->patterns),
+        );
+
+        return $rule->assert($description);
     }
 }

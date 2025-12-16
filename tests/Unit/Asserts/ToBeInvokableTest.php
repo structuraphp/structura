@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -51,6 +52,26 @@ final class ToBeInvokableTest extends TestCase
                 'Resource <promote>%s</promote> must have method <promote>__invoke</promote>',
                 $exceptName,
             ),
+        );
+    }
+
+    #[DataProvider('getClassLikeNonInvokable')]
+    public function testExceptToBeInvokable(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toBeInvokable(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeInvokable(),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'to have method <promote>__invoke</promote>',
         );
     }
 

@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -53,6 +54,26 @@ final class ToBeInterfaceTest extends TestCase
                 $classType->label(),
             ),
         );
+    }
+
+    #[DataProvider('getClassLikeNonEnums')]
+    public function testExceptToBeInterface(
+        string $raw,
+        ClassType $classType,
+        string $exceptName = 'Foo',
+    ): void {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toBeInterfaces(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toBeInterfaces(),
+            );
+
+        self::assertRulesPass($rules, 'to be interfaces');
     }
 
     public static function getClassLikeNonEnums(): Generator

@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
@@ -80,6 +81,37 @@ final class DependsOnlyOnInheritanceTest extends TestCase
                 ControllerBase::class,
                 'Dependencies\Acme\.*',
                 'BadExtends',
+            ),
+        );
+    }
+
+    #[DataProvider('getClassLikeWithoutInheritance')]
+    public function testExceptDependsOnlyOnInheritance(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                'Foo',
+                static fn (Except $assert): Except => $assert
+                    ->dependsOnlyOnInheritance(
+                        patterns: ['BadExtends'],
+                    ),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnInheritance(
+                        names: ControllerBase::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'depends only on inheritance <promote>%s, %s</promote>',
+                ControllerBase::class,
+                'Dependencies\Acme\.*',
             ),
         );
     }

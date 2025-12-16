@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToExtendNothing;
+use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -57,6 +58,23 @@ final class ToExtendNothingTest extends TestCase
                 'Exception',
             ),
         );
+    }
+
+    #[DataProvider('getClassLikeExtends')]
+    public function testExceptToExtendsNothing(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->except(
+                $exceptName,
+                static fn (Except $assert): Except => $assert->toExtendsNothing(),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
+            );
+
+        self::assertRulesPass($rules, 'to extend nothing');
     }
 
     public static function getClassLikeExtends(): Generator
