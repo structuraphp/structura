@@ -38,7 +38,7 @@ final class AnalyseServiceTest extends TestCase
         $formatter->progressAdvance($buffer, $result);
 
         self::assertSame(5, $result->countViolation);
-        self::assertSame(12, $result->countPass);
+        self::assertSame(13, $result->countPass);
         self::assertSame(1, $result->countWarning);
 
         $expected = <<<'EOF'
@@ -56,6 +56,12 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to extend nothing
          <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
+
+        <pass> PASS </pass> Binary architecture rules in StructuraPhp\Structura\Tests\Feature\TestConfig
+        1 classe(s) from
+         - dirs
+        Should
+         <green>✔</green> to use declare <promote>strict_types=1</promote>
 
         <violation> ERROR </violation> Controllers architecture rules in StructuraPhp\Structura\Tests\Feature\TestController
         3 classe(s) from
