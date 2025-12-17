@@ -6,26 +6,39 @@ namespace StructuraPhp\Structura\Testing;
 
 use StructuraPhp\Structura\Builder\AllClasses;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
 
 abstract class TestBuilder
 {
-    /** @var array<int,AllClasses<Expr>> */
+    /** @var array<int,AllClasses<Expr>|AllClasses<ExprScript>> */
     private array $rules = [];
 
     /**
      * @return AllClasses<Expr>
      */
-    public function allClasses(): AllClasses
+    final public function allClasses(): AllClasses
     {
-        $this->rules[] = AllClasses::allClasses();
+        $rule = AllClasses::allClasses();
+        $this->rules[] = $rule;
 
-        return $this->rules[array_key_last($this->rules)];
+        return $rule;
     }
 
     /**
-     * @return array<int,AllClasses<Expr>>
+     * @return AllClasses<ExprScript>
      */
-    public function getRules(): array
+    final public function allScripts(): AllClasses
+    {
+        $rule = AllClasses::allScripts();
+        $this->rules[] = $rule;
+
+        return $rule;
+    }
+
+    /**
+     * @return array<int,AllClasses<Expr>|AllClasses<ExprScript>>
+     */
+    final public function getRules(): array
     {
         $rules = $this->rules;
         $this->rules = [];
