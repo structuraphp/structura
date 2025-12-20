@@ -52,7 +52,7 @@ final class AnalyseServiceTest extends TestCase
          <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>34 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
-         <green>✔</green> to have prefix <promote>To</promote> <warning>1 warning(s)</warning>
+         <green>✔</green> to have prefix <promote>To</promote> <yellow>1 warning(s)</yellow>
          <green>✔</green> to extend nothing
          <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>

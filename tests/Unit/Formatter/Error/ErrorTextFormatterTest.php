@@ -36,7 +36,7 @@ class ErrorTextFormatterTest extends TestCase
 
         Except <promote>ToBeReadonly</promote> for <promote>x</promote> is not applicable
 
-        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <warning>1 warning</warning> (21 assertion)
+        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <yellow>1 warning</yellow> (21 assertion)
         EOF;
 
         $expected = explode(PHP_EOL, $expected);

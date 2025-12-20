@@ -103,7 +103,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         $data = [
             '<green>%d passed</green>' => $analyseDto->countPass,
             '<fire>%d failed</fire>' => $analyseDto->countViolation,
-            '<warning>%d warning</warning>' => $analyseDto->countWarning,
+            '<yellow>%d warning</yellow>' => $analyseDto->countWarning,
         ];
 
         $data = array_filter($data, fn (int $value): bool => $value > 0);

@@ -111,7 +111,7 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
             } else {
                 $countWarning = $assertValueObject->countWarning($message);
                 $warning = $countWarning !== 0
-                    ? sprintf(' <warning>%d warning(s)</warning>', $countWarning)
+                    ? sprintf(' <yellow>%d warning(s)</yellow>', $countWarning)
                     : '';
 
                 $this->prints[] = \sprintf(
