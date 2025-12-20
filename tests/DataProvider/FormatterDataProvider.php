@@ -36,6 +36,13 @@ class FormatterDataProvider
                         ],
                     ],
                 ],
+                warningsByTests: [
+                    [
+                        'Foo' => [
+                            'Except <promote>ToBeReadonly</promote> for <promote>x</promote> is not applicable',
+                        ],
+                    ],
+                ],
                 analyseTestValueObjects: [
                     new AnalyseTestValueObject(
                         textDox: 'Asserts architecture rules',

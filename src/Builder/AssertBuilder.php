@@ -75,11 +75,20 @@ class AssertBuilder
         throw new InvalidArgumentException();
     }
 
-    public function addWarning(?string $classname, string $key): self
-    {
+    public function addWarning(
+        string $key,
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
+    ): self {
         $this->pass[$key] = 2;
+        $classname = $description->namespace;
+
         if (\is_string($classname)) {
-            $this->warnings[$key][] = $classname;
+            $this->warnings[$key][] = sprintf(
+                'Except <promote>%s</promote> for <promote>%s</promote> is not applicable',
+                $assert::class,
+                $classname,
+            );
         }
 
         return $this;

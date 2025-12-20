@@ -13,6 +13,7 @@ use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
+ * @phpstan-import-type WarningByTest from AnalyseValueObject
  */
 final class AnalyseService
 {
@@ -27,6 +28,9 @@ final class AnalyseService
 
     /** @var array<int,ViolationsByTest> */
     private array $violationsByTests = [];
+
+    /** @var array<int, WarningByTest> */
+    private array $warningsByTests = [];
 
     /**
      * @param class-string<TestBuilder> $ruleClassname
@@ -43,6 +47,7 @@ final class AnalyseService
             countViolation: $this->countViolation,
             countWarning: $this->countWarning,
             violationsByTests: $this->violationsByTests,
+            warningsByTests: $this->warningsByTests,
             analyseTestValueObjects: $this->analyseTestValueObjects,
         );
     }
@@ -62,6 +67,7 @@ final class AnalyseService
             countViolation: $this->countViolation,
             countWarning: $this->countWarning,
             violationsByTests: $this->violationsByTests,
+            warningsByTests: $this->warningsByTests,
             analyseTestValueObjects: $this->analyseTestValueObjects,
         );
     }
@@ -116,6 +122,10 @@ final class AnalyseService
 
             if ($assertValueObject->violations !== []) {
                 $this->violationsByTests[] = $assertValueObject->violations;
+            }
+
+            if ($assertValueObject->warnings !== []) {
+                $this->warningsByTests[] = $assertValueObject->warnings;
             }
         }
     }

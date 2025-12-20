@@ -6,11 +6,13 @@ namespace StructuraPhp\Structura\ValueObjects;
 
 /**
  * @phpstan-type ViolationsByTest array<string, array<int, ViolationValueObject>>
+ * @phpstan-type WarningByTest array<string, array<int, string>>
  */
 final readonly class AnalyseValueObject
 {
     /**
      * @param array<int,ViolationsByTest> $violationsByTests
+     * @param array<int,WarningByTest> $warningsByTests
      * @param array<int,AnalyseTestValueObject> $analyseTestValueObjects
      */
     public function __construct(
@@ -19,6 +21,7 @@ final readonly class AnalyseValueObject
         public int $countViolation,
         public int $countWarning,
         public array $violationsByTests,
+        public array $warningsByTests,
         public array $analyseTestValueObjects,
     ) {}
 }

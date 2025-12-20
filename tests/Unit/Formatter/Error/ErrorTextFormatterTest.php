@@ -31,6 +31,10 @@ class ErrorTextFormatterTest extends TestCase
 
         Resource <promote>x</promote> must be a final class
         example.php:1
+        
+        <warning> WARNING LIST </warning>
+
+        Except <promote>ToBeReadonly</promote> for <promote>x</promote> is not applicable
 
         Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <warning>1 warning</warning> (21 assertion)
         EOF;

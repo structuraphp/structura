@@ -151,6 +151,7 @@ final class AnalyzeCommand extends Command
         $countViolation = 0;
         $countWarning = 0;
         $violationsByTests = [];
+        $warningsByTests = [];
         $analyseTestValueObjects = [];
 
         foreach ($results as $result) {
@@ -158,6 +159,7 @@ final class AnalyzeCommand extends Command
             $countViolation += $result->countViolation;
             $countWarning += $result->countWarning;
             $violationsByTests[] = $result->violationsByTests;
+            $warningsByTests[] = $result->warningsByTests;
             $analyseTestValueObjects[] = $result->analyseTestValueObjects;
         }
 
@@ -167,6 +169,7 @@ final class AnalyzeCommand extends Command
             countViolation: $countViolation,
             countWarning: $countWarning,
             violationsByTests: array_merge(...$violationsByTests),
+            warningsByTests: array_merge(...$warningsByTests),
             analyseTestValueObjects: array_merge(...$analyseTestValueObjects),
         );
     }

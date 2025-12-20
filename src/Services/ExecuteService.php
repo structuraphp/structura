@@ -110,7 +110,7 @@ final class ExecuteService
                     continue;
                 }
 
-                $this->builder->addWarning($description->namespace, (string) $assert);
+                $this->builder->addWarning((string) $assert, $assert, $description);
             }
 
             if (!$predicate) {
@@ -141,7 +141,7 @@ final class ExecuteService
                     continue;
                 }
 
-                $this->builder->addWarning($description->namespace, (string) $assert);
+                $this->builder->addWarning((string) $assert, $assert, $description);
             }
 
             if ($key === 0) {

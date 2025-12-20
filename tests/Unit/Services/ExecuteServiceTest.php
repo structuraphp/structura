@@ -152,6 +152,17 @@ final class ExecuteServiceTest extends TestCase
         self::assertEmpty($violation);
 
         $warning = $result->warnings;
-        self::assertSame([self::KEY => ['Foo']], $warning);
+        self::assertSame(
+            [
+                self::KEY => [
+                    sprintf(
+                        'Except <promote>%s</promote> for <promote>%s</promote> is not applicable',
+                        ToExtend::class,
+                        'Foo',
+                    ),
+                ],
+            ],
+            $warning,
+        );
     }
 }

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
+ * @phpstan-import-type WarningByTest from AnalyseValueObject
  */
 final class ErrorTextFormatter implements ErrorFormatterInterface
 {
@@ -24,9 +25,14 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         OutputInterface $output,
     ): int {
         $violations = array_merge(...$analyseValueObject->violationsByTests);
+        $warnings = array_merge(...$analyseValueObject->warningsByTests);
 
         if ($violations !== []) {
             $this->failedOutput($violations);
+        }
+
+        if ($warnings !== []) {
+            $this->warningOutput($warnings);
         }
 
         $this->assertionsResumeOutput($analyseValueObject);
@@ -71,6 +77,22 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
                     $violation->pathname,
                     $violation->line,
                 );
+                $this->prints[] = '';
+            }
+        }
+    }
+
+    /**
+     * @param WarningByTest $warningsByTests
+     */
+    private function warningOutput(array $warningsByTests): void
+    {
+        $this->prints[] = '<warning> WARNING LIST </warning>';
+        $this->prints[] = '';
+
+        foreach ($warningsByTests as $warningsByTest) {
+            foreach ($warningsByTest as $warning) {
+                $this->prints[] = $warning;
                 $this->prints[] = '';
             }
         }
