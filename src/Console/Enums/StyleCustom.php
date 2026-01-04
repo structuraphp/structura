@@ -14,6 +14,7 @@ enum StyleCustom: string
     case Promote = 'promote';
     case Violation = 'violation';
     case Warning = 'warning';
+    case Yellow = 'yellow';
 
     public function getOutputFormatterStyle(): OutputFormatterStyle
     {
@@ -23,7 +24,8 @@ enum StyleCustom: string
             self::Pass => new OutputFormatterStyle(null, 'green', ['bold', 'blink']),
             self::Promote => new OutputFormatterStyle('#066', null, ['bold', 'blink']),
             self::Violation => new OutputFormatterStyle(null, 'red', ['bold', 'blink']),
-            self::Warning => new OutputFormatterStyle('yellow', null, ['bold', 'blink']),
+            self::Warning => new OutputFormatterStyle(null, 'yellow', ['bold', 'blink']),
+            self::Yellow => new OutputFormatterStyle('yellow', null, ['bold', 'blink']),
         };
     }
 }

@@ -75,11 +75,20 @@ class AssertBuilder
         throw new InvalidArgumentException();
     }
 
-    public function addWarning(?string $classname, string $key): self
-    {
+    public function addWarning(
+        string $key,
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
+    ): self {
         $this->pass[$key] = 2;
+        $classname = $description->namespace;
+
         if (\is_string($classname)) {
-            $this->warnings[$key][] = $classname;
+            $this->warnings[$key][] = sprintf(
+                '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
+                $assert::class,
+                $classname,
+            );
         }
 
         return $this;
