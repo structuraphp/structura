@@ -39,7 +39,7 @@ class FormatterDataProvider
                 warningsByTests: [
                     [
                         'Foo' => [
-                            'Except <promote>ToBeReadonly</promote> for <promote>x</promote> is not applicable',
+                            '<promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable',
                         ],
                     ],
                 ],

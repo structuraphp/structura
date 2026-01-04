@@ -34,7 +34,7 @@ class ErrorTextFormatterTest extends TestCase
         
         <warning> WARNING LIST </warning>
 
-        Except <promote>ToBeReadonly</promote> for <promote>x</promote> is not applicable
+        <promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable
 
         Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <yellow>1 warning</yellow> (21 assertion)
         EOF;

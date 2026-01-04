@@ -156,7 +156,7 @@ final class ExecuteServiceTest extends TestCase
             [
                 self::KEY => [
                     sprintf(
-                        'Except <promote>%s</promote> for <promote>%s</promote> is not applicable',
+                        '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
                         ToExtend::class,
                         'Foo',
                     ),

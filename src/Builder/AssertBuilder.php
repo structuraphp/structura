@@ -85,7 +85,7 @@ class AssertBuilder
 
         if (\is_string($classname)) {
             $this->warnings[$key][] = sprintf(
-                'Except <promote>%s</promote> for <promote>%s</promote> is not applicable',
+                '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
                 $assert::class,
                 $classname,
             );
