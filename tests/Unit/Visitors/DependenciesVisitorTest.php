@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\Visitors\DependenciesVisitor;
 
-/** @property  */
 #[CoversClass(DependenciesVisitor::class)]
 final class DependenciesVisitorTest extends TestCase
 {
