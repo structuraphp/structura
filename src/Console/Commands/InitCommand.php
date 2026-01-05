@@ -43,7 +43,7 @@ final class InitCommand extends Command
                 $dto->configPath,
             ),
             'yes',
-            static fn (string $value): bool => \in_array($value, ['y', 'yes'], true),
+            static fn (mixed $value): bool => \in_array($value, ['y', 'yes'], true),
         );
 
         if (!$response) {
