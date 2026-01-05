@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\Visitors\DependenciesVisitor;
 
+/** @property  */
 #[CoversClass(DependenciesVisitor::class)]
 final class DependenciesVisitorTest extends TestCase
 {
@@ -34,6 +35,9 @@ final class DependenciesVisitorTest extends TestCase
                 // 'Dependency9', => trait
                 // 'Dependency10', => trait
                 'Dependency11',
+                'Dependency11_1',
+                'Dependency11_2',
+                'Dependency11_3',
                 'Dependency12',
                 // 'Dependency13', => attribut
                 'Dependency14',
@@ -116,6 +120,14 @@ final class DependenciesVisitorTest extends TestCase
                 private Bar $bar;
                 private AliasBaz $barAlias;
                 private \Dependency11 $dateTime;
+                private \Dependency11_1 $hook {
+                    get {
+                        new \Dependency11_2();
+                    }
+                    set {
+                        new \Dependency11_3();
+                    }
+                }
 
                 public function __construct(
                     \Dependency12 $arrayAccess,
