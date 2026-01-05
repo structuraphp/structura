@@ -13,10 +13,16 @@ final readonly class AnalyzeDto
 
     public const PROGRESS_FORMAT_OPTION = 'progress-format';
 
+    public const STOP_ON_ERROR = 'stop-on-error';
+
+    public const STOP_ON_WARNING = 'stop-on-warning';
+
     public function __construct(
         public string $configPath,
         public string $errorFormat,
         public string $progressFormat,
+        public bool $stopOnError,
+        public bool $stopOnWarning,
     ) {}
 
     /**
@@ -34,6 +40,12 @@ final readonly class AnalyzeDto
             progressFormat: \is_string($data[self::PROGRESS_FORMAT_OPTION])
                 ? $data[self::PROGRESS_FORMAT_OPTION]
                 : throw new InvalidArgumentException('progress must be a string'),
+            stopOnError: \is_bool($data[self::STOP_ON_ERROR])
+                ? $data[self::STOP_ON_ERROR]
+                : throw new InvalidArgumentException('stop on error must be a bool'),
+            stopOnWarning: \is_bool($data[self::STOP_ON_WARNING])
+                ? $data[self::STOP_ON_WARNING]
+                : throw new InvalidArgumentException('stop on warning must be a bool'),
         );
     }
 }

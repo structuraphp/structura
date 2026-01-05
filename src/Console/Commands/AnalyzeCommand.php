@@ -13,6 +13,7 @@ use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
+use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
@@ -71,17 +72,33 @@ final class AnalyzeCommand extends Command
 
         $results = [];
 
-        /** @var class-string<TestBuilder> $ruleClassname */
-        foreach ($rules as $ruleClassname) {
-            $analyseService = new AnalyseService();
-            $analyseResult = $analyseService
-                ->analyse(
-                    microtime(true),
-                    $ruleClassname,
+        try {
+            /** @var class-string<TestBuilder> $ruleClassname */
+            foreach ($rules as $ruleClassname) {
+                $analyseService = new AnalyseService(
+                    $this->analyzeDto->stopOnError,
+                    $this->analyzeDto->stopOnWarning,
                 );
+                $analyseResult = $analyseService
+                    ->analyse(
+                        microtime(true),
+                        $ruleClassname,
+                    );
+
+                $progressFormatter->progressAdvance($io, $analyseResult);
+                $results[] = $analyseResult;
+            }
+        } catch (StopOnException $stopOnException) {
+            $analyseResult = $stopOnException->analyseValueObject;
 
             $progressFormatter->progressAdvance($io, $analyseResult);
             $results[] = $analyseResult;
+
+            $result = $this->getValuesInfo($results);
+
+            $progressFormatter->progressStopOn($io);
+
+            return $errorFormatter->formatErrors($result, $output);
         }
 
         $result = $this->getValuesInfo($results);
@@ -109,6 +126,16 @@ final class AnalyzeCommand extends Command
                 description: 'Select output progress format',
                 default: ProgressFormatterType::Text->value,
                 suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
+            )
+            ->addOption(
+                name: AnalyzeDto::STOP_ON_ERROR,
+                mode: InputOption::VALUE_NONE,
+                description: 'Stop execution upon first that errored.',
+            )
+            ->addOption(
+                name: AnalyzeDto::STOP_ON_WARNING,
+                mode: InputOption::VALUE_NONE,
+                description: 'Stop execution after the first warning.',
             );
     }
 

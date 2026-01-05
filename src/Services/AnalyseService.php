@@ -6,7 +6,9 @@ namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
+use RuntimeException;
 use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
@@ -32,6 +34,11 @@ final class AnalyseService
     /** @var array<int, WarningByTest> */
     private array $warningsByTests = [];
 
+    public function __construct(
+        private readonly bool $stopOnError = false,
+        private readonly bool $stopOnWarning = false,
+    ) {}
+
     /**
      * @param class-string<TestBuilder> $ruleClassname
      */
@@ -39,37 +46,33 @@ final class AnalyseService
         float $timeStart,
         string $ruleClassname,
     ): AnalyseValueObject {
-        $this->executeTests($ruleClassname);
+        try {
+            $this->executeTests($ruleClassname);
+        } catch (RuntimeException) {
+            throw new StopOnException(
+                $this->getAnalyseValueObject($timeStart),
+            );
+        }
 
-        return new AnalyseValueObject(
-            timeStart: $timeStart,
-            countPass: $this->countPass,
-            countViolation: $this->countViolation,
-            countWarning: $this->countWarning,
-            violationsByTests: $this->violationsByTests,
-            warningsByTests: $this->warningsByTests,
-            analyseTestValueObjects: $this->analyseTestValueObjects,
-        );
+        return $this->getAnalyseValueObject($timeStart);
     }
 
     public function analyses(FinderService $finderService): AnalyseValueObject
     {
         $timeStart = microtime(true);
 
-        /** @var class-string<TestBuilder> $ruleClassname */
-        foreach ($finderService->getClassTests() as $ruleClassname) {
-            $this->executeTests($ruleClassname);
+        try {
+            /** @var class-string<TestBuilder> $ruleClassname */
+            foreach ($finderService->getClassTests() as $ruleClassname) {
+                $this->executeTests($ruleClassname);
+            }
+        } catch (RuntimeException) {
+            throw new StopOnException(
+                $this->getAnalyseValueObject($timeStart),
+            );
         }
 
-        return new AnalyseValueObject(
-            timeStart: $timeStart,
-            countPass: $this->countPass,
-            countViolation: $this->countViolation,
-            countWarning: $this->countWarning,
-            violationsByTests: $this->violationsByTests,
-            warningsByTests: $this->warningsByTests,
-            analyseTestValueObjects: $this->analyseTestValueObjects,
-        );
+        return $this->getAnalyseValueObject($timeStart);
     }
 
     /**
@@ -127,6 +130,27 @@ final class AnalyseService
             if ($assertValueObject->warnings !== []) {
                 $this->warningsByTests[] = $assertValueObject->warnings;
             }
+
+            if ($this->countViolation >= 1 && $this->stopOnError) {
+                throw new RuntimeException();
+            }
+
+            if ($this->countWarning >= 1 && $this->stopOnWarning) {
+                throw new RuntimeException();
+            }
         }
+    }
+
+    private function getAnalyseValueObject(float $timeStart): AnalyseValueObject
+    {
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: $this->countPass,
+            countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
+            violationsByTests: $this->violationsByTests,
+            warningsByTests: $this->warningsByTests,
+            analyseTestValueObjects: $this->analyseTestValueObjects,
+        );
     }
 }

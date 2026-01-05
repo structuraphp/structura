@@ -13,6 +13,7 @@ consistent code structure.
 - [Usage](#usage)
 - [Make test](#make-test)
 - [First run](#first-run)
+  - [Cli options](#cli-options) 
 - [Assertions](#assertions)
 - [Customization](#customization)
 - [With PHPUnit](#with-phpunit)
@@ -236,12 +237,15 @@ php bin/structura analyze
 
 ### Cli options
 
+- `-c, --config[=CONFIG]`: Path to config file.
 - `-f, --error-format[=ERROR-FORMAT]`
   - `text`: Default. For human consumption.
   - `github`: Creates GitHub Actions compatible output.
 - `-p, --progress-format[=PROGRESS-FORMAT]`
   - `text`: Default. For human consumption.
   - `bar`: For progress bar.
+- `--stop-on-error`: Stop execution upon first that errored.
+- `--stop-on-warning`: Stop execution after the first warning.
 
 ## Assertions
 
