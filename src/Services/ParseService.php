@@ -79,9 +79,15 @@ final readonly class ParseService
                 ? $this->classDescriptionVisitor->getClass()
                 : $this->scriptDescriptionVisitor->getScript();
 
-            $script ?? throw new InvalidArgumentException();
+            if (!$script instanceof ScriptDescription) {
+                throw new InvalidArgumentException(
+                    $this->descriptorType === DescriptorType::ClassLike
+                        ? 'class expected but script found'
+                        : 'script expected but class found',
+                );
+            }
         } catch (Error|InvalidArgumentException $e) {
-            echo \sprintf('Parse error: %s%s', $e->getMessage(), PHP_EOL);
+            echo \sprintf('Parse error: %s at %s%s', $e->getMessage(), $pathname, PHP_EOL);
 
             return null;
         }
