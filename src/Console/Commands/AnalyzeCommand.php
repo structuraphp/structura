@@ -88,9 +88,7 @@ final class AnalyzeCommand extends Command
 
         $progressFormatter->progressFinish($io);
 
-        $errorFormatter->formatErrors($result, $output);
-
-        return self::SUCCESS;
+        return $errorFormatter->formatErrors($result, $output);
     }
 
     protected function configure(): void
