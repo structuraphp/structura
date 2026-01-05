@@ -32,4 +32,11 @@ class ProgressBarFormatter implements ProgressFormatterInterface
             ? $output->progressFinish()
             : throw new RuntimeException();
     }
+
+    public function progressStopOn(OutputInterface $output): void
+    {
+        $output instanceof OutputStyle
+            ? $output->newLine(2)
+            : throw new RuntimeException();
+    }
 }

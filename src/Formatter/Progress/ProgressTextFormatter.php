@@ -47,13 +47,16 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
 
             unset($this->prints);
         }
-
-        $output->writeln('');
     }
 
     public function progressFinish(OutputInterface $output): void
     {
-        // Nothing
+        $output->writeln('');
+    }
+
+    public function progressStopOn(OutputInterface $output): void
+    {
+        $output->writeln('');
     }
 
     private function styleCustom(OutputInterface $output): OutputInterface

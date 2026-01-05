@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Services\FinderService;
@@ -87,7 +88,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        119 classe(s) from
+        120 classe(s) from
          - dirs
         That
         Should
@@ -100,6 +101,54 @@ final class AnalyseServiceTest extends TestCase
 
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key]);
+        }
+    }
+
+    public function testOnStopErrorAnalyseService(): void
+    {
+        $config = StructuraConfig::make()
+            ->archiRootNamespace(
+                'StructuraPhp\Structura\Tests\Feature',
+                'tests/Feature',
+            )
+            ->getConfig();
+
+        $finder = new FinderService($config);
+
+        $service = new AnalyseService(stopOnError: true);
+
+        try {
+            $service->analyses($finder);
+        } catch (StopOnException $stopOnException) {
+            $result = $stopOnException->analyseValueObject;
+
+            self::assertSame(2, $result->countViolation);
+            self::assertSame(5, $result->countPass);
+            self::assertSame(1, $result->countWarning);
+        }
+    }
+
+    public function testOnStopWarningAnalyseService(): void
+    {
+        $config = StructuraConfig::make()
+            ->archiRootNamespace(
+                'StructuraPhp\Structura\Tests\Feature',
+                'tests/Feature',
+            )
+            ->getConfig();
+
+        $finder = new FinderService($config);
+
+        $service = new AnalyseService(stopOnWarning: true);
+
+        try {
+            $service->analyses($finder);
+        } catch (StopOnException $stopOnException) {
+            $result = $stopOnException->analyseValueObject;
+
+            self::assertSame(2, $result->countViolation);
+            self::assertSame(5, $result->countPass);
+            self::assertSame(1, $result->countWarning);
         }
     }
 }
