@@ -76,8 +76,9 @@ final class AnalyzeCommand extends Command
             /** @var class-string<TestBuilder> $ruleClassname */
             foreach ($rules as $ruleClassname) {
                 $analyseService = new AnalyseService(
-                    $this->analyzeDto->stopOnError,
-                    $this->analyzeDto->stopOnWarning,
+                    stopOnError: $this->analyzeDto->stopOnError,
+                    stopOnWarning: $this->analyzeDto->stopOnWarning,
+                    filter: $this->analyzeDto->filter,
                 );
                 $analyseResult = $analyseService
                     ->analyse(
@@ -126,6 +127,11 @@ final class AnalyzeCommand extends Command
                 description: 'Select output progress format',
                 default: ProgressFormatterType::Text->value,
                 suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
+            )
+            ->addOption(
+                name: AnalyzeDto::FILTER,
+                mode: InputOption::VALUE_REQUIRED,
+                description: 'Filter which tests to run using pattern matching on the test name (class or method).',
             )
             ->addOption(
                 name: AnalyzeDto::STOP_ON_ERROR,

@@ -37,6 +37,7 @@ final class AnalyseService
     public function __construct(
         private readonly bool $stopOnError = false,
         private readonly bool $stopOnWarning = false,
+        private readonly ?string $filter = null,
     ) {}
 
     /**
@@ -80,11 +81,17 @@ final class AnalyseService
      */
     private function executeTests(string $classname): void
     {
+        $matchClassname = $this->match($classname);
+
         $class = new ReflectionClass($classname);
         $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
 
         $instance = new $classname();
         foreach ($methods as $method) {
+            if (!$matchClassname && !$this->match($method->name)) {
+                continue;
+            }
+
             $attributes = $method->getAttributes(TestDox::class);
             if (\count($attributes) !== 1) {
                 continue;
@@ -152,5 +159,14 @@ final class AnalyseService
             warningsByTests: $this->warningsByTests,
             analyseTestValueObjects: $this->analyseTestValueObjects,
         );
+    }
+
+    private function match(string $str): bool
+    {
+        return $this->filter === null
+            || str_contains(
+                strtolower(trim($str)),
+                strtolower(trim($this->filter)),
+            );
     }
 }
