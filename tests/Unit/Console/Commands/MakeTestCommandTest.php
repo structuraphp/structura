@@ -30,7 +30,7 @@ final class MakeTestCommandTest extends TestCase
 
         $application = new Kernel();
 
-        $command = $application->find(MakeTestCommand::getDefaultName() ?? '');
+        $command = $application->find(MakeTestCommand::NAME);
         $this->commandTester = new CommandTester($command);
     }
 

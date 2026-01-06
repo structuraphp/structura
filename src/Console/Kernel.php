@@ -22,7 +22,7 @@ class Kernel extends Application
         $this->add(new InitCommand());
         $this->add(new MakeTestCommand());
 
-        $this->setDefaultCommand('analyze');
+        $this->setDefaultCommand(AnalyzeCommand::NAME);
     }
 
     protected function getDefaultInputDefinition(): InputDefinition

@@ -32,12 +32,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'analyze',
+    name: AnalyzeCommand::NAME,
     description: 'Test archi',
 )]
 final class AnalyzeCommand extends Command
 {
     use Version;
+
+    /** @var string */
+    public const NAME = 'analyze';
 
     private AnalyzeDto $analyzeDto;
 
@@ -49,7 +52,7 @@ final class AnalyzeCommand extends Command
         $this->analyzeDto = $this->getAnalyseDto($input);
 
         if (!\file_exists($this->analyzeDto->configPath)) {
-            $initInput = new ArrayInput(['command' => InitCommand::getDefaultName()]);
+            $initInput = new ArrayInput(['command' => InitCommand::NAME]);
             $this->getApplication()?->doRun($initInput, $output);
 
             $io->success('Relaunch the command to run your tests');

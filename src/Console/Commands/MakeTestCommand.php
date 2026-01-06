@@ -20,12 +20,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'make:test',
+    name: MakeTestCommand::NAME,
     description: 'Make test',
 )]
 final class MakeTestCommand extends Command
 {
     use Version;
+
+    /** @var string */
+    public const NAME = 'make:test';
 
     private MakeTestDto $makeTestDto;
 
