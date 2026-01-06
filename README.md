@@ -238,6 +238,7 @@ php bin/structura analyze
 ### Cli options
 
 - `-c, --config[=CONFIG]`: Path to config file.
+- `--filter[=FILTER]`: Filter which tests to run using pattern matching on the test name (class or method).
 - `-f, --error-format[=ERROR-FORMAT]`
   - `text`: Default. For human consumption.
   - `github`: Creates GitHub Actions compatible output.

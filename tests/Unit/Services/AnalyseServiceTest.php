@@ -151,4 +151,24 @@ final class AnalyseServiceTest extends TestCase
             self::assertSame(1, $result->countWarning);
         }
     }
+
+    public function testFilterAnalyseService(): void
+    {
+        $config = StructuraConfig::make()
+            ->archiRootNamespace(
+                'StructuraPhp\Structura\Tests\Feature',
+                'tests/Feature',
+            )
+            ->getConfig();
+
+        $finder = new FinderService($config);
+
+        $service = new AnalyseService(filter: 'TestConfig');
+
+        $result = $service->analyses($finder);
+
+        self::assertSame(0, $result->countViolation);
+        self::assertSame(1, $result->countPass);
+        self::assertSame(0, $result->countWarning);
+    }
 }

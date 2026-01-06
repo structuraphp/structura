@@ -17,12 +17,15 @@ final readonly class AnalyzeDto
 
     public const STOP_ON_WARNING = 'stop-on-warning';
 
+    public const FILTER = 'filter';
+
     public function __construct(
         public string $configPath,
         public string $errorFormat,
         public string $progressFormat,
         public bool $stopOnError,
         public bool $stopOnWarning,
+        public ?string $filter,
     ) {}
 
     /**
@@ -46,6 +49,9 @@ final readonly class AnalyzeDto
             stopOnWarning: \is_bool($data[self::STOP_ON_WARNING])
                 ? $data[self::STOP_ON_WARNING]
                 : throw new InvalidArgumentException('stop on warning must be a bool'),
+            filter: \is_string($data[self::FILTER]) || is_null($data[self::FILTER])
+                ? $data[self::FILTER]
+                : throw new InvalidArgumentException('filter must be a string or null'),
         );
     }
 }
