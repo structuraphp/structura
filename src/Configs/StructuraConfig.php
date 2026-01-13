@@ -6,10 +6,11 @@ namespace StructuraPhp\Structura\Configs;
 
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\Contracts\StructuraConfigInterface;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 
-class StructuraConfig
+class StructuraConfig implements StructuraConfigInterface
 {
     /** @var array<int,string> */
     private array $extensions = [];
@@ -21,6 +22,9 @@ class StructuraConfig
     private array $progressFormatter = [];
 
     private ?RootNamespaceValueObject $archiRootNamespace = null;
+
+    /** @var array<string, string> */
+    private array $testSuites = [];
 
     public static function make(): self
     {
@@ -55,6 +59,13 @@ class StructuraConfig
         return $this;
     }
 
+    public function addTestSuite(string $path, string $name): self
+    {
+        $this->testSuites[$name] = $path;
+
+        return $this;
+    }
+
     public function archiRootNamespace(string $namespace, string $directory): self
     {
         $this->archiRootNamespace = new RootNamespaceValueObject(
@@ -68,6 +79,7 @@ class StructuraConfig
     public function getConfig(): ConfigValueObject
     {
         return new ConfigValueObject(
+            testSuites: $this->testSuites,
             rootNamespace: $this->archiRootNamespace,
             errorFormatter: $this->errorFormatter,
             progressFormatter: $this->progressFormatter,

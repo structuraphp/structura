@@ -65,7 +65,10 @@ final class AnalyzeCommand extends Command
         $errorFormatter = $this->getErrorFormatter();
         $progressFormatter = $this->getProgressFormatter();
 
-        $finder = new FinderService($this->configValueObject);
+        $finder = new FinderService(
+            config: $this->configValueObject,
+            testSuite: $this->analyzeDto->testSuite,
+        );
         $rules = $finder->getClassTests();
 
         $progressFormatter->progressStart($io, count($rules));
@@ -127,6 +130,11 @@ final class AnalyzeCommand extends Command
                 description: 'Select output progress format',
                 default: ProgressFormatterType::Text->value,
                 suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
+            )
+            ->addOption(
+                name: AnalyzeDto::TESTSUITE,
+                mode: InputOption::VALUE_REQUIRED,
+                description: 'List available test suites as defined in the PHP configuration file.',
             )
             ->addOption(
                 name: AnalyzeDto::FILTER,
@@ -207,10 +215,10 @@ final class AnalyzeCommand extends Command
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto
     {
-        /** @var array<string,scalar> $data */
+        /** @var array<string,null|scalar> $data */
         $data = array_filter(
             array: $input->getOptions(),
-            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
+            callback: static fn (mixed $value, int|string $key): bool => (\is_scalar($value) || is_null($value))
                 && \is_string($key),
             mode: ARRAY_FILTER_USE_BOTH,
         );

@@ -50,6 +50,9 @@ At the root of your project, add the namespace and directory for your architectu
 
 ```php
 return static function (StructuraConfig $config): void {
+    // Test suite, required to start the analysis
+    $config->addTestSuite('tests/Architecture', 'main');
+    // Base namespace, required for the test creation command
     $config->archiRootNamespace(
         '<MY_NAMESPACE>\Tests\Architecture', // namespace
         'tests/Architecture', // test directory
@@ -239,6 +242,7 @@ php bin/structura analyze
 
 - `-c, --config[=CONFIG]`: Path to config file.
 - `--filter[=FILTER]`: Filter which tests to run using pattern matching on the test name (class or method).
+- `--testsuite[=TESTSUITE]`: List available test suites as defined in the PHP configuration file.
 - `-f, --error-format[=ERROR-FORMAT]`
   - `text`: Default. For human consumption.
   - `github`: Creates GitHub Actions compatible output.

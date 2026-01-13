@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Contracts\StructuraConfigInterface;
 
-return static function (StructuraConfig $config): void {
+return static function (StructuraConfigInterface $config): void {
+    $config->addTestSuite('tests/Feature', 'main');
     $config->archiRootNamespace(
         'StructuraPhp\Structura\Tests\Feature',
         'tests/Feature',

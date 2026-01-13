@@ -17,20 +17,22 @@ use Symfony\Component\Console\Output\BufferedOutput;
 #[CoversClass(AnalyseService::class)]
 final class AnalyseServiceTest extends TestCase
 {
-    public function testAnalyseService(): void
+    private FinderService $finder;
+
+    protected function setUp(): void
     {
         $config = StructuraConfig::make()
-            ->archiRootNamespace(
-                'StructuraPhp\Structura\Tests\Feature',
-                'tests/Feature',
-            )
+            ->addTestSuite('tests/Feature', 'main')
             ->getConfig();
 
-        $finder = new FinderService($config);
+        $this->finder ??= new FinderService($config);
+    }
 
+    public function testAnalyseService(): void
+    {
         $service = new AnalyseService();
 
-        $result = $service->analyses($finder);
+        $result = $service->analyses($this->finder);
         $formatter = new ProgressTextFormatter();
 
         $buffer = new BufferedOutput(formatter: new OutputFormatter());
@@ -88,7 +90,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        120 classe(s) from
+        121 classe(s) from
          - dirs
         That
         Should
@@ -106,19 +108,10 @@ final class AnalyseServiceTest extends TestCase
 
     public function testOnStopErrorAnalyseService(): void
     {
-        $config = StructuraConfig::make()
-            ->archiRootNamespace(
-                'StructuraPhp\Structura\Tests\Feature',
-                'tests/Feature',
-            )
-            ->getConfig();
-
-        $finder = new FinderService($config);
-
         $service = new AnalyseService(stopOnError: true);
 
         try {
-            $service->analyses($finder);
+            $service->analyses($this->finder);
         } catch (StopOnException $stopOnException) {
             $result = $stopOnException->analyseValueObject;
 
@@ -131,10 +124,7 @@ final class AnalyseServiceTest extends TestCase
     public function testOnStopWarningAnalyseService(): void
     {
         $config = StructuraConfig::make()
-            ->archiRootNamespace(
-                'StructuraPhp\Structura\Tests\Feature',
-                'tests/Feature',
-            )
+            ->addTestSuite('tests/Feature', 'main')
             ->getConfig();
 
         $finder = new FinderService($config);
@@ -154,18 +144,9 @@ final class AnalyseServiceTest extends TestCase
 
     public function testFilterAnalyseService(): void
     {
-        $config = StructuraConfig::make()
-            ->archiRootNamespace(
-                'StructuraPhp\Structura\Tests\Feature',
-                'tests/Feature',
-            )
-            ->getConfig();
-
-        $finder = new FinderService($config);
-
         $service = new AnalyseService(filter: 'TestConfig');
 
-        $result = $service->analyses($finder);
+        $result = $service->analyses($this->finder);
 
         self::assertSame(0, $result->countViolation);
         self::assertSame(1, $result->countPass);

@@ -6,13 +6,16 @@ namespace StructuraPhp\Structura\Services;
 
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
-use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 use Symfony\Component\Finder\Finder;
 
 class FinderService
 {
+    /** @var null|array<int,class-string<TestBuilder>> */
+    private static ?array $loadedClasses = null;
+
     public function __construct(
         private ConfigValueObject $config,
+        private ?string $testSuite = null,
     ) {}
 
     /**
@@ -20,35 +23,43 @@ class FinderService
      */
     public function getClassTests(): array
     {
-        if (!$this->config->rootNamespace instanceof RootNamespaceValueObject) {
+        $testSuites = is_string($this->testSuite)
+            ? ($this->config->testSuites[$this->testSuite] ?? null)
+            : $this->config->testSuites;
+
+        if ($testSuites === [] || $testSuites === null) {
             return [];
         }
 
-        $directory = $this->config->rootNamespace->directory;
-        $namespace = $this->config->rootNamespace->namespace;
+        if (self::$loadedClasses !== null) {
+            return self::$loadedClasses;
+        }
 
+        $baseClasses = get_declared_classes();
         $finder = Finder::create()
             ->files()
             ->followLinks()
             ->sortByName()
             ->name('Test*.php')
-            ->in($directory);
+            ->in($testSuites);
 
-        $rules = [];
         foreach ($finder as $file) {
-            $pathName = $file->getPath();
-
-            if (str_starts_with($pathName, $directory)) {
-                $className = str_replace([$directory, '/'], [$namespace, '\\'], $pathName);
-                $className .= '\\' . pathinfo($file->getPathname(), \PATHINFO_FILENAME);
-
-                if (class_exists($className)) {
-                    /** @var class-string<TestBuilder> $className */
-                    $rules[] = $className;
-                }
-            }
+            require_once $file->getRealPath();
         }
 
-        return $rules;
+        /** @var array<int,class-string> $classes */
+        $classes = array_diff(get_declared_classes(), $baseClasses);
+
+        /** @var array<int,class-string<TestBuilder>> $instances */
+        $instances = array_filter(
+            $classes,
+            static fn (string $class): bool => in_array(
+                TestBuilder::class,
+                class_parents($class),
+                true,
+            ),
+        );
+
+        return self::$loadedClasses ??= $instances;
     }
 }
