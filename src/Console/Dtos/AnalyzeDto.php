@@ -19,6 +19,8 @@ final readonly class AnalyzeDto
 
     public const FILTER = 'filter';
 
+    public const TESTSUITE = 'testsuite';
+
     public function __construct(
         public string $configPath,
         public string $errorFormat,
@@ -26,10 +28,11 @@ final readonly class AnalyzeDto
         public bool $stopOnError,
         public bool $stopOnWarning,
         public ?string $filter,
+        public ?string $testSuite,
     ) {}
 
     /**
-     * @param array<string,scalar>|ArrayAccess<string,scalar> $data
+     * @param array<string,null|scalar>|ArrayAccess<string,null|scalar> $data
      */
     public static function fromArray(array|ArrayAccess $data): self
     {
@@ -52,6 +55,9 @@ final readonly class AnalyzeDto
             filter: \is_string($data[self::FILTER]) || is_null($data[self::FILTER])
                 ? $data[self::FILTER]
                 : throw new InvalidArgumentException('filter must be a string or null'),
+            testSuite: \is_string($data[self::TESTSUITE]) || is_null($data[self::TESTSUITE])
+                ? $data[self::TESTSUITE]
+                : throw new InvalidArgumentException('testsuite must be a string or null'),
         );
     }
 }
