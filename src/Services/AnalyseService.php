@@ -25,6 +25,8 @@ final class AnalyseService
 
     private int $countWarning = 0;
 
+    private int $countNotice = 0;
+
     /** @var array<int,AnalyseTestValueObject> */
     private array $analyseTestValueObjects = [];
 
@@ -34,9 +36,13 @@ final class AnalyseService
     /** @var array<int, WarningByTest> */
     private array $warningsByTests = [];
 
+    /** @var array<int, array<string, string>> */
+    private array $noticeByTests = [];
+
     public function __construct(
         private readonly bool $stopOnError = false,
         private readonly bool $stopOnWarning = false,
+        private readonly bool $stopOnNotice = false,
         private readonly ?string $filter = null,
     ) {}
 
@@ -122,6 +128,7 @@ final class AnalyseService
             $this->countPass += $assertValueObject->countAssertsSuccess();
             $this->countViolation += $assertValueObject->countAssertsFailure();
             $this->countWarning += $assertValueObject->countAssertsWarning();
+            $this->countNotice += $assertValueObject->countAssertsNotices();
 
             $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
                 textDox: $testDox,
@@ -138,11 +145,19 @@ final class AnalyseService
                 $this->warningsByTests[] = $assertValueObject->warnings;
             }
 
+            if ($assertValueObject->notices !== []) {
+                $this->noticeByTests[] = $assertValueObject->notices;
+            }
+
             if ($this->countViolation >= 1 && $this->stopOnError) {
                 throw new RuntimeException();
             }
 
             if ($this->countWarning >= 1 && $this->stopOnWarning) {
+                throw new RuntimeException();
+            }
+
+            if ($this->countNotice >= 1 && $this->stopOnNotice) {
                 throw new RuntimeException();
             }
         }
@@ -155,8 +170,10 @@ final class AnalyseService
             countPass: $this->countPass,
             countViolation: $this->countViolation,
             countWarning: $this->countWarning,
+            countNotice: $this->countNotice,
             violationsByTests: $this->violationsByTests,
             warningsByTests: $this->warningsByTests,
+            noticeByTests: $this->noticeByTests,
             analyseTestValueObjects: $this->analyseTestValueObjects,
         );
     }

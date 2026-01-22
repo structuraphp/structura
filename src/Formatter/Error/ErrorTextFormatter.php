@@ -26,6 +26,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     ): int {
         $violations = array_merge(...$analyseValueObject->violationsByTests);
         $warnings = array_merge(...$analyseValueObject->warningsByTests);
+        $notices = array_merge(...$analyseValueObject->noticeByTests);
 
         if ($violations !== []) {
             $this->failedOutput($violations);
@@ -33,6 +34,10 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
 
         if ($warnings !== []) {
             $this->warningOutput($warnings);
+        }
+
+        if ($notices !== []) {
+            $this->noticeOutput($notices);
         }
 
         $this->assertionsResumeOutput($analyseValueObject);
@@ -83,6 +88,20 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     }
 
     /**
+     * @param array<string, string> $noticesByTests
+     */
+    private function noticeOutput(array $noticesByTests): void
+    {
+        $this->prints[] = '<notice> NOTICE LIST </notice>';
+        $this->prints[] = '';
+
+        foreach ($noticesByTests as $noticeByTests) {
+            $this->prints[] = $noticeByTests;
+            $this->prints[] = '';
+        }
+    }
+
+    /**
      * @param WarningByTest $warningsByTests
      */
     private function warningOutput(array $warningsByTests): void
@@ -104,6 +123,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
             '<green>%d passed</green>' => $analyseDto->countPass,
             '<fire>%d failed</fire>' => $analyseDto->countViolation,
             '<yellow>%d warning</yellow>' => $analyseDto->countWarning,
+            '<orange>%d notice</orange>' => $analyseDto->countNotice,
         ];
 
         $data = array_filter($data, fn (int $value): bool => $value > 0);

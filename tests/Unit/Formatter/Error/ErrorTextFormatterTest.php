@@ -35,8 +35,12 @@ class ErrorTextFormatterTest extends TestCase
         <warning> WARNING LIST </warning>
 
         <promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable
+        
+        <notice> NOTICE LIST </notice>
 
-        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <yellow>1 warning</yellow> (21 assertion)
+        error notice
+
+        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <yellow>1 warning</yellow>, <orange>1 notice</orange> (21 assertion)
         EOF;
 
         $expected = explode(PHP_EOL, $expected);

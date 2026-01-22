@@ -13,6 +13,7 @@ final readonly class AnalyseValueObject
     /**
      * @param array<int,ViolationsByTest> $violationsByTests
      * @param array<int,WarningByTest> $warningsByTests
+     * @param array<int, array<string, string>> $noticeByTests
      * @param array<int,AnalyseTestValueObject> $analyseTestValueObjects
      */
     public function __construct(
@@ -20,8 +21,10 @@ final readonly class AnalyseValueObject
         public int $countPass,
         public int $countViolation,
         public int $countWarning,
+        public int $countNotice,
         public array $violationsByTests,
         public array $warningsByTests,
+        public array $noticeByTests,
         public array $analyseTestValueObjects,
     ) {}
 }

@@ -24,6 +24,9 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
         /** @var WarningByTest $warningsByTests */
         $warningsByTests = array_merge(...$analyseValueObject->warningsByTests);
 
+        /** @var array<string, string> $noticesByTests */
+        $noticesByTests = array_merge(...$analyseValueObject->noticeByTests);
+
         /** @var array<int, ViolationValueObject> $violationsByTest */
         foreach ($violationsByTests as $violationsByTest) {
             foreach ($violationsByTest as $violation) {
@@ -53,6 +56,14 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
 
                 $output->writeln($line, Output::OUTPUT_RAW);
             }
+        }
+
+        foreach ($noticesByTests as $notice) {
+            $message = $this->formatMessage($notice);
+
+            $line = sprintf('::notice ::%s', $message);
+
+            $output->writeln($line, Output::OUTPUT_RAW);
         }
 
         return $violationsByTests === []

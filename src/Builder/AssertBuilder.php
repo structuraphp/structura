@@ -29,6 +29,9 @@ class AssertBuilder
     /** @var array<string, array<int, string>> */
     private array $warnings = [];
 
+    /** @var array<string, string> */
+    private array $notices = [];
+
     public function addExcept(?string $classname, string $expr): self
     {
         if (\is_string($classname)) {
@@ -94,6 +97,16 @@ class AssertBuilder
         return $this;
     }
 
+    public function addNotice(
+        string $key,
+        string $message,
+    ): self {
+        $this->pass[$key] = 3;
+        $this->notices[$key] = $message;
+
+        return $this;
+    }
+
     public function getAssertValueObject(): AssertValueObject
     {
         return new AssertValueObject(
@@ -101,6 +114,7 @@ class AssertBuilder
             $this->violations,
             $this->exceptions,
             $this->warnings,
+            $this->notices,
         );
     }
 }

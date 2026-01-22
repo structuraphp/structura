@@ -17,6 +17,8 @@ final readonly class AnalyzeDto
 
     public const STOP_ON_WARNING = 'stop-on-warning';
 
+    public const STOP_ON_NOTICE = 'stop-on-notice';
+
     public const FILTER = 'filter';
 
     public const TESTSUITE = 'testsuite';
@@ -27,6 +29,7 @@ final readonly class AnalyzeDto
         public string $progressFormat,
         public bool $stopOnError,
         public bool $stopOnWarning,
+        public bool $stopOnNotice,
         public ?string $filter,
         public ?string $testSuite,
     ) {}
@@ -52,6 +55,9 @@ final readonly class AnalyzeDto
             stopOnWarning: \is_bool($data[self::STOP_ON_WARNING])
                 ? $data[self::STOP_ON_WARNING]
                 : throw new InvalidArgumentException('stop on warning must be a bool'),
+            stopOnNotice: \is_bool($data[self::STOP_ON_NOTICE])
+                ? $data[self::STOP_ON_NOTICE]
+                : throw new InvalidArgumentException('stop on notice must be a bool'),
             filter: \is_string($data[self::FILTER]) || is_null($data[self::FILTER])
                 ? $data[self::FILTER]
                 : throw new InvalidArgumentException('filter must be a string or null'),
