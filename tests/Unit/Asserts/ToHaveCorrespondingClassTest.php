@@ -21,9 +21,7 @@ class ToHaveCorrespondingClassTest extends TestCase
 
     private const CORRESPONDENCE_ERROR = [
         AndTest::class => 'StructuraPhp\Structura\Asserts\And',
-        ToNotDependsOnFunctionTest::class => 'StructuraPhp\Structura\Asserts\NotDependsOnFunction',
         OrTest::class => 'StructuraPhp\Structura\Asserts\Or',
-        ToBeInterfacesTest::class => 'StructuraPhp\Structura\Asserts\ToBeInterface',
         ToBeInvokableTest::class => 'StructuraPhp\Structura\Asserts\ToBeInvokable',
         ToUseStrictTypesTest::class => 'StructuraPhp\Structura\Asserts\ToUseStrictTypes',
     ];
