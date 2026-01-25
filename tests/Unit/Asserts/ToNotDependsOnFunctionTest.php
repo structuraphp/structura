@@ -16,7 +16,7 @@ use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOnFunction::class)]
 #[CoversMethod(Expr::class, 'toNotDependsOnFunction')]
-class NotDependsOnFunctionTest extends TestCase
+class ToNotDependsOnFunctionTest extends TestCase
 {
     use ArchitectureAsserts;
 

@@ -10,10 +10,11 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
+use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToOnlyImplementTest::class)]
+#[CoversClass(ToOnlyImplement::class)]
 #[CoversMethod(Expr::class, 'toOnlyImplement')]
 final class ToOnlyImplementTest extends TestCase
 {
