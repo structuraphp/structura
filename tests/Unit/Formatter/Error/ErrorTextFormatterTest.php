@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Tests\Unit\Formatter\Error;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Tests\DataProvider\FormatterDataProvider;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
@@ -47,7 +48,7 @@ class ErrorTextFormatterTest extends TestCase
 
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
-        self::assertSame(ErrorTextFormatter::ERROR, $output);
+        self::assertSame(ErrorFormatterInterface::ERROR, $output);
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key], sprintf('Error line %d', $key));
         }
