@@ -1,4 +1,4 @@
-name: Bump version & Build PHAR
+name: Release & PHAR
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
       - feat/*
 
 jobs:
-  build2:
-    name: Release
+  build-test:
+    name: Test PHAR
     runs-on: ubuntu-latest
 
     steps:
@@ -24,14 +24,17 @@ jobs:
       - name: Install dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Install Box (project-box)
+      - name: Install Box
         run: composer global require humbug/box
 
       - name: Build PHAR
-        run: ~/.composer/vendor/bin/box compile
+        run: ~/.composer/vendor/bin/box compile -c box-test.json
+
+      - name: Launch PHAR
+        run: php ./structura.phar -V
 
   build:
-    name: Bump version & Release
+    name: Release & Build PHAR
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
