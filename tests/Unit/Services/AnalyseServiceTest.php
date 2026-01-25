@@ -90,7 +90,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        121 classe(s) from
+        122 classe(s) from
          - dirs
         That
         Should
@@ -118,6 +118,7 @@ final class AnalyseServiceTest extends TestCase
             self::assertSame(2, $result->countViolation);
             self::assertSame(5, $result->countPass);
             self::assertSame(1, $result->countWarning);
+            self::assertSame(0, $result->countNotice);
         }
     }
 
@@ -139,6 +140,7 @@ final class AnalyseServiceTest extends TestCase
             self::assertSame(2, $result->countViolation);
             self::assertSame(5, $result->countPass);
             self::assertSame(1, $result->countWarning);
+            self::assertSame(0, $result->countNotice);
         }
     }
 
@@ -151,5 +153,6 @@ final class AnalyseServiceTest extends TestCase
         self::assertSame(0, $result->countViolation);
         self::assertSame(1, $result->countPass);
         self::assertSame(0, $result->countWarning);
+        self::assertSame(0, $result->countNotice);
     }
 }

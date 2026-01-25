@@ -27,6 +27,7 @@ class ErrorGithubFormatterTest extends TestCase
         $expected = <<<'EOF'
         ::error file=example.php,line=1,col=0::Resource <promote>x</promote> must be a final class
         ::warning ::<promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable
+        ::notice ::error notice
 
         EOF;
 

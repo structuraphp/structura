@@ -251,6 +251,7 @@ php bin/structura analyze
   - `bar`: For progress bar.
 - `--stop-on-error`: Stop execution upon first that errored.
 - `--stop-on-warning`: Stop execution after the first warning.
+- `--stop-on-notice`: Stop execution after the first notice.
 
 ## Assertions
 

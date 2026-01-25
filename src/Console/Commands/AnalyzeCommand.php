@@ -81,6 +81,7 @@ final class AnalyzeCommand extends Command
                 $analyseService = new AnalyseService(
                     stopOnError: $this->analyzeDto->stopOnError,
                     stopOnWarning: $this->analyzeDto->stopOnWarning,
+                    stopOnNotice: $this->analyzeDto->stopOnNotice,
                     filter: $this->analyzeDto->filter,
                 );
                 $analyseResult = $analyseService
@@ -150,6 +151,11 @@ final class AnalyzeCommand extends Command
                 name: AnalyzeDto::STOP_ON_WARNING,
                 mode: InputOption::VALUE_NONE,
                 description: 'Stop execution after the first warning.',
+            )
+            ->addOption(
+                name: AnalyzeDto::STOP_ON_NOTICE,
+                mode: InputOption::VALUE_NONE,
+                description: 'Stop execution after the first notice.',
             );
     }
 
@@ -189,16 +195,20 @@ final class AnalyzeCommand extends Command
         $countPass = 0;
         $countViolation = 0;
         $countWarning = 0;
+        $countNotice = 0;
         $violationsByTests = [];
         $warningsByTests = [];
+        $noticesByTests = [];
         $analyseTestValueObjects = [];
 
         foreach ($results as $result) {
             $countPass += $result->countPass;
             $countViolation += $result->countViolation;
             $countWarning += $result->countWarning;
+            $countNotice += $result->countNotice;
             $violationsByTests[] = $result->violationsByTests;
             $warningsByTests[] = $result->warningsByTests;
+            $noticesByTests[] = $result->noticeByTests;
             $analyseTestValueObjects[] = $result->analyseTestValueObjects;
         }
 
@@ -207,8 +217,10 @@ final class AnalyzeCommand extends Command
             countPass: $countPass,
             countViolation: $countViolation,
             countWarning: $countWarning,
+            countNotice: $countNotice,
             violationsByTests: array_merge(...$violationsByTests),
             warningsByTests: array_merge(...$warningsByTests),
+            noticeByTests: array_merge(...$noticesByTests),
             analyseTestValueObjects: array_merge(...$analyseTestValueObjects),
         );
     }
