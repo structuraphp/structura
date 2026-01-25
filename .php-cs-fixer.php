@@ -13,7 +13,10 @@ use PhpCsFixer\Runner\Parallel\ParallelConfig;
 $finder = Finder::create()
     ->exclude('build')
     ->in(__DIR__)
-    ->append([__FILE__]);
+    ->append([
+        __DIR__ . '/bin/structura',
+        __FILE__,
+    ]);
 
 $config = new Config();
 
