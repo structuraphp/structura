@@ -33,6 +33,12 @@ jobs:
       - name: Launch PHAR
         run: php ./structura.phar -V
 
+      - name: Show PHAR size
+        run: |
+          SIZE_BYTES=$(stat -c%s "./structura.phar")
+          SIZE_KB=$((SIZE_BYTES / 1024))
+          echo "PHAR size: ${SIZE_KB} KB"
+
   build:
     name: Release & Build PHAR
     if: github.ref == 'refs/heads/main'

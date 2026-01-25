@@ -2,7 +2,7 @@
   "banner": [
     "Structura PHP",
     "",
-    "(c) Mathieu NOËL",
+    "Copyright (c) 2025 structuraphp",
     "",
     "This source file is subject to the MIT license that is bundled",
     "with this source code in the file LICENSE."
@@ -31,8 +31,7 @@
         "test",
         "Tests",
         "tests"
-      ],
-      "notPath": [ "symfony/polyfill-intl-.*" ]
+      ]
     }
   ],
   "compression": "GZ",
