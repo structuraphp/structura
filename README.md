@@ -36,6 +36,12 @@ consistent code structure.
 composer required --dev structuraphp/structura
 ```
 
+### Manual binary download
+
+```shell
+wget https://github.com/structuraphp/structura/releases/latest/download/phparkitect.phar
+```
+
 ## Usage
 
 ## Configuration
@@ -868,6 +874,12 @@ $this
 ```
 
 ## Customization
+
+If you use custom formats, progress bars, or rules with the PHA file, add your autoloader to the configuration using the following method:
+
+```php
+$config->setAutoload(__DIR__ . '/vendor/autoload.php');
+```
 
 ### Custom assert
 

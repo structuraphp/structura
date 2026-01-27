@@ -36,4 +36,9 @@ interface StructuraConfigInterface
      * @param string $directory relative root path to the architecture tests directory (e.g. “tests/Architecture”)
      */
     public function archiRootNamespace(string $namespace, string $directory): self;
+
+    /**
+     * @param string $path absolute path to your project's autoload file if you are using PHAR (e.g "__DIR__ . '/vendor/autoload.php")
+     */
+    public function setAutoload(string $path): self;
 }

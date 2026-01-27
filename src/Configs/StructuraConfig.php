@@ -26,6 +26,8 @@ class StructuraConfig implements StructuraConfigInterface
     /** @var array<string, string> */
     private array $testSuites = [];
 
+    private ?string $autoload = null;
+
     public static function make(): self
     {
         return new self();
@@ -76,6 +78,13 @@ class StructuraConfig implements StructuraConfigInterface
         return $this;
     }
 
+    public function setAutoload(string $path): StructuraConfigInterface
+    {
+        $this->autoload = $path;
+
+        return $this;
+    }
+
     public function getConfig(): ConfigValueObject
     {
         return new ConfigValueObject(
@@ -84,6 +93,7 @@ class StructuraConfig implements StructuraConfigInterface
             errorFormatter: $this->errorFormatter,
             progressFormatter: $this->progressFormatter,
             extensions: $this->extensions,
+            autoload: $this->autoload,
         );
     }
 }
