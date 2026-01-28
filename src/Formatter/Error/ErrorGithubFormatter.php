@@ -6,11 +6,12 @@ namespace StructuraPhp\Structura\Formatter\Error;
 
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
-use Symfony\Component\Console\Output\Output;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
+ * @phpstan-import-type WarningByTest from AnalyseValueObject
  */
 class ErrorGithubFormatter implements ErrorFormatterInterface
 {
@@ -19,10 +20,13 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
         /** @var ViolationsByTest $violationsByTests */
         $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);
 
-        if ($violationsByTests === []) {
-            return self::SUCCESS;
-        }
+        /** @var WarningByTest $warningsByTests */
+        $warningsByTests = array_merge(...$analyseValueObject->warningsByTests);
 
+        /** @var array<string, string> $noticesByTests */
+        $noticesByTests = array_merge(...$analyseValueObject->noticeByTests);
+
+        /** @var array<int, ViolationValueObject> $violationsByTest */
         foreach ($violationsByTests as $violationsByTest) {
             foreach ($violationsByTest as $violation) {
                 $metas = [
@@ -31,20 +35,48 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
                     'col' => 0,
                 ];
                 array_walk($metas, static function (&$value, string $key): void {
-                    $value = sprintf('%s=%s', $key, (string) $value);
+                    $value = sprintf('%s=%s', $key, $value);
                 });
 
-                $message = $violation->messageViolation;
-                // newlines need to be encoded
-                // see https://github.com/actions/starter-workflows/issues/68#issuecomment-581479448
-                $message = str_replace("\n", '%0A', $message);
+                $message = $this->formatMessage($violation->messageViolation);
 
                 $line = sprintf('::error %s::%s', implode(',', $metas), $message);
 
-                $output->writeln($line, Output::OUTPUT_RAW);
+                $output->writeln($line, OutputInterface::OUTPUT_RAW);
             }
         }
 
-        return self::ERROR;
+        /** @var array<int, string> $warningsByTest */
+        foreach ($warningsByTests as $warningsByTest) {
+            foreach ($warningsByTest as $warning) {
+                $message = $this->formatMessage($warning);
+
+                $line = sprintf('::warning ::%s', $message);
+
+                $output->writeln($line, OutputInterface::OUTPUT_RAW);
+            }
+        }
+
+        foreach ($noticesByTests as $notice) {
+            $message = $this->formatMessage($notice);
+
+            $line = sprintf('::notice ::%s', $message);
+
+            $output->writeln($line, OutputInterface::OUTPUT_RAW);
+        }
+
+        return $violationsByTests === []
+            ? self::SUCCESS
+            : self::ERROR;
+    }
+
+    /**
+     * Newlines need to be encoded.
+     *
+     * @see https://github.com/actions/starter-workflows/issues/68#issuecomment-581479448
+     */
+    private function formatMessage(string $message): string
+    {
+        return str_replace("\n", '%0A', $message);
     }
 }

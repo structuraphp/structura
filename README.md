@@ -13,9 +13,11 @@ consistent code structure.
 - [Usage](#usage)
 - [Make test](#make-test)
 - [First run](#first-run)
+  - [Cli options](#cli-options) 
 - [Assertions](#assertions)
-- [Custom assert](#custom-assert)
+- [Customization](#customization)
 - [With PHPUnit](#with-phpunit)
+- [Inspiration](#inspiration)
 
 ## Requirements
 
@@ -34,6 +36,12 @@ consistent code structure.
 composer required --dev structuraphp/structura
 ```
 
+### Manual binary download
+
+```shell
+wget https://github.com/structuraphp/structura/releases/latest/download/phparkitect.phar
+```
+
 ## Usage
 
 ## Configuration
@@ -48,6 +56,9 @@ At the root of your project, add the namespace and directory for your architectu
 
 ```php
 return static function (StructuraConfig $config): void {
+    // Test suite, required to start the analysis
+    $config->addTestSuite('tests/Architecture', 'main');
+    // Base namespace, required for the test creation command
     $config->archiRootNamespace(
         '<MY_NAMESPACE>\Tests\Architecture', // namespace
         'tests/Architecture', // test directory
@@ -235,12 +246,18 @@ php bin/structura analyze
 
 ### Cli options
 
+- `-c, --config[=CONFIG]`: Path to config file.
+- `--filter[=FILTER]`: Filter which tests to run using pattern matching on the test name (class or method).
+- `--testsuite[=TESTSUITE]`: List available test suites as defined in the PHP configuration file.
 - `-f, --error-format[=ERROR-FORMAT]`
   - `text`: Default. For human consumption.
   - `github`: Creates GitHub Actions compatible output.
 - `-p, --progress-format[=PROGRESS-FORMAT]`
   - `text`: Default. For human consumption.
   - `bar`: For progress bar.
+- `--stop-on-error`: Stop execution upon first that errored.
+- `--stop-on-warning`: Stop execution after the first warning.
+- `--stop-on-notice`: Stop execution after the first notice.
 
 ## Assertions
 
@@ -856,7 +873,15 @@ $this
   );
 ```
 
-## Custom assert
+## Customization
+
+If you use custom formats, progress bars, or rules with the PHA file, add your autoloader to the configuration using the following method:
+
+```php
+$config->setAutoload(__DIR__ . '/vendor/autoload.php');
+```
+
+### Custom assert
 
 To create a custom rule :
 
@@ -908,8 +933,95 @@ $this
 
 Use [existing rules](https://github.com/structuraphp/structura/tree/main/src/Asserts) as an example.
 
+### Custom progress bar
+
+To create a custom progress bar, implement the `StructuraPhp\Structura\Contracts\ProgressFormatterInterface` interface:
+
+```php
+class CustomProgress implements ProgressFormatterInterface
+{
+    private int $max;
+    private int $counter = 0;
+
+    public function progressStart(OutputInterface $output, int $max): void
+    {
+        $this->max = $max;
+        $output->writeln('<info>Starting progress ...</info>');
+    }
+
+    public function progressAdvance(OutputInterface $output, AnalyseValueObject $analyseValueObject): void
+    {
+        $this->counter++;
+        $output->writeln(sprintf('%d/%d', $this->counter, $this->max));
+    }
+
+    public function progressFinish(OutputInterface $output): void
+    {
+        $output->writeln('<info>Finished progress ...</info>');
+    }
+}
+```
+
+Add your implementation to the configuration and run the analysis with the `--progress-format[=PROGRESS-FORMAT]` option:
+
+```php
+$config
+    ->setProgressFormatter(
+        'custom',
+        new CustomProgress()
+    );
+```
+
+The example here will display:
+
+```shell
+Starting progress ...
+1/4
+2/4
+3/4
+4/4
+Finished progress ...
+```
+
+### Custom error format
+
+To create a custom error format, mplement the `StructuraPhp\Structura\Contracts\ErrorFormatterInterface` interface:
+
+```php
+class CustomError implements ErrorFormatterInterface
+{
+    public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
+    {
+        // TODO: Implement formatErrors() method.
+    }
+}
+```
+
+Add your implementation to the configuration and run the analysis with the `--error-format[=ERROR-FORMAT]` option:
+
+```php
+$config
+    ->setErrorFormatter(
+        'custom',
+        new CustomError()
+    );
+```
+
 ## With PHPUnit
 
 Structura can integrate architecture testing with PHPUnit with this project:
 
 <https://github.com/structuraphp/structura-phpunit>
+
+## Inspiration
+
+StructuraPHP is the result of current tools failing to meet, or only partially meeting, our needs as an architecture testing tool.
+
+Our design and features are heavily inspired by the following tools:
+
+- [ArchUnit](https://github.com/TNG/ArchUnit): for rules
+- [Arkitect](https://github.com/phparkitect/arkitect): for rules, independence, full php,
+- [Deptract](https://github.com/deptrac/deptrac): for rules
+- [Pest Architecture](https://pestphp.com/docs/arch-testing): for rules, function names, output format,
+- [PhpUnit](https://github.com/sebastianbergmann/phpunit/): for test classes, flags,
+- [Phpat](https://github.com/carlosas/phpat): for rules.

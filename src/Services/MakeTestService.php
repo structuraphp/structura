@@ -7,7 +7,7 @@ namespace StructuraPhp\Structura\Services;
 use InvalidArgumentException;
 use RuntimeException;
 use StructuraPhp\Structura\Concerns\Pipe;
-use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\GenerateTestValueObject;
 use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
@@ -20,12 +20,12 @@ final readonly class MakeTestService
     private const STUB_FILENAME = '%s/Stubs/test.php.dist';
 
     public function __construct(
-        private StructuraConfig $structuraConfig,
+        private ConfigValueObject $structuraConfig,
     ) {}
 
     public function make(MakeTestValueObject $dto): GenerateTestValueObject
     {
-        $rootNamespace = $this->structuraConfig->getArchiRootNamespace();
+        $rootNamespace = $this->structuraConfig->rootNamespace;
         if (!$rootNamespace instanceof RootNamespaceValueObject) {
             throw new RuntimeException('Root namespace not found');
         }
@@ -53,7 +53,7 @@ final readonly class MakeTestService
             content: $content,
             filename: \sprintf(
                 '%s/%s.php',
-                (string) getcwd(),
+                $this->getcwd(),
                 implode('/', [$rootNamespace->directory, ...$parts, $className]),
             ),
         );
@@ -82,7 +82,7 @@ final readonly class MakeTestService
 
         $namespace = $replace($input);
 
-        if (!preg_match('/^(([A-Z]+[a-z0-9]*)+\\\?)+$/n', $namespace)) {
+        if (preg_match('/^(([A-Z]+[a-z0-9]*)+\\\?)+$/n', $namespace) === false) {
             throw new RuntimeException(
                 'The name of the test class must be PSR4-compliant.',
             );
@@ -90,8 +90,8 @@ final readonly class MakeTestService
 
         $file = sprintf(
             '%s/%s/%s.php',
-            (string) getcwd(),
-            $this->structuraConfig->getArchiRootNamespace()->directory ?? '',
+            $this->getcwd(),
+            $this->structuraConfig->rootNamespace->directory ?? '',
             str_replace('\\', DIRECTORY_SEPARATOR, $namespace),
         );
 
@@ -126,5 +126,16 @@ final readonly class MakeTestService
         }
 
         return $path;
+    }
+
+    private function getcwd(): string
+    {
+        $getcwd = getcwd();
+
+        return $getcwd === false
+            ? throw new RuntimeException(
+                'Could not create test file, because cannot find the current work folder',
+            )
+            : $getcwd;
     }
 }

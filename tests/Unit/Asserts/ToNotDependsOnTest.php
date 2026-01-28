@@ -93,10 +93,9 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s, %s, [1+]',
-                ArrayAccess::class,
-                'Depend\Bar',
-                Exception::class,
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
+                'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
         );
     }
@@ -147,11 +146,10 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on these namespaces %s, %s, %s, [1+]',
+                'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
                 $exceptName,
-                ArrayAccess::class,
-                'Depend\Bar',
-                Exception::class,
+                'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
+                'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
         );
     }

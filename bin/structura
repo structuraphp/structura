@@ -7,14 +7,14 @@ if (version_compare('8.2.0', PHP_VERSION, '>')) {
     fwrite(
         STDERR,
         sprintf(
-            'This version of Structura requires PHP >= 8.2.' . PHP_EOL .
-            'You are using PHP %s (%s).' . PHP_EOL,
+            'This version of Structura requires PHP >= 8.2.' . PHP_EOL
+            . 'You are using PHP %s (%s).' . PHP_EOL,
             PHP_VERSION,
-            PHP_BINARY
-        )
+            PHP_BINARY,
+        ),
     );
 
-    die(1);
+    exit(1);
 }
 
 if (isset($GLOBALS['_composer_autoload_path'])) {
@@ -23,11 +23,11 @@ if (isset($GLOBALS['_composer_autoload_path'])) {
     unset($GLOBALS['_composer_autoload_path']);
 } else {
     foreach (
-        array(
+        [
             __DIR__ . '/../../autoload.php',
             __DIR__ . '/../vendor/autoload.php',
-            __DIR__ . '/vendor/autoload.php'
-        ) as $file
+            __DIR__ . '/vendor/autoload.php',
+        ] as $file
     ) {
         if (file_exists($file)) {
             define('STRUCTURA_COMPOSER_AUTOLOAD_PATH', $file);
@@ -52,7 +52,7 @@ if (!defined('STRUCTURA_COMPOSER_AUTOLOAD_PATH')) {
         TXT
     );
 
-    die(1);
+    exit(1);
 }
 
 require STRUCTURA_COMPOSER_AUTOLOAD_PATH;

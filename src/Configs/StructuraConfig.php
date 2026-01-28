@@ -4,23 +4,51 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Configs;
 
-use StructuraPhp\Structura\Testing\TestBuilder;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
+use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\Contracts\StructuraConfigInterface;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
-use Symfony\Component\Finder\Finder;
 
-class StructuraConfig
+class StructuraConfig implements StructuraConfigInterface
 {
-    /** @var array<int,class-string<TestBuilder>> */
-    private array $rules = [];
-
     /** @var array<int,string> */
-    private array $extensions;
+    private array $extensions = [];
+
+    /** @var array<string,ErrorFormatterInterface> */
+    private array $errorFormatter = [];
+
+    /** @var array<string,ProgressFormatterInterface> */
+    private array $progressFormatter = [];
 
     private ?RootNamespaceValueObject $archiRootNamespace = null;
+
+    /** @var array<string, string> */
+    private array $testSuites = [];
+
+    private ?string $autoload = null;
 
     public static function make(): self
     {
         return new self();
+    }
+
+    public function setErrorFormatter(
+        string $name,
+        ErrorFormatterInterface $errorFormatter,
+    ): self {
+        $this->errorFormatter[$name] = $errorFormatter;
+
+        return $this;
+    }
+
+    public function setProgressFormatter(
+        string $name,
+        ProgressFormatterInterface $progressFormatter,
+    ): self {
+        $this->progressFormatter[$name] = $progressFormatter;
+
+        return $this;
     }
 
     /**
@@ -33,22 +61,9 @@ class StructuraConfig
         return $this;
     }
 
-    /**
-     * @param class-string<TestBuilder> ...$classes
-     */
-    public function rules(string ...$classes): self
+    public function addTestSuite(string $path, string $name): self
     {
-        $this->rules = array_merge($this->rules, array_values($classes));
-
-        return $this;
-    }
-
-    /**
-     * @param class-string<TestBuilder> $class
-     */
-    public function rule(string $class): self
-    {
-        $this->rules[] = $class;
+        $this->testSuites[$name] = $path;
 
         return $this;
     }
@@ -63,57 +78,22 @@ class StructuraConfig
         return $this;
     }
 
-    /**
-     * @return array<int,class-string<TestBuilder>>
-     */
-    public function getRules(): array
+    public function setAutoload(string $path): StructuraConfigInterface
     {
-        $this->setRulesByRootNamespace();
+        $this->autoload = $path;
 
-        return $this->rules;
+        return $this;
     }
 
-    public function getArchiRootNamespace(): ?RootNamespaceValueObject
+    public function getConfig(): ConfigValueObject
     {
-        return $this->archiRootNamespace;
-    }
-
-    /**
-     * @return array<int,string>
-     */
-    public function getExtensions(): array
-    {
-        return $this->extensions;
-    }
-
-    private function setRulesByRootNamespace(): void
-    {
-        if (!$this->archiRootNamespace instanceof RootNamespaceValueObject) {
-            return;
-        }
-
-        $directory = $this->archiRootNamespace->directory;
-        $namespace = $this->archiRootNamespace->namespace;
-
-        $finder = Finder::create()
-            ->files()
-            ->followLinks()
-            ->sortByName()
-            ->name('Test*.php')
-            ->in($directory);
-
-        foreach ($finder as $file) {
-            $pathName = $file->getPath();
-
-            if (str_starts_with($pathName, $directory)) {
-                $className = str_replace([$directory, '/'], [$namespace, '\\'], $pathName);
-                $className .= '\\' . pathinfo($file->getPathname(), \PATHINFO_FILENAME);
-
-                if (class_exists($className)) {
-                    /** @var class-string<TestBuilder> $className */
-                    $this->rule($className);
-                }
-            }
-        }
+        return new ConfigValueObject(
+            testSuites: $this->testSuites,
+            rootNamespace: $this->archiRootNamespace,
+            errorFormatter: $this->errorFormatter,
+            progressFormatter: $this->progressFormatter,
+            extensions: $this->extensions,
+            autoload: $this->autoload,
+        );
     }
 }

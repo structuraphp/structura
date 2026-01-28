@@ -72,7 +72,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement %s',
+                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
                 ArrayAccess::class,
                 'Dependencies\Acme\.*',
                 'BadImplements',

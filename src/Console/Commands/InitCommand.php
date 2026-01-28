@@ -14,12 +14,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
-    name: 'init',
+    name: InitCommand::NAME,
     description: 'Initialize config file',
 )]
 final class InitCommand extends Command
 {
     use Version;
+
+    /** @var string */
+    public const NAME = 'init';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -43,7 +46,7 @@ final class InitCommand extends Command
                 $dto->configPath,
             ),
             'yes',
-            static fn (string $value): bool => \in_array($value, ['y', 'yes'], true),
+            static fn (mixed $value): bool => \in_array($value, ['y', 'yes'], true),
         );
 
         if (!$response) {

@@ -61,7 +61,7 @@ final readonly class DependsOnlyOn implements ExprScriptInterface
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s',
+                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
@@ -87,7 +87,7 @@ final readonly class DependsOnlyOn implements ExprScriptInterface
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends %s',
+                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
                 $script->namespace ?? $script->getFileBasename(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),

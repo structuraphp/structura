@@ -23,6 +23,7 @@ class FormatterDataProvider
                 countPass: 10,
                 countViolation: 10,
                 countWarning: 1,
+                countNotice: 1,
                 violationsByTests: [
                     [
                         'to be final' => [
@@ -34,6 +35,18 @@ class FormatterDataProvider
                                 messageCustom: '',
                             ),
                         ],
+                    ],
+                ],
+                warningsByTests: [
+                    [
+                        'Foo' => [
+                            '<promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable',
+                        ],
+                    ],
+                ],
+                noticeByTests: [
+                    [
+                        'to be final' => 'error notice',
                     ],
                 ],
                 analyseTestValueObjects: [

@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Tests\Unit\Formatter\Error;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Tests\DataProvider\FormatterDataProvider;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
@@ -31,15 +32,23 @@ class ErrorTextFormatterTest extends TestCase
 
         Resource <promote>x</promote> must be a final class
         example.php:1
+        
+        <warning> WARNING LIST </warning>
 
-        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <warning>1 warning</warning> (21 assertion)
+        <promote>ToBeReadonly</promote> exception for <promote>x</promote> is no longer applicable
+        
+        <notice> NOTICE LIST </notice>
+
+        error notice
+
+        Tests:    <green>10 passed</green>, <fire>10 failed</fire>, <yellow>1 warning</yellow>, <orange>1 notice</orange> (21 assertion)
         EOF;
 
         $expected = explode(PHP_EOL, $expected);
 
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
-        self::assertSame(ErrorTextFormatter::ERROR, $output);
+        self::assertSame(ErrorFormatterInterface::ERROR, $output);
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key], sprintf('Error line %d', $key));
         }

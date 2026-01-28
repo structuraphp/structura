@@ -5,9 +5,6 @@ includes:
     - phar://vendor/phpstan/phpstan/phpstan.phar/conf/bleedingEdge.neon
 
 parameters:
-    strictRules:
-        booleansInConditions: false
-
     level: max
 
     paths:

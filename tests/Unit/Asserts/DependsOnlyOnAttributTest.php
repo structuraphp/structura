@@ -72,7 +72,7 @@ final class DependsOnlyOnAttributTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes %s',
+                'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
                 SensitiveParameter::class,
                 'Dependencies\Acme\.*',
                 'BadAttribute',

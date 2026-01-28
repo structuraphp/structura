@@ -24,7 +24,7 @@ final readonly class ToBeFinal implements ExprInterface
     public function assert(ClassDescription $class): bool
     {
         return $class->classType === ClassType::Class_
-            && $class->flags & FlagType::ModifierFinal->value;
+            && ($class->flags & FlagType::ModifierFinal->value) !== 0;
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject

@@ -78,7 +78,7 @@ final class ExecuteServiceTest extends TestCase
         );
         self::assertSame(1, $violation->line);
         self::assertSame(ToExtend::class, $violation->assertClassname);
-        self::assertSame($violation->pathname, 'tmp/run_0.php');
+        self::assertSame('tmp/run_0.php', $violation->pathname);
         self::assertSame('', $violation->messageCustom);
 
         $warning = $result->warnings;
@@ -152,6 +152,17 @@ final class ExecuteServiceTest extends TestCase
         self::assertEmpty($violation);
 
         $warning = $result->warnings;
-        self::assertSame([self::KEY => ['Foo']], $warning);
+        self::assertSame(
+            [
+                self::KEY => [
+                    sprintf(
+                        '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
+                        ToExtend::class,
+                        'Foo',
+                    ),
+                ],
+            ],
+            $warning,
+        );
     }
 }

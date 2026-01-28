@@ -77,7 +77,7 @@ class DependsOnlyOnFunctionTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
+                'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                 $exceptName,
                 'strtoupper, mb_.+',
                 'array_merge, strtolower',

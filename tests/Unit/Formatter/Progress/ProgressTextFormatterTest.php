@@ -7,14 +7,13 @@ namespace StructuraPhp\Structura\Tests\Unit\Formatter\Progress;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Tests\DataProvider\FormatterDataProvider;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-#[CoversClass(ErrorTextFormatter::class)]
+#[CoversClass(ProgressTextFormatter::class)]
 class ProgressTextFormatterTest extends TestCase
 {
     #[DataProviderExternal(FormatterDataProvider::class, 'getAnalyseValueObject')]
@@ -37,7 +36,7 @@ class ProgressTextFormatterTest extends TestCase
          - to be classes
         Should
          <green>✔</green> to extend <promote>y</promote>
-         <green>✔</green> to be readonly <warning>1 warning(s)</warning>
+         <green>✔</green> to be readonly <yellow>1 warning(s)</yellow>
          <fire>✘</fire> to be final <fire>1 error(s)</fire>
 
         EOF;

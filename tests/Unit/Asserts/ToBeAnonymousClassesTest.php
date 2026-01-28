@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -33,7 +34,7 @@ final class ToBeAnonymousClassesTest extends TestCase
     }
 
     #[DataProvider('getClassLikeNonAnonymousClasses')]
-    public function testShouldFailToBeAnonymousClasses(string $raw): void
+    public function testShouldFailToBeAnonymousClasses(string $raw, ClassType $classType): void
     {
         $rules = $this
             ->allClasses()
@@ -45,18 +46,21 @@ final class ToBeAnonymousClassesTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            'Resource <promote>Foo</promote> must be an anonymous class',
+            sprintf(
+                'Resource <promote>Foo</promote> must be an anonymous class but is <fire>%s</fire>',
+                $classType->label(),
+            ),
         );
     }
 
     public static function getClassLikeNonAnonymousClasses(): Generator
     {
-        yield 'class' => ['<?php class Foo {}'];
+        yield 'class' => ['<?php class Foo {}', ClassType::Class_];
 
-        yield 'enum' => ['<?php enum Foo {};'];
+        yield 'enum' => ['<?php enum Foo {};', ClassType::Enum_];
 
-        yield 'interface' => ['<?php interface Foo {}'];
+        yield 'interface' => ['<?php interface Foo {}', ClassType::Interface_];
 
-        yield 'trait' => ['<?php trait Foo {}'];
+        yield 'trait' => ['<?php trait Foo {}', ClassType::Trait_];
     }
 }

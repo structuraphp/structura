@@ -9,11 +9,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
+use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToBeInOneOfTheNamespaces::class)]
+#[CoversClass(NotToBeInOneOfTheNamespaces::class)]
 #[CoversMethod(Expr::class, 'toBeInOneOfTheNamespaces')]
 class NotToBeInOneOfTheNamespacesTest extends TestCase
 {

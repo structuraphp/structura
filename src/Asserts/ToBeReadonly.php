@@ -24,7 +24,7 @@ final readonly class ToBeReadonly implements ExprInterface
     public function assert(ClassDescription $class): bool
     {
         return $class->classType === ClassType::Class_
-            && $class->flags & FlagType::ModifierReadonly->value;
+            && ($class->flags & FlagType::ModifierReadonly->value) !== 0;
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject

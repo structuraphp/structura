@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
+use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
@@ -32,8 +33,11 @@ final class ToBeEnumsTest extends TestCase
     }
 
     #[DataProvider('getClassLikeNonEnums')]
-    public function testShouldFailToBeEnums(string $raw, string $exceptName = 'Foo'): void
-    {
+    public function testShouldFailToBeEnums(
+        string $raw,
+        ClassType $classType,
+        string $exceptName = 'Foo',
+    ): void {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -43,18 +47,22 @@ final class ToBeEnumsTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf('Resource <promote>%s</promote> must be an enum', $exceptName),
+            \sprintf(
+                'Resource <promote>%s</promote> must be an enum but is <fire>%s</fire>',
+                $exceptName,
+                $classType->label(),
+            ),
         );
     }
 
     public static function getClassLikeNonEnums(): Generator
     {
-        yield 'class' => ['<?php class Foo {}'];
+        yield 'anonymous class' => ['<?php new class {};', ClassType::AnonymousClass_, 'Anonymous'];
 
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'class' => ['<?php class Foo {}', ClassType::Class_];
 
-        yield 'interface' => ['<?php interface Foo {}'];
+        yield 'interface' => ['<?php interface Foo {}', ClassType::Interface_];
 
-        yield 'trait' => ['<?php trait Foo {}'];
+        yield 'trait' => ['<?php trait Foo {}', ClassType::Trait_];
     }
 }

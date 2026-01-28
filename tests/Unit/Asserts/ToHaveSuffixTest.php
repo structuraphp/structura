@@ -9,10 +9,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToHaveSuffixTest::class)]
+#[CoversClass(ToHaveSuffix::class)]
 #[CoversMethod(Expr::class, 'toHaveSuffix')]
 final class ToHaveSuffixTest extends TestCase
 {

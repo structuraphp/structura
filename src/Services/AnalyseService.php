@@ -6,14 +6,16 @@ namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
+use RuntimeException;
 use StructuraPhp\Structura\Attributes\TestDox;
-use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
+ * @phpstan-import-type WarningByTest from AnalyseValueObject
  */
 final class AnalyseService
 {
@@ -23,14 +25,25 @@ final class AnalyseService
 
     private int $countWarning = 0;
 
+    private int $countNotice = 0;
+
     /** @var array<int,AnalyseTestValueObject> */
     private array $analyseTestValueObjects = [];
 
     /** @var array<int,ViolationsByTest> */
     private array $violationsByTests = [];
 
+    /** @var array<int, WarningByTest> */
+    private array $warningsByTests = [];
+
+    /** @var array<int, array<string, string>> */
+    private array $noticeByTests = [];
+
     public function __construct(
-        private readonly StructuraConfig $structuraConfig,
+        private readonly bool $stopOnError = false,
+        private readonly bool $stopOnWarning = false,
+        private readonly bool $stopOnNotice = false,
+        private readonly ?string $filter = null,
     ) {}
 
     /**
@@ -40,35 +53,33 @@ final class AnalyseService
         float $timeStart,
         string $ruleClassname,
     ): AnalyseValueObject {
-        $this->executeTests($ruleClassname);
+        try {
+            $this->executeTests($ruleClassname);
+        } catch (RuntimeException) {
+            throw new StopOnException(
+                $this->getAnalyseValueObject($timeStart),
+            );
+        }
 
-        return new AnalyseValueObject(
-            timeStart: $timeStart,
-            countPass: $this->countPass,
-            countViolation: $this->countViolation,
-            countWarning: $this->countWarning,
-            violationsByTests: $this->violationsByTests,
-            analyseTestValueObjects: $this->analyseTestValueObjects,
-        );
+        return $this->getAnalyseValueObject($timeStart);
     }
 
-    public function analyses(): AnalyseValueObject
+    public function analyses(FinderService $finderService): AnalyseValueObject
     {
         $timeStart = microtime(true);
 
-        /** @var class-string<TestBuilder> $ruleClassname */
-        foreach ($this->structuraConfig->getRules() as $ruleClassname) {
-            $this->executeTests($ruleClassname);
+        try {
+            /** @var class-string<TestBuilder> $ruleClassname */
+            foreach ($finderService->getClassTests() as $ruleClassname) {
+                $this->executeTests($ruleClassname);
+            }
+        } catch (RuntimeException) {
+            throw new StopOnException(
+                $this->getAnalyseValueObject($timeStart),
+            );
         }
 
-        return new AnalyseValueObject(
-            timeStart: $timeStart,
-            countPass: $this->countPass,
-            countViolation: $this->countViolation,
-            countWarning: $this->countWarning,
-            violationsByTests: $this->violationsByTests,
-            analyseTestValueObjects: $this->analyseTestValueObjects,
-        );
+        return $this->getAnalyseValueObject($timeStart);
     }
 
     /**
@@ -76,11 +87,17 @@ final class AnalyseService
      */
     private function executeTests(string $classname): void
     {
+        $matchClassname = $this->match($classname);
+
         $class = new ReflectionClass($classname);
         $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
 
         $instance = new $classname();
         foreach ($methods as $method) {
+            if (!$matchClassname && !$this->match($method->name)) {
+                continue;
+            }
+
             $attributes = $method->getAttributes(TestDox::class);
             if (\count($attributes) !== 1) {
                 continue;
@@ -111,6 +128,7 @@ final class AnalyseService
             $this->countPass += $assertValueObject->countAssertsSuccess();
             $this->countViolation += $assertValueObject->countAssertsFailure();
             $this->countWarning += $assertValueObject->countAssertsWarning();
+            $this->countNotice += $assertValueObject->countAssertsNotices();
 
             $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
                 textDox: $testDox,
@@ -122,6 +140,50 @@ final class AnalyseService
             if ($assertValueObject->violations !== []) {
                 $this->violationsByTests[] = $assertValueObject->violations;
             }
+
+            if ($assertValueObject->warnings !== []) {
+                $this->warningsByTests[] = $assertValueObject->warnings;
+            }
+
+            if ($assertValueObject->notices !== []) {
+                $this->noticeByTests[] = $assertValueObject->notices;
+            }
+
+            if ($this->countViolation >= 1 && $this->stopOnError) {
+                throw new RuntimeException();
+            }
+
+            if ($this->countWarning >= 1 && $this->stopOnWarning) {
+                throw new RuntimeException();
+            }
+
+            if ($this->countNotice >= 1 && $this->stopOnNotice) {
+                throw new RuntimeException();
+            }
         }
+    }
+
+    private function getAnalyseValueObject(float $timeStart): AnalyseValueObject
+    {
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: $this->countPass,
+            countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
+            countNotice: $this->countNotice,
+            violationsByTests: $this->violationsByTests,
+            warningsByTests: $this->warningsByTests,
+            noticeByTests: $this->noticeByTests,
+            analyseTestValueObjects: $this->analyseTestValueObjects,
+        );
+    }
+
+    private function match(string $str): bool
+    {
+        return $this->filter === null
+            || str_contains(
+                strtolower(trim($str)),
+                strtolower(trim($this->filter)),
+            );
     }
 }

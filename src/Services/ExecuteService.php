@@ -11,6 +11,7 @@ use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Enums\ExprType;
+use StructuraPhp\Structura\Exception\Console\NoticeException;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
@@ -62,13 +63,17 @@ final class ExecuteService
             $this->builder->addPass((string) $assert);
         }
 
-        /** @var ScriptDescription $description */
-        foreach ($descriptions as $description) {
-            if ($this->executeThat($description)) {
-                continue;
-            }
+        try {
+            /** @var ScriptDescription $description */
+            foreach ($descriptions as $description) {
+                if ($this->executeThat($description)) {
+                    continue;
+                }
 
-            $this->executeShould($assertions, $description);
+                $this->executeShould($assertions, $description);
+            }
+        } catch (NoticeException $noticeException) {
+            $this->builder->addNotice($noticeException->getMessage(), $noticeException->getMessage());
         }
     }
 
@@ -110,7 +115,7 @@ final class ExecuteService
                     continue;
                 }
 
-                $this->builder->addWarning($description->namespace, (string) $assert);
+                $this->builder->addWarning((string) $assert, $assert, $description);
             }
 
             if (!$predicate) {
@@ -141,7 +146,7 @@ final class ExecuteService
                     continue;
                 }
 
-                $this->builder->addWarning($description->namespace, (string) $assert);
+                $this->builder->addWarning((string) $assert, $assert, $description);
             }
 
             if ($key === 0) {
