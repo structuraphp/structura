@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
+use StructuraPhp\Structura\Console\Enums\AnalyseOption;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\Enums\ErrorFormatterType;
@@ -27,7 +28,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -119,48 +119,16 @@ final class AnalyzeCommand extends Command
 
     protected function configure(): void
     {
-        $this
-            ->addOption(
-                name: AnalyzeDto::ERROR_FORMAT_OPTION,
-                shortcut: 'f',
-                mode: InputOption::VALUE_REQUIRED,
-                description: 'Select output error format',
-                default: ErrorFormatterType::Text->value,
-                suggestedValues: array_column(ErrorFormatterType::cases(), 'value'),
-            )
-            ->addOption(
-                name: AnalyzeDto::PROGRESS_FORMAT_OPTION,
-                shortcut: 'p',
-                mode: InputOption::VALUE_REQUIRED,
-                description: 'Select output progress format',
-                default: ProgressFormatterType::Text->value,
-                suggestedValues: array_column(ProgressFormatterType::cases(), 'value'),
-            )
-            ->addOption(
-                name: AnalyzeDto::TESTSUITE,
-                mode: InputOption::VALUE_REQUIRED,
-                description: 'List available test suites as defined in the PHP configuration file.',
-            )
-            ->addOption(
-                name: AnalyzeDto::FILTER,
-                mode: InputOption::VALUE_REQUIRED,
-                description: 'Filter which tests to run using pattern matching on the test name (class or method).',
-            )
-            ->addOption(
-                name: AnalyzeDto::STOP_ON_ERROR,
-                mode: InputOption::VALUE_NONE,
-                description: 'Stop execution upon first that errored.',
-            )
-            ->addOption(
-                name: AnalyzeDto::STOP_ON_WARNING,
-                mode: InputOption::VALUE_NONE,
-                description: 'Stop execution after the first warning.',
-            )
-            ->addOption(
-                name: AnalyzeDto::STOP_ON_NOTICE,
-                mode: InputOption::VALUE_NONE,
-                description: 'Stop execution after the first notice.',
+        foreach (AnalyseOption::cases() as $option) {
+            $this->addOption(
+                name: $option->value,
+                shortcut: $option->shortcut(),
+                mode: $option->mode(),
+                description: $option->description(),
+                default: $option->default(),
+                suggestedValues: $option->suggestedValues(),
             );
+        }
     }
 
     private function getErrorFormatter(): ErrorFormatterInterface
