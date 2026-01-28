@@ -27,7 +27,7 @@ final class InitCommandTest extends TestCase
     {
         $application = new Kernel();
 
-        $command = $application->find(InitCommand::getDefaultName() ?? '');
+        $command = $application->find(InitCommand::NAME);
         $commandTester = new CommandTester($command);
 
         $commandTester->setInputs(['yes']);

@@ -9,11 +9,11 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToHaveMethod::class)]
+#[CoversClass(ToHavePrefix::class)]
 #[CoversMethod(Expr::class, 'toHavePrefix')]
 final class ToHavePrefixTest extends TestCase
 {

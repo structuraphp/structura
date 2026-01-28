@@ -7,7 +7,7 @@ namespace StructuraPhp\Structura\Console;
 use StructuraPhp\Structura\Console\Commands\AnalyzeCommand;
 use StructuraPhp\Structura\Console\Commands\InitCommand;
 use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
-use StructuraPhp\Structura\Console\Enums\Options;
+use StructuraPhp\Structura\Console\Enums\CommonOption;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,31 +18,31 @@ class Kernel extends Application
     {
         parent::__construct('Structura');
 
-        $this->add(new AnalyzeCommand());
-        $this->add(new InitCommand());
-        $this->add(new MakeTestCommand());
+        $this->addCommands([
+            new AnalyzeCommand(),
+            new InitCommand(),
+            new MakeTestCommand(),
+        ]);
 
-        $this->setDefaultCommand('analyze');
+        $this->setDefaultCommand(AnalyzeCommand::NAME);
     }
 
     protected function getDefaultInputDefinition(): InputDefinition
     {
         $defaultInputDefinition = parent::getDefaultInputDefinition();
-        $defaultInputDefinition->addOption(
-            new InputOption(
-                Options::Config->value,
-                'c',
-                InputOption::VALUE_REQUIRED,
-                'Path to config file',
-                $this->getDefaultConfigPath(),
-            ),
-        );
+        foreach (CommonOption::cases() as $option) {
+            $defaultInputDefinition->addOption(
+                new InputOption(
+                    name: $option->value,
+                    shortcut: $option->shortcut(),
+                    mode: $option->mode(),
+                    description: $option->description(),
+                    default: $option->default(),
+                    suggestedValues: $option->suggestedValues(),
+                ),
+            );
+        }
 
         return $defaultInputDefinition;
-    }
-
-    private function getDefaultConfigPath(): string
-    {
-        return \getcwd() . '/structura.php';
     }
 }

@@ -7,7 +7,6 @@ namespace StructuraPhp\Structura\Formatter\Error;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -36,14 +35,14 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
                     'col' => 0,
                 ];
                 array_walk($metas, static function (&$value, string $key): void {
-                    $value = sprintf('%s=%s', $key, (string) $value);
+                    $value = sprintf('%s=%s', $key, $value);
                 });
 
                 $message = $this->formatMessage($violation->messageViolation);
 
                 $line = sprintf('::error %s::%s', implode(',', $metas), $message);
 
-                $output->writeln($line, Output::OUTPUT_RAW);
+                $output->writeln($line, OutputInterface::OUTPUT_RAW);
             }
         }
 
@@ -54,7 +53,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
 
                 $line = sprintf('::warning ::%s', $message);
 
-                $output->writeln($line, Output::OUTPUT_RAW);
+                $output->writeln($line, OutputInterface::OUTPUT_RAW);
             }
         }
 
@@ -63,7 +62,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
 
             $line = sprintf('::notice ::%s', $message);
 
-            $output->writeln($line, Output::OUTPUT_RAW);
+            $output->writeln($line, OutputInterface::OUTPUT_RAW);
         }
 
         return $violationsByTests === []

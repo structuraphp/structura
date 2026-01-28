@@ -6,23 +6,11 @@ namespace StructuraPhp\Structura\Console\Dtos;
 
 use ArrayAccess;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Console\Enums\AnalyseOption;
+use StructuraPhp\Structura\Console\Enums\CommonOption;
 
 final readonly class AnalyzeDto
 {
-    public const ERROR_FORMAT_OPTION = 'error-format';
-
-    public const PROGRESS_FORMAT_OPTION = 'progress-format';
-
-    public const STOP_ON_ERROR = 'stop-on-error';
-
-    public const STOP_ON_WARNING = 'stop-on-warning';
-
-    public const STOP_ON_NOTICE = 'stop-on-notice';
-
-    public const FILTER = 'filter';
-
-    public const TESTSUITE = 'testsuite';
-
     public function __construct(
         public string $configPath,
         public string $errorFormat,
@@ -40,29 +28,29 @@ final readonly class AnalyzeDto
     public static function fromArray(array|ArrayAccess $data): self
     {
         return new self(
-            configPath: \is_string($data['config'])
-                ? $data['config']
+            configPath: \is_string($data[CommonOption::Config->value])
+                ? $data[CommonOption::Config->value]
                 : throw new InvalidArgumentException('config must be a string'),
-            errorFormat: \is_string($data[self::ERROR_FORMAT_OPTION])
-                ? $data[self::ERROR_FORMAT_OPTION]
+            errorFormat: \is_string($data[AnalyseOption::ErrorFormat->value])
+                ? $data[AnalyseOption::ErrorFormat->value]
                 : throw new InvalidArgumentException('error format must be a string'),
-            progressFormat: \is_string($data[self::PROGRESS_FORMAT_OPTION])
-                ? $data[self::PROGRESS_FORMAT_OPTION]
+            progressFormat: \is_string($data[AnalyseOption::ProgressFormat->value])
+                ? $data[AnalyseOption::ProgressFormat->value]
                 : throw new InvalidArgumentException('progress must be a string'),
-            stopOnError: \is_bool($data[self::STOP_ON_ERROR])
-                ? $data[self::STOP_ON_ERROR]
+            stopOnError: \is_bool($data[AnalyseOption::StopOnError->value])
+                ? $data[AnalyseOption::StopOnError->value]
                 : throw new InvalidArgumentException('stop on error must be a bool'),
-            stopOnWarning: \is_bool($data[self::STOP_ON_WARNING])
-                ? $data[self::STOP_ON_WARNING]
+            stopOnWarning: \is_bool($data[AnalyseOption::StopOnWarning->value])
+                ? $data[AnalyseOption::StopOnWarning->value]
                 : throw new InvalidArgumentException('stop on warning must be a bool'),
-            stopOnNotice: \is_bool($data[self::STOP_ON_NOTICE])
-                ? $data[self::STOP_ON_NOTICE]
+            stopOnNotice: \is_bool($data[AnalyseOption::StopOnNotice->value])
+                ? $data[AnalyseOption::StopOnNotice->value]
                 : throw new InvalidArgumentException('stop on notice must be a bool'),
-            filter: \is_string($data[self::FILTER]) || is_null($data[self::FILTER])
-                ? $data[self::FILTER]
+            filter: \is_string($data[AnalyseOption::Filter->value]) || is_null($data[AnalyseOption::Filter->value])
+                ? $data[AnalyseOption::Filter->value]
                 : throw new InvalidArgumentException('filter must be a string or null'),
-            testSuite: \is_string($data[self::TESTSUITE]) || is_null($data[self::TESTSUITE])
-                ? $data[self::TESTSUITE]
+            testSuite: \is_string($data[AnalyseOption::Testsuite->value]) || is_null($data[AnalyseOption::Testsuite->value])
+                ? $data[AnalyseOption::Testsuite->value]
                 : throw new InvalidArgumentException('testsuite must be a string or null'),
         );
     }
