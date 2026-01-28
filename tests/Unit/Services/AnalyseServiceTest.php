@@ -75,7 +75,7 @@ final class AnalyseServiceTest extends TestCase
          <fire>✘</fire> to not use trait <fire>1 error(s)</fire>
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
-         <fire>✘</fire> to have method <promote>__construct</promote> <fire>2 error(s)</fire>
+         <fire>✘</fire> to have method <promote>__construct</promote> <fire>3 error(s)</fire>
          <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Models\User</promote> <fire>1 error(s)</fire>
          <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
          <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
@@ -90,7 +90,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        122 classe(s) from
+        123 classe(s) from
          - dirs
         That
         Should
