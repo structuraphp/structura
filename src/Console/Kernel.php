@@ -18,9 +18,11 @@ class Kernel extends Application
     {
         parent::__construct('Structura');
 
-        $this->add(new AnalyzeCommand());
-        $this->add(new InitCommand());
-        $this->add(new MakeTestCommand());
+        $this->addCommands([
+            new AnalyzeCommand(),
+            new InitCommand(),
+            new MakeTestCommand(),
+        ]);
 
         $this->setDefaultCommand(AnalyzeCommand::NAME);
     }
