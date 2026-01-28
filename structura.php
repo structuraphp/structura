@@ -10,4 +10,6 @@ return static function (StructuraConfigInterface $config): void {
         'StructuraPhp\Structura\Tests\Feature',
         'tests/Feature',
     );
+
+    // $config->setAutoload(__DIR__ . '/vendor/autoload.php');
 };

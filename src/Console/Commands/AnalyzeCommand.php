@@ -62,6 +62,7 @@ final class AnalyzeCommand extends Command
 
         $this->configValueObject = $this->getConfigValueObject();
 
+        $this->autoload($io);
         $errorFormatter = $this->getErrorFormatter();
         $progressFormatter = $this->getProgressFormatter();
 
@@ -185,6 +186,31 @@ final class AnalyzeCommand extends Command
                     sprintf('Unknown progress format "%s"', $format),
                 ),
         };
+    }
+
+    private function autoload(SymfonyStyle $output): void
+    {
+        if (!str_starts_with(__FILE__, 'phar://')) {
+            $output->warning(
+                'This command is not running inside a PHAR archive, '
+                . 'so the autoload configuration is not required in this environment.',
+            );
+        }
+
+        if (!is_string($this->configValueObject->autoload)) {
+            return;
+        }
+
+        if (is_file($this->configValueObject->autoload)) {
+            require $this->configValueObject->autoload;
+        }
+
+        $output->error(
+            sprintf(
+                'The autoload file "%s" could not be found. For example: __DIR__ . "/vendor/autoload.php".',
+                $this->configValueObject->autoload,
+            ),
+        );
     }
 
     /**

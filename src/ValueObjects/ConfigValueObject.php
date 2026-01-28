@@ -21,5 +21,6 @@ final readonly class ConfigValueObject
         public array $errorFormatter,
         public array $progressFormatter,
         public array $extensions,
+        public ?string $autoload,
     ) {}
 }

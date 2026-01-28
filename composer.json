@@ -21,6 +21,7 @@
         "symfony/finder": "^7.2"
     },
     "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8",
         "friendsofphp/php-cs-fixer": "^3.69",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-phpunit": "^2.0",
@@ -34,6 +35,7 @@
         "optimize-autoloader": true,
         "classmap-authoritative": true,
         "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
             "dealerdirect/phpcodesniffer-composer-installer": false
         }
     },

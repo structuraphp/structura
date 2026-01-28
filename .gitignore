@@ -2,3 +2,7 @@
 .idea
 /build/
 /vendor/
+/vendor-bin/
+
+# files
+structura.phar
