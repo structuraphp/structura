@@ -9,6 +9,9 @@
 .gitignore export-ignore
 .php-cs-fixer.php export-ignore
 Makefile export-ignore
+box-test.json
+box.json
 phpstan.neon.dist export-ignore
 phpunit.xml export-ignore
 rector.php export-ignore
+structura.php

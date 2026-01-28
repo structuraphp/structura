@@ -14,4 +14,6 @@ interface ProgressFormatterInterface
     public function progressAdvance(OutputInterface $output, AnalyseValueObject $analyseValueObject): void;
 
     public function progressFinish(OutputInterface $output): void;
+
+    public function progressStopOn(OutputInterface $output): void;
 }

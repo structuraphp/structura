@@ -29,6 +29,9 @@ class AssertBuilder
     /** @var array<string, array<int, string>> */
     private array $warnings = [];
 
+    /** @var array<string, string> */
+    private array $notices = [];
+
     public function addExcept(?string $classname, string $expr): self
     {
         if (\is_string($classname)) {
@@ -75,12 +78,31 @@ class AssertBuilder
         throw new InvalidArgumentException();
     }
 
-    public function addWarning(?string $classname, string $key): self
-    {
+    public function addWarning(
+        string $key,
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
+    ): self {
         $this->pass[$key] = 2;
+        $classname = $description->namespace;
+
         if (\is_string($classname)) {
-            $this->warnings[$key][] = $classname;
+            $this->warnings[$key][] = sprintf(
+                '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
+                $assert::class,
+                $classname,
+            );
         }
+
+        return $this;
+    }
+
+    public function addNotice(
+        string $key,
+        string $message,
+    ): self {
+        $this->pass[$key] = 3;
+        $this->notices[$key] = $message;
 
         return $this;
     }
@@ -92,6 +114,7 @@ class AssertBuilder
             $this->violations,
             $this->exceptions,
             $this->warnings,
+            $this->notices,
         );
     }
 }

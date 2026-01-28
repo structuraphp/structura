@@ -37,7 +37,7 @@ final readonly class ToBeAttribute implements ExprInterface
         if (
             $class->classType !== ClassType::Class_
             || $class->attrGroups === []
-            || $class->flags & FlagType::ModifierAbstract->value
+            || ($class->flags & FlagType::ModifierAbstract->value) !== 0
         ) {
             return false;
         }

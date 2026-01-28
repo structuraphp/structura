@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Visitors;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\Visitors\FunctionVisitor;
 
-/**
- * @coversNothing
- */
+#[CoversClass(FunctionVisitor::class)]
 class FunctionVisitorTest extends TestCase
 {
     use ParserHelper;

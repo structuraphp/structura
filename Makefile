@@ -103,3 +103,11 @@ test: ## Run unit tests
 .PHONY: %Test
 %Test: ## it launches a test
 	${BIN_DIR}/phpunit --filter $@
+
+phar: ## Build PHAR
+	$(call printSection,BUILD Phar)
+	$(COMPOSER) global require humbug/box
+	$(COMPOSER) require --dev bamarni/composer-bin-plugin
+	$(COMPOSER) bin box require --dev humbug/box
+	$(COMPOSER) install --no-dev -o
+	${BIN_DIR}/box compile

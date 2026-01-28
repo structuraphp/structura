@@ -51,7 +51,11 @@ final class ToExtendNothingTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf('Resource <promote>%s</promote> must extend nothing', $exceptName),
+            \sprintf(
+                'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
+                $exceptName,
+                'Exception',
+            ),
         );
     }
 

@@ -6,7 +6,4 @@ namespace StructuraPhp\Structura\Tests\Fixture\Http\Controller;
 
 use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 
-class RoleController extends ControllerBase
-{
-    public function __construct() {}
-}
+class RoleController extends ControllerBase {}

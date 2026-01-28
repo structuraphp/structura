@@ -11,6 +11,7 @@ use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\MakeTestDto;
 use StructuraPhp\Structura\Services\MakeTestService;
+use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,27 +20,32 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'make:test',
+    name: MakeTestCommand::NAME,
     description: 'Make test',
 )]
 final class MakeTestCommand extends Command
 {
     use Version;
 
+    /** @var string */
+    public const NAME = 'make:test';
+
+    private MakeTestDto $makeTestDto;
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $dto = $this->getDto($input);
+        $this->makeTestDto = $this->geMaketDto($input);
 
-        if (!\file_exists($dto->configPath)) {
+        if (!\file_exists($this->makeTestDto->configPath)) {
             return self::INVALID;
         }
 
-        $io->writeln($this->getInfos($dto->configPath));
+        $io->writeln($this->getInfos($this->makeTestDto->configPath));
 
-        $archiConfig = $this->getStructuraConfig($dto->configPath);
+        $structuraConfig = $this->getConfigValueObject();
 
-        $makeService = new MakeTestService($archiConfig);
+        $makeService = new MakeTestService($structuraConfig);
 
         try {
             $nameResponse = $io->ask(
@@ -87,7 +93,7 @@ final class MakeTestCommand extends Command
         return self::SUCCESS;
     }
 
-    private function getDto(InputInterface $input): MakeTestDto
+    private function geMaketDto(InputInterface $input): MakeTestDto
     {
         /** @var array<string,scalar> $data */
         $data = array_filter(
@@ -100,10 +106,10 @@ final class MakeTestCommand extends Command
         return MakeTestDto::fromArray($data);
     }
 
-    private function getStructuraConfig(string $configPath): StructuraConfig
+    private function getConfigValueObject(): ConfigValueObject
     {
         /** @var Closure(StructuraConfig): void|StructuraConfig $closure */
-        $closure = require $configPath;
+        $closure = require $this->makeTestDto->configPath;
         if (!$closure instanceof Closure) {
             throw new InvalidArgumentException();
         }
@@ -111,6 +117,6 @@ final class MakeTestCommand extends Command
         $config = new StructuraConfig();
         $closure($config);
 
-        return $config;
+        return $config->getConfig();
     }
 }

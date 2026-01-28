@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Services;
 
-use Error;
+use Exception;
 use Generator;
 use InvalidArgumentException;
 use PhpParser\Node\Stmt;
@@ -13,6 +13,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use StructuraPhp\Structura\Enums\DescriptorType;
+use StructuraPhp\Structura\Exception\Console\NoticeException;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\Visitors\ClassDescriptionVisitor;
@@ -79,11 +80,21 @@ final readonly class ParseService
                 ? $this->classDescriptionVisitor->getClass()
                 : $this->scriptDescriptionVisitor->getScript();
 
-            $script ?? throw new InvalidArgumentException();
-        } catch (Error|InvalidArgumentException $e) {
-            echo \sprintf('Parse error: %s%s', $e->getMessage(), PHP_EOL);
-
-            return null;
+            if (!$script instanceof ScriptDescription) {
+                throw new InvalidArgumentException(
+                    $this->descriptorType === DescriptorType::ClassLike
+                        ? 'class expected but script found'
+                        : 'script expected but class found',
+                );
+            }
+        } catch (InvalidArgumentException $e) {
+            throw new NoticeException(
+                \sprintf('<orange>Parse error, %s</orange> at %s', $e->getMessage(), $pathname),
+            );
+        } catch (Exception $e) {
+            throw new NoticeException(
+                \sprintf('<orange>%s</orange> at %s', $e->getMessage(), $pathname),
+            );
         }
 
         yield $script

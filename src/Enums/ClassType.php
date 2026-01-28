@@ -11,4 +11,15 @@ enum ClassType
     case Enum_;
     case Interface_;
     case Trait_;
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::AnonymousClass_ => 'an anonymous class',
+            self::Class_ => 'an class',
+            self::Enum_ => 'an enum',
+            self::Interface_ => 'an interface',
+            self::Trait_ => 'a trait',
+        };
+    }
 }

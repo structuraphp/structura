@@ -10,20 +10,26 @@ enum StyleCustom: string
 {
     case Fire = 'fire';
     case Green = 'green';
+    case Notice = 'notice';
+    case Orange = 'orange';
     case Pass = 'pass';
     case Promote = 'promote';
     case Violation = 'violation';
     case Warning = 'warning';
+    case Yellow = 'yellow';
 
     public function getOutputFormatterStyle(): OutputFormatterStyle
     {
         return match ($this) {
-            self::Fire => new OutputFormatterStyle('red', null, ['bold', 'blink']),
-            self::Green => new OutputFormatterStyle('green', null, ['bold', 'blink']),
-            self::Pass => new OutputFormatterStyle(null, 'green', ['bold', 'blink']),
-            self::Promote => new OutputFormatterStyle('#066', null, ['bold', 'blink']),
-            self::Violation => new OutputFormatterStyle(null, 'red', ['bold', 'blink']),
-            self::Warning => new OutputFormatterStyle('yellow', null, ['bold', 'blink']),
+            self::Fire => new OutputFormatterStyle('red', null, ['bold']),
+            self::Green => new OutputFormatterStyle('green', null, ['bold']),
+            self::Notice => new OutputFormatterStyle(null, '#fa0', ['bold']),
+            self::Orange => new OutputFormatterStyle('#fa0', null, ['bold']),
+            self::Pass => new OutputFormatterStyle(null, 'green', ['bold']),
+            self::Promote => new OutputFormatterStyle('#066', null, ['bold']),
+            self::Violation => new OutputFormatterStyle(null, 'red', ['bold']),
+            self::Warning => new OutputFormatterStyle(null, 'yellow', ['bold']),
+            self::Yellow => new OutputFormatterStyle('yellow', null, ['bold']),
         };
     }
 }

@@ -246,34 +246,6 @@ final class ClassDescription extends ScriptDescription
 
     /**
      * @param array<int,string> $patterns
-     *
-     * @return array<int,string>
-     */
-    public function getDependenciesFunctionByPatterns(
-        array $patterns,
-    ): array {
-        $matches = [];
-        if ($patterns === []) {
-            return [];
-        }
-
-        $pattern = implode('|', $patterns);
-
-        /** @var array<int,string>|false $match */
-        $match = preg_grep(
-            '/^' . $this->customPregQuote($pattern) . '$/',
-            $this->getFunctionDependencies(),
-        );
-
-        if ($match !== false) {
-            return array_merge($matches, $match);
-        }
-
-        return $matches;
-    }
-
-    /**
-     * @param array<int,string> $patterns
      */
     public function hasNamespaceByPatterns(array $patterns): bool
     {

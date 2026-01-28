@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
+ * @phpstan-import-type WarningByTest from AnalyseValueObject
  */
 final class ErrorTextFormatter implements ErrorFormatterInterface
 {
@@ -24,9 +25,21 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         OutputInterface $output,
     ): int {
         $violations = array_merge(...$analyseValueObject->violationsByTests);
+        $warnings = array_merge(...$analyseValueObject->warningsByTests);
+
+        /** @var array<string, string> $notices */
+        $notices = array_merge(...$analyseValueObject->noticeByTests);
 
         if ($violations !== []) {
             $this->failedOutput($violations);
+        }
+
+        if ($warnings !== []) {
+            $this->warningOutput($warnings);
+        }
+
+        if ($notices !== []) {
+            $this->noticeOutput($notices);
         }
 
         $this->assertionsResumeOutput($analyseValueObject);
@@ -76,12 +89,43 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         }
     }
 
+    /**
+     * @param array<string, string> $noticesByTests
+     */
+    private function noticeOutput(array $noticesByTests): void
+    {
+        $this->prints[] = '<notice> NOTICE LIST </notice>';
+        $this->prints[] = '';
+
+        foreach ($noticesByTests as $noticeByTests) {
+            $this->prints[] = $noticeByTests;
+            $this->prints[] = '';
+        }
+    }
+
+    /**
+     * @param WarningByTest $warningsByTests
+     */
+    private function warningOutput(array $warningsByTests): void
+    {
+        $this->prints[] = '<warning> WARNING LIST </warning>';
+        $this->prints[] = '';
+
+        foreach ($warningsByTests as $warningsByTest) {
+            foreach ($warningsByTest as $warning) {
+                $this->prints[] = $warning;
+                $this->prints[] = '';
+            }
+        }
+    }
+
     private function assertionsResumeOutput(AnalyseValueObject $analyseDto): void
     {
         $data = [
             '<green>%d passed</green>' => $analyseDto->countPass,
             '<fire>%d failed</fire>' => $analyseDto->countViolation,
-            '<warning>%d warning</warning>' => $analyseDto->countWarning,
+            '<yellow>%d warning</yellow>' => $analyseDto->countWarning,
+            '<orange>%d notice</orange>' => $analyseDto->countNotice,
         ];
 
         $data = array_filter($data, fn (int $value): bool => $value > 0);

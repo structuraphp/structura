@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
+use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeInterfaces::class)]
 #[CoversMethod(Expr::class, 'toBeInterfaces')]
-final class ToBeInterfaceTest extends TestCase
+final class ToBeInterfacesTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -32,8 +33,11 @@ final class ToBeInterfaceTest extends TestCase
     }
 
     #[DataProvider('getClassLikeNonEnums')]
-    public function testShouldFailToBeInterface(string $raw, string $exceptName = 'Foo'): void
-    {
+    public function testShouldFailToBeInterface(
+        string $raw,
+        ClassType $classType,
+        string $exceptName = 'Foo',
+    ): void {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -43,18 +47,22 @@ final class ToBeInterfaceTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf('Resource <promote>%s</promote> must be an interface', $exceptName),
+            \sprintf(
+                'Resource <promote>%s</promote> must be an interface but is <fire>%s</fire>',
+                $exceptName,
+                $classType->label(),
+            ),
         );
     }
 
     public static function getClassLikeNonEnums(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php new class {};', ClassType::AnonymousClass_, 'Anonymous'];
 
-        yield 'class' => ['<?php class Foo {}'];
+        yield 'class' => ['<?php class Foo {}', ClassType::Class_];
 
-        yield 'enum' => ['<?php enum Foo {}'];
+        yield 'enum' => ['<?php enum Foo {}', ClassType::Enum_];
 
-        yield 'trait' => ['<?php trait Foo {}'];
+        yield 'trait' => ['<?php trait Foo {}', ClassType::Trait_];
     }
 }

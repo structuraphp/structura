@@ -127,7 +127,6 @@ class ScriptDescription
     public function getDependenciesFunctionByPatterns(
         array $patterns,
     ): array {
-        $matches = [];
         if ($patterns === []) {
             return [];
         }
@@ -141,10 +140,10 @@ class ScriptDescription
         );
 
         if ($match !== false) {
-            return array_merge($matches, $match);
+            return $match;
         }
 
-        return $matches;
+        return [];
     }
 
     /**

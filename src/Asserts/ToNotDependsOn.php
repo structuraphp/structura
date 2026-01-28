@@ -51,20 +51,22 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
 
     private function getViolationClass(ClassDescription $class): ViolationValueObject
     {
+        $unauthorizedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
             $this->names,
             $class->getDependenciesByPatterns($this->patterns),
         );
-        $dependencies = array_intersect($class->getClassDependencies(), $dependencies);
-        sort($dependencies);
+        $violations = array_intersect($class->getClassDependencies(), $dependencies);
+        sort($violations);
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on these namespaces %s',
+                'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
                 $class->isAnonymous()
                     ? 'Anonymous'
                     : $class->namespace,
-                $this->implodeMore($dependencies),
+                implode(', ', $unauthorizedDependence),
+                implode(', ', $violations),
             ),
             $this::class,
             $class->lines,
@@ -75,18 +77,20 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
 
     private function getViolationScript(ScriptDescription $script): ViolationValueObject
     {
+        $unauthorizedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
             $this->names,
             $script->getDependenciesByPatterns($this->patterns),
         );
-        $dependencies = array_intersect($script->getClassDependencies(), $dependencies);
-        sort($dependencies);
+        $violations = array_intersect($script->getClassDependencies(), $dependencies);
+        sort($violations);
 
         return new ViolationValueObject(
             \sprintf(
-                'Resource <promote>%s</promote> must not depends on these namespaces %s',
+                'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
                 $script->namespace ?? $script->getFileBasename(),
-                $this->implodeMore($dependencies),
+                implode(', ', $unauthorizedDependence),
+                implode(', ', $violations),
             ),
             $this::class,
             0,

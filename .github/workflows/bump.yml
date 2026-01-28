@@ -1,17 +1,70 @@
-name: Bump version
+name: Release & PHAR
 
 on:
   push:
     branches:
       - main
+      - feat/*
+
 jobs:
-  build:
-    name: Bump version
-    if: github.ref == 'refs/heads/main'
+  build-test:
+    name: Test PHAR
     runs-on: ubuntu-latest
+
     steps:
       - name: Pull repository
         uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install Box
+        run: composer global require humbug/box
+
+      - name: Build PHAR
+        run: ~/.composer/vendor/bin/box compile -c box-test.json
+
+      - name: Launch PHAR
+        run: php ./structura.phar -V
+
+      - name: Show PHAR size
+        run: |
+          SIZE_BYTES=$(stat -c%s "./structura.phar")
+          SIZE_KB=$((SIZE_BYTES / 1024))
+          echo "PHAR size: ${SIZE_KB} KB"
+
+  build:
+    name: Release & Build PHAR
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Install Box (project-box)
+        run: composer global require humbug/box
+
+      - name: Build PHAR
+        run: ~/.composer/vendor/bin/box compile
 
       - name: Bump version and push tag
         id: tag_version
@@ -20,9 +73,13 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ''
 
-      - name: Create a GitHub release
+      - name: Create GitHub release with PHAR
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: "structura.phar"
+          allowUpdates: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

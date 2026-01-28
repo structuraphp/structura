@@ -29,11 +29,21 @@ trait Version
 
     private function getProjectVersion(): string
     {
-        return InstalledVersions::getVersion('structuraphp/structura') ?? 'UNKNOWN';
+        $commitPlaceholderPossiblyEvaluated = '@git-tag@';
+        $versionCommit = $this->getCommitPlaceholder() !== $commitPlaceholderPossiblyEvaluated
+            ? substr($commitPlaceholderPossiblyEvaluated, 0, 7) // for phar builds
+            : null;
+
+        return $versionCommit ?? InstalledVersions::getVersion('structuraphp/structura') ?? 'UNKNOWN';
     }
 
     private function getPhpVersion(): string
     {
         return PHP_VERSION;
+    }
+
+    private function getCommitPlaceholder(): string
+    {
+        return implode('', ['@', 'git-tag@']);
     }
 }
