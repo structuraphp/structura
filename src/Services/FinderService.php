@@ -14,8 +14,8 @@ class FinderService
     private static ?array $loadedClasses = null;
 
     public function __construct(
-        private ConfigValueObject $config,
-        private ?string $testSuite = null,
+        private readonly ConfigValueObject $config,
+        private readonly ?string $testSuite = null,
     ) {}
 
     /**
