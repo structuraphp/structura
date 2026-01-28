@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
-use PhpParser\Modifiers;
 use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
@@ -236,34 +235,6 @@ final class ClassDescription extends ScriptDescription
         $match = preg_grep(
             '/^(?:' . $this->customPregQuote($pattern) . ')$/',
             $this->getDependenciesByType($type),
-        );
-
-        if ($match !== false) {
-            return array_merge($matches, $match);
-        }
-
-        return $matches;
-    }
-
-    /**
-     * @param array<int,string> $patterns
-     *
-     * @return array<int,string>
-     */
-    public function getDependenciesFunctionByPatterns(
-        array $patterns,
-    ): array {
-        $matches = [];
-        if ($patterns === []) {
-            return [];
-        }
-
-        $pattern = implode('|', $patterns);
-
-        /** @var array<int,string>|false $match */
-        $match = preg_grep(
-            '/^' . $this->customPregQuote($pattern) . '$/',
-            $this->getFunctionDependencies(),
         );
 
         if ($match !== false) {

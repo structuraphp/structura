@@ -35,7 +35,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
                     'col' => 0,
                 ];
                 array_walk($metas, static function (&$value, string $key): void {
-                    $value = sprintf('%s=%s', $key, (string) $value);
+                    $value = sprintf('%s=%s', $key, $value);
                 });
 
                 $message = $this->formatMessage($violation->messageViolation);

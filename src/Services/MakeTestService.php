@@ -53,7 +53,7 @@ final readonly class MakeTestService
             content: $content,
             filename: \sprintf(
                 '%s/%s.php',
-                (string) getcwd(),
+                $this->getcwd(),
                 implode('/', [$rootNamespace->directory, ...$parts, $className]),
             ),
         );
@@ -90,7 +90,7 @@ final readonly class MakeTestService
 
         $file = sprintf(
             '%s/%s/%s.php',
-            (string) getcwd(),
+            $this->getcwd(),
             $this->structuraConfig->rootNamespace->directory ?? '',
             str_replace('\\', DIRECTORY_SEPARATOR, $namespace),
         );
@@ -126,5 +126,16 @@ final readonly class MakeTestService
         }
 
         return $path;
+    }
+
+    private function getcwd(): string
+    {
+        $getcwd = getcwd();
+
+        return $getcwd === false
+            ? throw new RuntimeException(
+                'Could not create test file, because cannot find the current work folder',
+            )
+            : $getcwd;
     }
 }
