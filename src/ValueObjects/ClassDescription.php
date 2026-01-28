@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
+use PhpParser\Modifiers;
 use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;

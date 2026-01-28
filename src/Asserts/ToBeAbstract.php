@@ -24,7 +24,7 @@ final readonly class ToBeAbstract implements ExprInterface
     public function assert(ClassDescription $class): bool
     {
         return $class->classType === ClassType::Class_
-            && $class->flags & FlagType::ModifierAbstract->value;
+            && ($class->flags & FlagType::ModifierAbstract->value) !== 0;
     }
 
     public function getViolation(ClassDescription $class): ViolationValueObject

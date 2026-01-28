@@ -82,7 +82,7 @@ final readonly class MakeTestService
 
         $namespace = $replace($input);
 
-        if (!preg_match('/^(([A-Z]+[a-z0-9]*)+\\\?)+$/n', $namespace)) {
+        if (preg_match('/^(([A-Z]+[a-z0-9]*)+\\\?)+$/n', $namespace) === false) {
             throw new RuntimeException(
                 'The name of the test class must be PSR4-compliant.',
             );
