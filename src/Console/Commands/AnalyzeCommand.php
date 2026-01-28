@@ -162,13 +162,15 @@ final class AnalyzeCommand extends Command
     private function autoload(SymfonyStyle $output): void
     {
         if (!str_starts_with(__FILE__, 'phar://')) {
+            return;
+        }
+
+        if (!is_string($this->configValueObject->autoload)) {
             $output->warning(
                 'This command is not running inside a PHAR archive, '
                 . 'so the autoload configuration is not required in this environment.',
             );
-        }
 
-        if (!is_string($this->configValueObject->autoload)) {
             return;
         }
 

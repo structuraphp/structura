@@ -26,6 +26,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     ): int {
         $violations = array_merge(...$analyseValueObject->violationsByTests);
         $warnings = array_merge(...$analyseValueObject->warningsByTests);
+
         /** @var array<string, string> $notices */
         $notices = array_merge(...$analyseValueObject->noticeByTests);
 
