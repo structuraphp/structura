@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
+use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Stmt\Declare_;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
@@ -17,9 +18,13 @@ class ScriptDescription
 
     protected ?string $fileBasename = null;
 
+    /**
+     * @param array<int,Include_> $includes
+     */
     public function __construct(
         public readonly ?string $namespace,
         public readonly ?Declare_ $declare,
+        public readonly array $includes,
     ) {}
 
     /**

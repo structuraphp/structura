@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\ExprScript;
 
 use StructuraPhp\Structura\AbstractExpr;
+use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToUseDeclare;
+use StructuraPhp\Structura\Asserts\ToUseInclude;
+use StructuraPhp\Structura\Enums\IncludeType;
 
 /**
  * @mixin AbstractExpr
  */
-trait DeclareAssert
+trait ThirdPartyAssert
 {
     public function toUseStrictTypes(string $message = ''): self
     {
@@ -20,5 +23,15 @@ trait DeclareAssert
     public function toUseDeclare(string $key, string $value, string $message = ''): self
     {
         return $this->addExpr(new ToUseDeclare($key, $value, $message));
+    }
+
+    public function toUseInclude(IncludeType $includeType, string $message = ''): self
+    {
+        return $this->addExpr(new ToUseInclude($includeType, $message));
+    }
+
+    public function toNotUseInclude(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotUseInclude($message));
     }
 }
