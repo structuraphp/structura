@@ -15,6 +15,9 @@ use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 class FormatterDataProvider
 {
+    /**
+     * @return Generator<string, array<int, AnalyseValueObject>>
+     */
     public static function getAnalyseValueObject(): Generator
     {
         yield 'simple' => [

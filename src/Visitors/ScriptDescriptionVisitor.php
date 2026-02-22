@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Visitors;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\NodeVisitorAbstract;
@@ -17,6 +18,9 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
     private ?Namespace_ $namespace = null;
 
     private ?ScriptDescription $script;
+
+    /** @var array<int,Include_> */
+    private array $includes = [];
 
     public function getScript(): ?ScriptDescription
     {
@@ -34,6 +38,7 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
         $this->script = null;
         $this->declare = null;
         $this->namespace = null;
+        $this->includes = [];
 
         return null;
     }
@@ -48,10 +53,20 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
             $this->namespace = $node;
         }
 
+        if ($node instanceof Include_) {
+            $this->includes[] = $node;
+        }
+
+        return null;
+    }
+
+    public function afterTraverse(array $nodes): null
+    {
         if (!$this->script instanceof ScriptDescription) {
             $this->script = new ScriptDescription(
                 namespace: $this->namespace?->name?->toString(),
                 declare: $this->declare,
+                includes: $this->includes,
             );
         }
 

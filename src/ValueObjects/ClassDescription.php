@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\ValueObjects;
 
 use PhpParser\Node\AttributeGroup;
+use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -16,6 +17,7 @@ use StructuraPhp\Structura\Enums\DependenciesType;
 final class ClassDescription extends ScriptDescription
 {
     /**
+     * @param array<int,Include_> $includes
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
@@ -26,6 +28,7 @@ final class ClassDescription extends ScriptDescription
     public function __construct(
         ?string $namespace,
         ?Declare_ $declare,
+        array $includes,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
@@ -37,7 +40,7 @@ final class ClassDescription extends ScriptDescription
         public readonly ClassType $classType,
         public readonly ?array $methods,
     ) {
-        parent::__construct($namespace, $declare);
+        parent::__construct($namespace, $declare, $includes);
     }
 
     public function isExtendable(): bool

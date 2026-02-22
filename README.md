@@ -834,6 +834,28 @@ $this
 
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select namespaces.
 
+## toToUseInclude()
+
+Allows an inclusion (`include*`/`require*`) in a script or class.
+
+```php
+use StructuraPhp\Structura\Enums\IncludeType;
+
+$this
+    ->allScripts()
+    ->fromRaw('<?php require "foo.php";')
+    ->should(fn(ExprScript $expr) => $expr->toUseInclude(IncludeType::Require));
+```
+
+### toToNotUseInclude()
+
+```php
+$this
+    ->allScripts()
+    ->fromRaw('<?php require "foo.php";')
+    ->should(fn(ExprScript $expr) => $expr->toNotUseInclude());
+```
+
 ## and()
 
 To be valid, all the rules contained in the `and()` method must meet the requirements.
