@@ -20,6 +20,7 @@ final class ClassDescription extends ScriptDescription
 {
     /**
      * @param array<int,Include_> $includes
+     * @param array<int,Class_> $anonymousClasses
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
@@ -27,12 +28,12 @@ final class ClassDescription extends ScriptDescription
      * @param array<TraitUse> $traits
      * @param null|array<ClassMethod> $methods
      * @param array<ClassConst> $constants
-     * @param array<int,Class_> $anonymousClasses
      */
     public function __construct(
         ?string $namespace,
         ?Declare_ $declare,
         array $includes,
+        array $anonymousClasses,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
@@ -44,7 +45,6 @@ final class ClassDescription extends ScriptDescription
         public readonly ClassType $classType,
         public readonly ?array $methods,
         public readonly array $constants,
-        array $anonymousClasses = [],
     ) {
         parent::__construct($namespace, $declare, $includes, $anonymousClasses);
     }

@@ -64,6 +64,10 @@ final class ToHaveAnonymousClassTest extends TestCase
         yield 'enum with anonymous class' => [
             '<?php enum Foo { public function bar() { return new class {}; } }',
         ];
+
+        yield 'anonymous class' => [
+            '<?php new class { public function bar() { return new class {}; } };',
+        ];
     }
 
     #[DataProvider('getScriptWithAnonymousProvider')]
@@ -105,7 +109,7 @@ final class ToHaveAnonymousClassTest extends TestCase
     #[DataProvider('getClassWithoutAnonymousProvider')]
     public function testShouldFailToHaveAnonymousClassWithClass(
         string $rawClass,
-        string $name,
+        string $name = 'Foo',
     ): void {
         $rules = $this
             ->allClasses()
@@ -126,33 +130,22 @@ final class ToHaveAnonymousClassTest extends TestCase
 
     public static function getClassWithoutAnonymousProvider(): Generator
     {
-        yield 'class without anonymous class' => [
-            '<?php class Foo {}',
-            'Foo',
-        ];
+        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
 
-        yield 'enum without anonymous class' => [
-            '<?php enum Foo {}',
-            'Foo',
-        ];
+        yield 'class' => ['<?php class Foo {}'];
 
-        yield 'interface without anonymous class' => [
-            '<?php interface Foo {}',
-            'Foo',
-        ];
+        yield 'enum' => ['<?php enum Foo {}'];
 
-        yield 'trait without anonymous class' => [
-            '<?php trait Foo {}',
-            'Foo',
-        ];
+        yield 'interface' => ['<?php interface Foo {}'];
+
+        yield 'trait' => ['<?php trait Foo {}'];
     }
 
-    #[DataProvider('getScriptWithoutAnonymousProvider')]
-    public function testShouldFailToHaveAnonymousClassWithScript(string $rawScript): void
+    public function testShouldFailToHaveAnonymousClassWithScript(): void
     {
         $rules = $this
             ->allScripts()
-            ->fromRaw($rawScript)
+            ->fromRaw('<?php function foo() {}')
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
                     ->toHaveAnonymousClass(),
@@ -162,16 +155,5 @@ final class ToHaveAnonymousClassTest extends TestCase
             $rules,
             'Resource <promote>tmp/run_0.php</promote> must have anonymous class',
         );
-    }
-
-    public static function getScriptWithoutAnonymousProvider(): Generator
-    {
-        yield 'script without anonymous class' => [
-            '<?php echo "hello";',
-        ];
-
-        yield 'script with function' => [
-            '<?php function foo() {}',
-        ];
     }
 }

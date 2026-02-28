@@ -27,7 +27,7 @@ class ScriptDescription
         public readonly ?string $namespace,
         public readonly ?Declare_ $declare,
         public readonly array $includes,
-        public readonly array $anonymousClasses = [],
+        public readonly array $anonymousClasses,
     ) {}
 
     /**

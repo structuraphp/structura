@@ -106,6 +106,11 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
             $this->includes[] = $node;
         }
 
+        if ($node instanceof Class_ && $node->isAnonymous() && $this->classDeep > 0) {
+            $this->anonymousClasses[] = $node;
+            $this->classDeep++;
+        }
+
         if ($node instanceof ClassLike && $this->classDeep === 0) {
             $this->classDeep++;
 
@@ -136,11 +141,6 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
             }
         }
 
-        if ($node instanceof Class_ && $node->isAnonymous() && $this->classDeep > 0) {
-            $this->anonymousClasses[] = $node;
-            $this->classDeep++;
-        }
-
         return null;
     }
 
@@ -151,6 +151,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 namespace: $this->namespace,
                 declare: $this->declare,
                 includes: $this->includes,
+                anonymousClasses: $this->anonymousClasses,
                 name: $this->name,
                 attrGroups: $this->attrGroups,
                 lines: $this->lines,
@@ -162,7 +163,6 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 classType: $this->classType,
                 methods: $this->methods,
                 constants: $this->constants,
-                anonymousClasses: $this->anonymousClasses,
             );
         }
 
