@@ -179,7 +179,7 @@ final class ToHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutPublicConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -216,7 +216,7 @@ final class ToHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutProtectedConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -253,7 +253,7 @@ final class ToHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutPrivateConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

@@ -41,7 +41,7 @@ final class ToNotUseIncludeTest extends TestCase
 
     public static function getClassLikeWithoutIncludeProvider(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -93,7 +93,7 @@ final class ToNotUseIncludeTest extends TestCase
     public static function getClassLikeWithIncludeProvider(): Generator
     {
         $classLike = [
-            'anonymous class' => '<?php new class { public function bar() { %s } };',
+            'anonymous class' => '<?php return new class { public function bar() { %s } };',
             'class' => '<?php class Foo { public function bar() { %s } }',
             'enum' => '<?php enum Foo { public function bar() { %s } }',
             'interface' => '<?php %s interface Foo {}',

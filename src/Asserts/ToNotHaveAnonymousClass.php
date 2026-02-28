@@ -38,9 +38,7 @@ final readonly class ToNotHaveAnonymousClass implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not have anonymous class but found <fire>%d</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $class->countAnonymousClasses(),
             ),
             $this::class,

@@ -66,7 +66,7 @@ final class ToExtendTest extends TestCase
 
     public static function getClassLikeExtendsNothing(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
     }

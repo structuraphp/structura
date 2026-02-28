@@ -32,9 +32,7 @@ final readonly class ToBeFinal implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be a final class',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
             ),
             $this::class,
             $class->lines,

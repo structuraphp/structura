@@ -68,9 +68,7 @@ final readonly class ToNotDependsOnFunction implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),
             ),

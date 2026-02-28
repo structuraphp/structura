@@ -45,9 +45,7 @@ final class ToNotUseInclude implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not use anything but use <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->getLables($class),
             ),
             $this::class,

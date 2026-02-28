@@ -69,7 +69,7 @@ final class ToHavePrefixTest extends TestCase
 
     public static function getClassLikeWithoutPrefixProvider(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

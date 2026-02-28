@@ -87,7 +87,7 @@ class ToBeBackedEnumsTest extends TestCase
     public static function getClasseLikeForFail(): Generator
     {
         yield 'anonymous class' => [
-            '<?php new class {};',
+            '<?php return new class {};',
             null,
             'Anonymous',
         ];

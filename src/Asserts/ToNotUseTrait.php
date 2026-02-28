@@ -32,9 +32,7 @@ final readonly class ToNotUseTrait implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not use a trait but uses <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $class->getTraitNames()),
             ),
             $this::class,

@@ -89,7 +89,7 @@ class ToNotDependsOnFunctionTest extends TestCase
     {
         yield 'anonymous class' => [
             '<?php
-             new class {
+             return new class {
                 public function __invoke() {
                     array_merge([], []);
                     strtolower("FOO");

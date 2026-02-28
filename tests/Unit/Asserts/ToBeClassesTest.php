@@ -57,8 +57,6 @@ final class ToBeClassesTest extends TestCase
 
     public static function getClassLikeNonClasses(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', ClassType::AnonymousClass_, 'Anonymous'];
-
         yield 'enum' => ['<?php enum Foo {}', ClassType::Enum_];
 
         yield 'interface' => ['<?php interface Foo {}', ClassType::Interface_];

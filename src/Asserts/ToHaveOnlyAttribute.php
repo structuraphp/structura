@@ -35,9 +35,7 @@ final readonly class ToHaveOnlyAttribute implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must have only attribute <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->name,
             ),
             $this::class,

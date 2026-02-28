@@ -39,9 +39,7 @@ final readonly class NotToBeInOneOfTheNamespaces implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not to be in one of the namespaces <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $this->patterns),
             ),
             $this::class,

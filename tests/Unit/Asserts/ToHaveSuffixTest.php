@@ -69,7 +69,7 @@ final class ToHaveSuffixTest extends TestCase
 
     public static function getClassLikeWithoutSuffixProvider(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

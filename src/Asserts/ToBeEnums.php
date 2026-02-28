@@ -30,9 +30,7 @@ final readonly class ToBeEnums implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be an enum but is <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $class->classType->label(),
             ),
             $this::class,

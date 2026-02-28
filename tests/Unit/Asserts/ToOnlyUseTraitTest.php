@@ -43,7 +43,7 @@ final class ToOnlyUseTraitTest extends TestCase
     public static function getClassLikeWithTrait(): Generator
     {
         yield 'anonymous class' => [
-            '<?php new class { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
+            '<?php return new class { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; };',
         ];
 
         yield 'class' => [
@@ -82,7 +82,7 @@ final class ToOnlyUseTraitTest extends TestCase
 
     public static function getClassLikeWithoutTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

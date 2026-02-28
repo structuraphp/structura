@@ -30,9 +30,7 @@ final readonly class ToBeTraits implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be a trait but is <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $class->classType->label(),
             ),
             $this::class,

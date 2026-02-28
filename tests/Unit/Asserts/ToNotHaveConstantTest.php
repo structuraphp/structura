@@ -42,7 +42,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutPublicConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -76,7 +76,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutProtectedConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -110,7 +110,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithoutPrivateConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -195,7 +195,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithPublicConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class { public const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { public const FOO = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { public const BAR = 1; }'];
 
@@ -228,7 +228,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithProtectedConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class { protected const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { protected const FOO = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { protected const BAR = 1; }'];
 
@@ -259,7 +259,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithPrivateConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php new class { private const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { private const FOO = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { private const BAR = 1; }'];
 

@@ -29,9 +29,7 @@ final readonly class ToImplementNothing implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $class->interfaces ?? []),
             ),
             $this::class,

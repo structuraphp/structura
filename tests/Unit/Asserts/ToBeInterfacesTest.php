@@ -57,7 +57,7 @@ final class ToBeInterfacesTest extends TestCase
 
     public static function getClassLikeNonEnums(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', ClassType::AnonymousClass_, 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', ClassType::AnonymousClass_, 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}', ClassType::Class_];
 
