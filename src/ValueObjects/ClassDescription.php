@@ -8,6 +8,7 @@ use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
@@ -24,6 +25,7 @@ final class ClassDescription extends ScriptDescription
      * @param null|array<Name>|Name $extends
      * @param array<TraitUse> $traits
      * @param null|array<ClassMethod> $methods
+     * @param array<ClassConst> $constants
      */
     public function __construct(
         ?string $namespace,
@@ -39,6 +41,7 @@ final class ClassDescription extends ScriptDescription
         public readonly ?int $flags,
         public readonly ClassType $classType,
         public readonly ?array $methods,
+        public readonly array $constants,
     ) {
         parent::__construct($namespace, $declare, $includes);
     }
@@ -91,6 +94,51 @@ final class ClassDescription extends ScriptDescription
 
         foreach ($this->methods as $method) {
             if ($method->name->name === $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasPublicConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isPublic()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasProtectedConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isProtected()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasPrivateConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isPrivate()) {
                 return true;
             }
         }
