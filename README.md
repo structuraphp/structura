@@ -311,6 +311,8 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveAnonymousClass()](#tohaveanonymousclass)
+  - [toNotHaveAnonymousClass()](#tonothaveanonymousclass)
   - [toHaveCorresponding()](#tohavecorresponding)
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
   - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
@@ -824,6 +826,28 @@ $this
   ->allClasses()
   ->fromRaw('<?php class FooExemple {}')
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
+```
+
+### toHaveAnonymousClass()
+
+Assert that a class contains at least one anonymous class.
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo { public function bar() { return new class {}; } }')
+  ->should(fn(Expr $expr) => $expr->toHaveAnonymousClass());
+```
+
+### toNotHaveAnonymousClass()
+
+Assert that a class does not contain any anonymous class.
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo { public function bar() {} }')
+  ->should(fn(Expr $expr) => $expr->toNotHaveAnonymousClass());
 ```
 
 ### toHaveCorresponding()
