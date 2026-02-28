@@ -64,6 +64,9 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
     private int $classDeep = 0;
 
+    /** @var array<int,Class_> */
+    private array $anonymousClasses = [];
+
     public function getClass(): ?ClassDescription
     {
         return $this->class;
@@ -101,6 +104,11 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Include_) {
             $this->includes[] = $node;
+        }
+
+        if ($node instanceof Class_ && $node->isAnonymous() && $this->classDeep > 0) {
+            $this->anonymousClasses[] = $node;
+            $this->classDeep++;
         }
 
         if ($node instanceof ClassLike && $this->classDeep === 0) {
@@ -143,6 +151,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 namespace: $this->namespace,
                 declare: $this->declare,
                 includes: $this->includes,
+                anonymousClasses: $this->anonymousClasses,
                 name: $this->name,
                 attrGroups: $this->attrGroups,
                 lines: $this->lines,

@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Visitors;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\Include_;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\NodeVisitorAbstract;
@@ -21,6 +22,9 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
 
     /** @var array<int,Include_> */
     private array $includes = [];
+
+    /** @var array<int,Class_> */
+    private array $anonymousClasses = [];
 
     public function getScript(): ?ScriptDescription
     {
@@ -39,6 +43,7 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
         $this->declare = null;
         $this->namespace = null;
         $this->includes = [];
+        $this->anonymousClasses = [];
 
         return null;
     }
@@ -57,6 +62,10 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
             $this->includes[] = $node;
         }
 
+        if ($node instanceof Class_ && $node->isAnonymous()) {
+            $this->anonymousClasses[] = $node;
+        }
+
         return null;
     }
 
@@ -67,6 +76,7 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
                 namespace: $this->namespace?->name?->toString(),
                 declare: $this->declare,
                 includes: $this->includes,
+                anonymousClasses: $this->anonymousClasses,
             );
         }
 

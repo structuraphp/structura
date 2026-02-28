@@ -311,6 +311,8 @@ php bin/structura analyze
   - [toHavePrefix()](#tohaveprefix)
   - [toHaveSuffix()](#tohavesuffix)
 - 🕹️ Other
+  - [toHaveAnonymousClass()](#tohaveanonymousclass)
+  - [toNotHaveAnonymousClass()](#tonothaveanonymousclass)
   - [toHaveCorresponding()](#tohavecorresponding)
   - [toHaveCorrespondingClass()](#tohavecorrespondingclass)
   - [toHaveCorrespondingEnum()](#tohavecorrespondingenum)
@@ -824,6 +826,60 @@ $this
   ->allClasses()
   ->fromRaw('<?php class FooExemple {}')
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
+```
+
+### toHaveAnonymousClass()
+
+Assert that a class-like (class, enum, interface, trait) contains at least one anonymous class.
+
+> **Important!**
+> 
+> - With `allClasses()`: the anonymous class **MUST** be encapsulated inside the analyzed class-like.
+> - With `allScripts()`: detects any anonymous class present in the script, regardless of context.
+
+#### Example with allClasses()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo { public function bar() { return new class {}; } }')
+  ->should(fn(Expr $expr) => $expr->toHaveAnonymousClass());
+```
+
+#### Example with allScripts()
+
+```php
+$this
+  ->allScripts()
+  ->fromRaw('<?php $obj = new class {};')
+  ->should(fn(ExprScript $expr) => $expr->toHaveAnonymousClass());
+```
+
+### toNotHaveAnonymousClass()
+
+Assert that a class-like does not contain any anonymous class.
+
+> **Important!**
+> 
+> - With `allClasses()`: the class-like **MUST NOT** have any anonymous class encapsulated inside it.
+> - With `allScripts()`: detects if there are any anonymous classes present anywhere in the script.
+
+#### Example with allClasses()
+
+```php
+$this
+  ->allClasses()
+  ->fromRaw('<?php class Foo { public function bar() {} }')
+  ->should(fn(Expr $expr) => $expr->toNotHaveAnonymousClass());
+```
+
+#### Example with allScripts()
+
+```php
+$this
+  ->allScripts()
+  ->fromRaw('<?php function foo() {}')
+  ->should(fn(ExprScript $expr) => $expr->toNotHaveAnonymousClass());
 ```
 
 ### toHaveCorresponding()

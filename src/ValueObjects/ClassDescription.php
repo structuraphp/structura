@@ -8,6 +8,7 @@ use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
@@ -19,6 +20,7 @@ final class ClassDescription extends ScriptDescription
 {
     /**
      * @param array<int,Include_> $includes
+     * @param array<int,Class_> $anonymousClasses
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
@@ -31,6 +33,7 @@ final class ClassDescription extends ScriptDescription
         ?string $namespace,
         ?Declare_ $declare,
         array $includes,
+        array $anonymousClasses,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
@@ -43,7 +46,7 @@ final class ClassDescription extends ScriptDescription
         public readonly ?array $methods,
         public readonly array $constants,
     ) {
-        parent::__construct($namespace, $declare, $includes);
+        parent::__construct($namespace, $declare, $includes, $anonymousClasses);
     }
 
     public function isExtendable(): bool

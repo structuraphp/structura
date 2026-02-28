@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\ExprScript;
 
 use StructuraPhp\Structura\AbstractExpr;
+use StructuraPhp\Structura\Asserts\ToHaveAnonymousClass;
+use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToUseDeclare;
 use StructuraPhp\Structura\Asserts\ToUseInclude;
@@ -33,5 +35,15 @@ trait ThirdPartyAssert
     public function toNotUseInclude(string $message = ''): self
     {
         return $this->addExpr(new ToNotUseInclude($message));
+    }
+
+    public function toHaveAnonymousClass(string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveAnonymousClass($message));
+    }
+
+    public function toNotHaveAnonymousClass(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotHaveAnonymousClass($message));
     }
 }
