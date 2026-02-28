@@ -42,7 +42,7 @@ final readonly class ToHaveAnonymousClass implements ExprScriptInterface
                     : $class->namespace,
             ),
             $this::class,
-            0,
+            $class->lines,
             $class->getFileBasename(),
             $this->message,
         );
