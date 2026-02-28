@@ -30,9 +30,7 @@ final readonly class ToHaveSuffix implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource name <promote>%s</promote> must end with <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->suffix,
             ),
             $this::class,

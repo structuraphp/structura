@@ -32,9 +32,7 @@ final readonly class ToBeAbstract implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> be an abstract class',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
             ),
             $this::class,
             $class->lines,

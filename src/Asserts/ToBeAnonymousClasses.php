@@ -30,7 +30,7 @@ final readonly class ToBeAnonymousClasses implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be an anonymous class but is <fire>%s</fire>',
-                $class->namespace,
+                $class->getResourceName(),
                 $class->classType->label(),
             ),
             $this::class,

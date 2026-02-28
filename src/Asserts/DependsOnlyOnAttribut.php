@@ -55,9 +55,7 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must use attributes on these namespaces %s but use attributes <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),
             ),

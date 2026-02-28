@@ -17,6 +17,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeVisitorAbstract;
@@ -67,6 +68,8 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
     /** @var array<int,Class_> */
     private array $anonymousClasses = [];
 
+    private bool $inRootReturn = false;
+
     public function getClass(): ?ClassDescription
     {
         return $this->class;
@@ -86,6 +89,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
         $this->extends = null;
         $this->flags = null;
         $this->includes = [];
+        $this->inRootReturn = false;
         $this->interfaces = null;
         $this->lines = 0;
         $this->methods = null;
@@ -104,6 +108,10 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Include_) {
             $this->includes[] = $node;
+        }
+
+        if ($node instanceof Return_ && $this->classDeep === 0) {
+            $this->inRootReturn = true;
         }
 
         if ($node instanceof Class_ && $node->isAnonymous() && $this->classDeep > 0) {
@@ -172,7 +180,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
     private function getClassType(ClassLike $node): ClassType
     {
         if ($node instanceof Class_) {
-            return $node->isAnonymous()
+            return $node->isAnonymous() && $this->inRootReturn
                 ? ClassType::AnonymousClass_
                 : ClassType::Class_;
         }

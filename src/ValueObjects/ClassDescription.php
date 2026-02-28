@@ -49,6 +49,17 @@ final class ClassDescription extends ScriptDescription
         parent::__construct($namespace, $declare, $includes, $anonymousClasses);
     }
 
+    public function getResourceName(): string
+    {
+        if ($this->isAnonymous()) {
+            return is_string($this->namespace) && $this->namespace !== ''
+                ? sprintf('%s@Anonymous', $this->namespace)
+                : 'Anonymous';
+        }
+
+        return $this->namespace ?? $this->getFileBasename() ?? 'Unknown';
+    }
+
     public function isExtendable(): bool
     {
         return \in_array(

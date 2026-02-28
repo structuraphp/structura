@@ -84,7 +84,7 @@ final class ToUseTraitTest extends TestCase
 
     public static function getClassLikeWithoutTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

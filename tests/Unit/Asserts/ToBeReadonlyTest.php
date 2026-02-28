@@ -54,7 +54,7 @@ final class ToBeReadonlyTest extends TestCase
     {
         yield 'abstract class' => ['<?php abstract class Foo {}'];
 
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

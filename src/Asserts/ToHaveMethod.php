@@ -30,9 +30,7 @@ final readonly class ToHaveMethod implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must have method <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->name,
             ),
             $this::class,

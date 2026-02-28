@@ -30,9 +30,7 @@ final readonly class ToHavePrefix implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource name <promote>%s</promote> must start with <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->prefix,
             ),
             $this::class,

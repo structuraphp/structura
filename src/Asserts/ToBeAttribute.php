@@ -64,9 +64,7 @@ final readonly class ToBeAttribute implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be attributable',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
             ),
             $this::class,
             $class->lines,

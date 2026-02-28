@@ -35,7 +35,7 @@ final class ToImplementNothingTest extends TestCase
 
     public static function getClassLikeImplementsNothing(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};'];
+        yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
 
@@ -65,7 +65,7 @@ final class ToImplementNothingTest extends TestCase
 
     public static function getClassLikeImplements(): Generator
     {
-        yield 'anonymous class' => ['<?php new class implements BarInterface {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class implements BarInterface {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo implements BarInterface {}'];
 

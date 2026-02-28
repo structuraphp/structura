@@ -40,9 +40,7 @@ final readonly class ToHaveCorrespondingTrait implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource name <promote>%s</promote> must have corresponding trait <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $className,
             ),
             $this::class,

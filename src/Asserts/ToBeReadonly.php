@@ -32,9 +32,7 @@ final readonly class ToBeReadonly implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must be a read-only class',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
             ),
             $this::class,
             $class->lines,

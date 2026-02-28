@@ -45,9 +45,7 @@ final class ToUseInclude implements ExprScriptInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must use <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->includeType->label(),
             ),
             $this::class,

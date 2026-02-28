@@ -36,9 +36,7 @@ final readonly class ToOnlyImplement implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must only implement <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->name,
             ),
             $this::class,

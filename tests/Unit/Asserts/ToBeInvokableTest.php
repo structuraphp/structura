@@ -58,7 +58,7 @@ final class ToBeInvokableTest extends TestCase
     {
         yield 'class' => ['<?php class Foo {}'];
 
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'enum' => ['<?php enum Foo {}'];
 

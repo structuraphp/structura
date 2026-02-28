@@ -35,9 +35,7 @@ final readonly class ToHaveConstant implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must have <promote>%s</promote> constant',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->visibility->value,
             ),
             $this::class,

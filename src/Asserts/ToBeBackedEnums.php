@@ -45,9 +45,7 @@ final readonly class ToBeBackedEnums implements ExprInterface
         return new ViolationValueObject(
             sprintf(
                 'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $this->scalarType->value ?? 'int or string',
             ),
             $this::class,

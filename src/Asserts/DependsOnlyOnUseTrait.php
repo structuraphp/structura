@@ -55,9 +55,7 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must use traits on these namespaces %s but uses these traits <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),
             ),

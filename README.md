@@ -339,10 +339,15 @@ $this
 
 ### toBeAnonymousClasses()
 
+A PHP script is considered an anonymous class **only** if it explicitly returns the anonymous class using a `return` statement at the root level of the script.
+
+> ⚠️ Simply instantiating an anonymous class (`new class {}`) is **not** sufficient.
+> The script **must** use `return new class {}` to be recognized as an anonymous class.
+
 ```php
 $this
   ->allClasses()
-  ->fromRaw('<?php new class {};')
+  ->fromRaw('<?php return new class {};')
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeAnonymousClasses(),
   );

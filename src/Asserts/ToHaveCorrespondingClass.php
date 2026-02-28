@@ -40,9 +40,7 @@ final readonly class ToHaveCorrespondingClass implements ExprInterface
         return new ViolationValueObject(
             \sprintf(
                 'Resource name <promote>%s</promote> must have corresponding class <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+                $class->getResourceName(),
                 $className,
             ),
             $this::class,
