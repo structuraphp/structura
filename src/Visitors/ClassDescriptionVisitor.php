@@ -11,6 +11,7 @@ use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
@@ -56,6 +57,9 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
     /** @var null|array<ClassMethod> */
     private ?array $methods = null;
 
+    /** @var array<ClassConst> */
+    private array $constants = [];
+
     private ?ClassDescription $class;
 
     private int $classDeep = 0;
@@ -74,6 +78,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
         $this->class = null;
         $this->classDeep = 0;
         $this->classType = ClassType::Class_;
+        $this->constants = [];
         $this->declare = null;
         $this->extends = null;
         $this->flags = null;
@@ -120,6 +125,12 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 : null;
             $this->classType = $this->getClassType($node);
             $this->methods = $node->getMethods();
+
+            foreach ($node->stmts as $stmt) {
+                if ($stmt instanceof ClassConst) {
+                    $this->constants[] = $stmt;
+                }
+            }
         }
 
         return null;
@@ -142,6 +153,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 flags: $this->flags,
                 classType: $this->classType,
                 methods: $this->methods,
+                constants: $this->constants,
             );
         }
 
