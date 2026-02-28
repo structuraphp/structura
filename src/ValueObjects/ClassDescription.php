@@ -8,6 +8,7 @@ use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
@@ -26,6 +27,7 @@ final class ClassDescription extends ScriptDescription
      * @param array<TraitUse> $traits
      * @param null|array<ClassMethod> $methods
      * @param array<ClassConst> $constants
+     * @param array<int,Class_> $anonymousClasses
      */
     public function __construct(
         ?string $namespace,
@@ -42,8 +44,9 @@ final class ClassDescription extends ScriptDescription
         public readonly ClassType $classType,
         public readonly ?array $methods,
         public readonly array $constants,
+        array $anonymousClasses = [],
     ) {
-        parent::__construct($namespace, $declare, $includes);
+        parent::__construct($namespace, $declare, $includes, $anonymousClasses);
     }
 
     public function isExtendable(): bool

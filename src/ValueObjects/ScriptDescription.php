@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\ValueObjects;
 
 use PhpParser\Node\Expr\Include_;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
@@ -20,11 +21,13 @@ class ScriptDescription
 
     /**
      * @param array<int,Include_> $includes
+     * @param array<int,Class_> $anonymousClasses
      */
     public function __construct(
         public readonly ?string $namespace,
         public readonly ?Declare_ $declare,
         public readonly array $includes,
+        public readonly array $anonymousClasses = [],
     ) {}
 
     /**
@@ -73,6 +76,16 @@ class ScriptDescription
         $this->fileBasename = $fileBasename;
 
         return $this;
+    }
+
+    public function hasAnonymousClasses(): bool
+    {
+        return $this->anonymousClasses !== [];
+    }
+
+    public function countAnonymousClasses(): int
+    {
+        return \count($this->anonymousClasses);
     }
 
     public function hasDeclare(
