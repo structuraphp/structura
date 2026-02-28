@@ -52,7 +52,9 @@ final class ClassDescription extends ScriptDescription
     public function getResourceName(): string
     {
         if ($this->isAnonymous()) {
-            return 'Anonymous';
+            return is_string($this->namespace) && $this->namespace !== ''
+                ? sprintf('%s@Anonymous', $this->namespace)
+                : 'Anonymous';
         }
 
         return $this->namespace ?? $this->getFileBasename() ?? 'Unknown';
