@@ -13,4 +13,6 @@ interface DeclareAssertInterface
     public function toHaveAnonymousClass(string $message = ''): self;
 
     public function toNotHaveAnonymousClass(string $message = ''): self;
+
+    public function toHaveFilePermission(string $expectedPermission, string $message = ''): self;
 }

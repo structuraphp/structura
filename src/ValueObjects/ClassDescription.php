@@ -57,7 +57,7 @@ final class ClassDescription extends ScriptDescription
                 : 'Anonymous';
         }
 
-        return $this->namespace ?? $this->getFileBasename() ?? 'Unknown';
+        return $this->namespace ?? $this->getFileBasename();
     }
 
     public function isExtendable(): bool
