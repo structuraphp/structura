@@ -168,3 +168,14 @@ $this
     ->fromRaw('<?php require "foo.php";')
     ->should(fn(ExprScript $expr) => $expr->toNotUseInclude());
 ```
+
+## toHaveFilePermission()
+
+Assert that a script or class file has specific Unix file permissions.
+
+```php
+$this
+    ->allScripts()
+    ->fromDir('src')
+    ->should(fn(ExprScript $expr) => $expr->toHaveFilePermission('0644'));
+```

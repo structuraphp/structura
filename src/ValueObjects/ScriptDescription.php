@@ -17,7 +17,7 @@ class ScriptDescription
     /** @var array<int,string> */
     protected array $functionDependencies = [];
 
-    protected ?string $fileBasename = null;
+    protected string $fileBasename = '';
 
     /**
      * @param array<int,Include_> $includes
@@ -66,12 +66,12 @@ class ScriptDescription
         return $this;
     }
 
-    public function getFileBasename(): ?string
+    public function getFileBasename(): string
     {
         return $this->fileBasename;
     }
 
-    public function setFilePathname(?string $fileBasename): self
+    public function setFilePathname(string $fileBasename): self
     {
         $this->fileBasename = $fileBasename;
 

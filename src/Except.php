@@ -90,8 +90,7 @@ class Except
 
         $filename = $description->getFileBasename();
         if (
-            is_string($filename)
-            && $filename !== ''
+            $filename !== ''
             && $this->checkFilePatterns($filename, $expression)
         ) {
             return true;

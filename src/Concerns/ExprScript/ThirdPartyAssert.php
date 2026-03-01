@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Concerns\ExprScript;
 
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToHaveAnonymousClass;
+use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToUseDeclare;
@@ -45,5 +46,10 @@ trait ThirdPartyAssert
     public function toNotHaveAnonymousClass(string $message = ''): self
     {
         return $this->addExpr(new ToNotHaveAnonymousClass($message));
+    }
+
+    public function toHaveFilePermission(string $expectedPermission, string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveFilePermission($expectedPermission, $message));
     }
 }
