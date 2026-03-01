@@ -204,7 +204,9 @@ Specifies rules for targeting class analysis, optional functionality:
 
 ### except()
 
-Ignores class rules, can be used as a baseline, optional functionality:
+#### byClassname()
+
+Ignore rules for specific classes by their fully qualified class name:
 
 ```php
 ->except(static fn(Except $except): Except => $except
@@ -214,6 +216,32 @@ Ignores class rules, can be used as a baseline, optional functionality:
             BarDto::class,
         ],
         expression: ToExtendNothing::class
+    )
+)
+```
+
+#### byNamespace()
+
+Ignore rules for classes in specific namespaces:
+
+```php
+->except(static fn(Except $except): Except => $except
+    ->byNamespace(
+        namespace: 'App\Tests\.*',
+        expression: [ToExtendNothing::class]
+    )
+)
+```
+
+#### byFileName()
+
+Ignore rules for scripts matching a filename pattern:
+
+```php
+->except(static fn(Except $except): Except => $except
+    ->byFileName(
+        filePattern: 'migrations.*.php',
+        expression: [ToBeClasses::class, ToBeEnums::class]
     )
 )
 ```
