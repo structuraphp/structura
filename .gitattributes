@@ -1,6 +1,7 @@
 * text=auto
 
 # directories
+/docs export-ignore
 /.github export-ignore
 /tests export-ignore
 
