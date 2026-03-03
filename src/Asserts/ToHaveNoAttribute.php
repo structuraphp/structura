@@ -29,18 +29,21 @@ final readonly class ToHaveNoAttribute implements ExprInterface
      */
     public function getViolation(ClassDescription $class): array
     {
-        return [
-            new ViolationValueObject(
+        $results = [];
+        foreach ($class->getAttributeNames() as $attributeName) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
                     $class->getResourceName(),
-                    implode(', ', $class->getAttributeNames()),
+                    $attributeName,
                 ),
                 $this::class,
                 $class->lines,
                 $class->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

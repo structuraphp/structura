@@ -100,12 +100,29 @@ final class DependsOnlyOnTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
-                'Depend\Bap',
-                'ArrayAccess, Depend\Bar, Exception, Stringable',
-            ),
-            7,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Depend\Bap',
+                    'ArrayAccess',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Depend\Bap',
+                    'Depend\Bar',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Depend\Bap',
+                    'Exception',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Depend\Bap',
+                    'Stringable',
+                ),
+            ],
+            [7, 7, 7, 7],
         );
     }
 
@@ -147,12 +164,32 @@ final class DependsOnlyOnTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
-                $exceptName,
-                'Depend\Bap',
-                'ArrayAccess, Depend\Bar, Exception, Stringable',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    $exceptName,
+                    'Depend\Bap',
+                    'ArrayAccess',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    $exceptName,
+                    'Depend\Bap',
+                    'Depend\Bar',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    $exceptName,
+                    'Depend\Bap',
+                    'Exception',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    $exceptName,
+                    'Depend\Bap',
+                    'Stringable',
+                ),
+            ],
             0,
         );
     }

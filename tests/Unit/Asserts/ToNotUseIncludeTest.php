@@ -144,7 +144,7 @@ final class ToNotUseIncludeTest extends TestCase
                 'Resource <promote>tmp/run_0.php</promote> must not use anything but use <fire>%s</fire>',
                 $includeType->label(),
             ),
-            0,
+            1,
         );
     }
 

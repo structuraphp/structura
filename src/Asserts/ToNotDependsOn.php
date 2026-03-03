@@ -47,7 +47,7 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
      */
     public function getViolation(ScriptDescription $description): array
     {
-        $unauthorizedDependence = array_merge($this->names, $this->patterns);
+        $unauthorizedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
             $description->getDependenciesByPatterns($this->patterns),
@@ -55,13 +55,14 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
         $violations = array_intersect($description->getClassDependencies(), $dependencies);
         sort($violations);
 
-        return [
-            new ViolationValueObject(
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
-                    implode(', ', $unauthorizedDependence),
-                    implode(', ', $violations),
+                    $unauthorizedDependence,
+                    $violation,
                 ),
                 $this::class,
                 $description instanceof ClassDescription
@@ -69,7 +70,9 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
                     : 0,
                 $description->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

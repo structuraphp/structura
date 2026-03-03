@@ -47,7 +47,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
      */
     public function getViolation(ScriptDescription $description): array
     {
-        $authorisedDependence = array_merge($this->names, $this->patterns);
+        $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
             $description->getDependenciesFunctionByPatterns($this->patterns),
@@ -55,13 +55,14 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         $violations = array_diff($description->getFunctionDependencies(), $dependencies);
         sort($violations);
 
-        return [
-            new ViolationValueObject(
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
-                    implode(', ', $authorisedDependence),
-                    implode(', ', $violations),
+                    $authorisedDependence,
+                    $violation,
                 ),
                 $this::class,
                 $description instanceof ClassDescription
@@ -69,7 +70,9 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
                     : 0,
                 $description->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

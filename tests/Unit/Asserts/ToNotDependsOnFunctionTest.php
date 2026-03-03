@@ -76,13 +76,21 @@ class ToNotDependsOnFunctionTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
-                $exceptName,
-                'strtolower, array_.+',
-                'array_merge, strtolower',
-            ),
-            2,
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtolower, array_.+',
+                    'array_merge',
+                ),
+                sprintf(
+                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtolower, array_.+',
+                    'strtolower',
+                ),
+            ],
+            [2, 2],
         );
     }
 
@@ -118,12 +126,20 @@ class ToNotDependsOnFunctionTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
-                $exceptName,
-                'strtolower, array_.+',
-                'array_merge, strtolower',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtolower, array_.+',
+                    'array_merge',
+                ),
+                sprintf(
+                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtolower, array_.+',
+                    'strtolower',
+                ),
+            ],
             0,
         );
     }
