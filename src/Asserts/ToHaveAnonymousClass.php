@@ -27,35 +27,16 @@ final readonly class ToHaveAnonymousClass implements ExprScriptInterface
 
     public function getViolation(ScriptDescription $description): ViolationValueObject
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    private function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must have anonymous class',
-                $class->getResourceName(),
+                $description->getResourceName(),
             ),
             $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must have anonymous class',
-                $script->namespace ?? $script->getFileBasename(),
-            ),
-            $this::class,
-            0,
-            $script->getFileBasename(),
+            $description instanceof ClassDescription
+                ? $description->lines
+                : 0,
+            $description->getFileBasename(),
             $this->message,
         );
     }

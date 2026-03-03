@@ -44,55 +44,26 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
 
     public function getViolation(ScriptDescription $description): ViolationValueObject
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    private function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
         $authorisedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesFunctionByPatterns($this->patterns),
+            $description->getDependenciesFunctionByPatterns($this->patterns),
         );
-        $violations = array_diff($class->getFunctionDependencies(), $dependencies);
+        $violations = array_diff($description->getFunctionDependencies(), $dependencies);
         sort($violations);
 
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
-                $class->getResourceName(),
+                $description->getResourceName(),
                 implode(', ', $authorisedDependence),
                 implode(', ', $violations),
             ),
             $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        $authorisedDependence = array_merge($this->names, $this->patterns);
-        $dependencies = array_merge(
-            $this->names,
-            $script->getDependenciesFunctionByPatterns($this->patterns),
-        );
-        $violations = array_diff($script->getFunctionDependencies(), $dependencies);
-        sort($violations);
-
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
-                $script->namespace ?? $script->getFileBasename(),
-                implode(', ', $authorisedDependence),
-                implode(', ', $violations),
-            ),
-            $this::class,
-            0,
-            $script->getFileBasename(),
+            $description instanceof ClassDescription
+                ? $description->lines
+                : 0,
+            $description->getFileBasename(),
             $this->message,
         );
     }
