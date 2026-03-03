@@ -37,7 +37,10 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
         return $actualPermission === $this->expectedPermission;
     }
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array
     {
         $filename = $description->getFileBasename();
         $actualPermission = 'unknown';
@@ -53,19 +56,21 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
             ? $description->getResourceName()
             : $filename;
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must have file permission <promote>%s</promote> but is <fire>%s</fire>',
-                $resourceName,
-                $this->expectedPermission,
-                $actualPermission,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must have file permission <promote>%s</promote> but is <fire>%s</fire>',
+                    $resourceName,
+                    $this->expectedPermission,
+                    $actualPermission,
+                ),
+                $this::class,
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $filename,
+                $this->message,
             ),
-            $this::class,
-            $description instanceof ClassDescription
-                ? $description->lines
-                : 0,
-            $filename,
-            $this->message,
-        );
+        ];
     }
 }

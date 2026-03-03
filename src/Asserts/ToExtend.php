@@ -28,18 +28,23 @@ final readonly class ToExtend implements ExprInterface
             && $this->name === $class->extends->toString();
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must extend by <promote>%s</promote>',
-                $class->getResourceName(),
-                $this->name,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must extend by <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->name,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

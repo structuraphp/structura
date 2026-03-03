@@ -42,9 +42,12 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         return array_diff($description->getFunctionDependencies(), array_unique($dependencies)) === [];
     }
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array
     {
-        $authorisedDependence = array_merge($this->names, $this->patterns);
+        $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
             $description->getDependenciesFunctionByPatterns($this->patterns),
@@ -52,19 +55,24 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         $violations = array_diff($description->getFunctionDependencies(), $dependencies);
         sort($violations);
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
-                $description->getResourceName(),
-                implode(', ', $authorisedDependence),
-                implode(', ', $violations),
-            ),
-            $this::class,
-            $description instanceof ClassDescription
-                ? $description->lines
-                : 0,
-            $description->getFileBasename(),
-            $this->message,
-        );
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    $description->getResourceName(),
+                    $authorisedDependence,
+                    $violation,
+                ),
+                $this::class,
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $description->getFileBasename(),
+                $this->message,
+            );
+        }
+
+        return $results;
     }
 }

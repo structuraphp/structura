@@ -34,18 +34,23 @@ final readonly class ToBeInOneOfTheNamespaces implements ExprInterface
         return $class->hasNamespaceByPatterns($this->patterns);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> to be in one of the namespaces <promote>%s</promote>',
-                $class->getResourceName(),
-                implode(', ', $this->patterns),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> to be in one of the namespaces <promote>%s</promote>',
+                    $class->getResourceName(),
+                    implode(', ', $this->patterns),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

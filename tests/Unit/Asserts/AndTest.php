@@ -62,10 +62,12 @@ final class AndTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            'Resource <promote>Foo</promote> must implement <promote>ArrayAccess</promote>, '
-            . 'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>, '
-            . 'Resource <promote>Bar</promote> must implement <promote>ArrayAccess</promote>, '
-            . 'Resource <promote>Bar</promote> must implement <promote>Iterator</promote>',
+            [
+                'Resource <promote>Foo</promote> must implement <promote>ArrayAccess</promote>',
+                'Resource <promote>Foo</promote> must implement <promote>Iterator</promote>',
+                'Resource <promote>Bar</promote> must implement <promote>ArrayAccess</promote>',
+                'Resource <promote>Bar</promote> must implement <promote>Iterator</promote>',
+            ],
         );
     }
 }

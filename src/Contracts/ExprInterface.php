@@ -12,5 +12,8 @@ interface ExprInterface extends Stringable
 {
     public function assert(ClassDescription $class): bool;
 
-    public function getViolation(ClassDescription $class): ViolationValueObject;
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array;
 }

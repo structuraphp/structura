@@ -67,10 +67,13 @@ final class OrTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            'Resource <promote>Foo</promote> must extend by <promote>ArrayIterator</promote>, '
-            . 'Resource <promote>Foo</promote> must extend by <promote>AppendIterator</promote>, '
-            . 'Resource <promote>Bar</promote> must extend by <promote>ArrayIterator</promote>, '
-            . 'Resource <promote>Bar</promote> must extend by <promote>AppendIterator</promote>',
+            [
+                'Resource <promote>Foo</promote> must extend by <promote>ArrayIterator</promote>',
+                'Resource <promote>Foo</promote> must extend by <promote>AppendIterator</promote>',
+                'Resource <promote>Bar</promote> must extend by <promote>ArrayIterator</promote>',
+                'Resource <promote>Bar</promote> must extend by <promote>AppendIterator</promote>',
+            ],
+            [2, 2, 2, 2],
         );
     }
 

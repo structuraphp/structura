@@ -88,13 +88,19 @@ class AbstractExpr implements IteratorAggregate
         /** @var AbstractExpr|ExprInterface $assert */
         foreach ($this->asserts as $assert) {
             if ($assert instanceof ExprScriptInterface) {
-                $return[] = $assert->getViolation($description);
+                $return = [
+                    ...$return,
+                    ...$assert->getViolation($description),
+                ];
 
                 continue;
             }
 
             if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
-                $return[] = $assert->getViolation($description);
+                $return = [
+                    ...$return,
+                    ...$assert->getViolation($description),
+                ];
 
                 continue;
             }

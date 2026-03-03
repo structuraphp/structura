@@ -181,6 +181,7 @@ final class ToUseIncludeTest extends TestCase
                 'Resource <promote>tmp/run_0.php</promote> must use <fire>%s</fire>',
                 $includeType->label(),
             ),
+            0,
         );
     }
 

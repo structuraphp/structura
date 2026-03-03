@@ -42,9 +42,12 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
         return array_diff($class->getTraitNames(), array_unique($dependencies)) === [];
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        $authorisedDependence = array_merge($this->names, $this->patterns);
+        $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Traits),
@@ -52,17 +55,22 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
         $violations = array_diff($class->getTraitNames(), $dependencies);
         sort($violations);
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use traits on these namespaces %s but uses these traits <fire>%s</fire>',
-                $class->getResourceName(),
-                implode(', ', $authorisedDependence),
-                implode(', ', $violations),
-            ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must use traits on these namespaces %s but uses these traits <fire>%s</fire>',
+                    $class->getResourceName(),
+                    $authorisedDependence,
+                    $violation,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            );
+        }
+
+        return $results;
     }
 }

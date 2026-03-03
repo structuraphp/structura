@@ -25,18 +25,23 @@ final readonly class ToBeEnums implements ExprInterface
         return $class->classType === ClassType::Enum_;
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must be an enum but is <fire>%s</fire>',
-                $class->getResourceName(),
-                $class->classType->label(),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must be an enum but is <fire>%s</fire>',
+                    $class->getResourceName(),
+                    $class->classType->label(),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

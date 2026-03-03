@@ -74,6 +74,7 @@ final class ToHaveFilePermissionTest extends TestCase
                 'Resource <promote>%s</promote> must have file permission <promote>0755</promote> but is <fire>0644</fire>',
                 $filePath,
             ),
+            0,
         );
     }
 }

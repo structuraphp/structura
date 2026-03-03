@@ -32,21 +32,26 @@ final readonly class ToHaveCorrespondingInterface implements ExprInterface
         return interface_exists($className);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
         $callback = $this->callback;
         $className = $callback($class);
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource name <promote>%s</promote> must have corresponding interface <promote>%s</promote>',
-                $class->getResourceName(),
-                $className,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource name <promote>%s</promote> must have corresponding interface <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $className,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

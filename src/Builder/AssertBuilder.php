@@ -55,13 +55,19 @@ class AssertBuilder
     ): self {
         $this->pass[$key] = 0;
         if ($assert instanceof ExprScriptInterface) {
-            $this->violations[$key][] = $assert->getViolation($description);
+            $this->violations[$key] = array_merge(
+                $this->violations[$key] ?? [],
+                $assert->getViolation($description),
+            );
 
             return $this;
         }
 
         if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
-            $this->violations[$key][] = $assert->getViolation($description);
+            $this->violations[$key] = array_merge(
+                $this->violations[$key] ?? [],
+                $assert->getViolation($description),
+            );
 
             return $this;
         }
