@@ -30,6 +30,11 @@ class ScriptDescription
         public readonly array $anonymousClasses,
     ) {}
 
+    public function getResourceName(): string
+    {
+        return $this->namespace ?? $this->getFileBasename();
+    }
+
     /**
      * @return array<int,string>
      */

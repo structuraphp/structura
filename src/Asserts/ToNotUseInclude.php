@@ -35,37 +35,17 @@ final class ToNotUseInclude implements ExprScriptInterface
 
     public function getViolation(ScriptDescription $description): ViolationValueObject
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    public function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not use anything but use <fire>%s</fire>',
-                $class->getResourceName(),
-                $this->getLables($class),
+                $description->getResourceName(),
+                $this->getLables($description),
             ),
             $this::class,
-            0,
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must not use anything but use <fire>%s</fire>',
-                $script->namespace ?? $script->getFileBasename(),
-                $this->getLables($script),
-            ),
-            $this::class,
-            0,
-            $script->getFileBasename(),
+            $description instanceof ClassDescription
+                ? $description->lines
+                : 0,
+            $description->getFileBasename(),
             $this->message,
         );
     }

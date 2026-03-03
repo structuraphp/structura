@@ -35,37 +35,17 @@ final class ToUseInclude implements ExprScriptInterface
 
     public function getViolation(ScriptDescription $description): ViolationValueObject
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    public function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must use <fire>%s</fire>',
-                $class->getResourceName(),
+                $description->getResourceName(),
                 $this->includeType->label(),
             ),
             $this::class,
-            0,
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use <fire>%s</fire>',
-                $script->namespace ?? $script->getFileBasename(),
-                $this->includeType->label(),
-            ),
-            $this::class,
-            0,
-            $script->getFileBasename(),
+            $description instanceof ClassDescription
+                ? $description->lines
+                : 0,
+            $description->getFileBasename(),
             $this->message,
         );
     }

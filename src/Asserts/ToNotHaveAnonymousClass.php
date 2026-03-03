@@ -6,7 +6,6 @@ namespace StructuraPhp\Structura\Asserts;
 
 use PhpParser\Node\Stmt\Class_;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -28,37 +27,15 @@ final readonly class ToNotHaveAnonymousClass implements ExprScriptInterface
 
     public function getViolation(ScriptDescription $description): ViolationValueObject
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    private function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must not have anonymous class but found <fire>%d</fire>',
-                $class->getResourceName(),
-                $class->countAnonymousClasses(),
+                $description->getResourceName(),
+                $description->countAnonymousClasses(),
             ),
             $this::class,
-            $this->getLines($class->anonymousClasses),
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must not have anonymous class but found <fire>%d</fire>',
-                $script->namespace ?? $script->getFileBasename(),
-                $script->countAnonymousClasses(),
-            ),
-            $this::class,
-            $this->getLines($script->anonymousClasses),
-            $script->getFileBasename(),
+            $this->getLines($description->anonymousClasses),
+            $description->getFileBasename(),
             $this->message,
         );
     }

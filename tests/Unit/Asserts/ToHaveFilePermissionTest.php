@@ -72,7 +72,7 @@ final class ToHaveFilePermissionTest extends TestCase
             $rules,
             \sprintf(
                 'Resource <promote>%s</promote> must have file permission <promote>0755</promote> but is <fire>0644</fire>',
-                \basename($filePath),
+                $filePath,
             ),
         );
     }

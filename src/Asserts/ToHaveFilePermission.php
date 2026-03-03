@@ -49,12 +49,14 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
             }
         }
 
+        $resourceName = $description instanceof ClassDescription
+            ? $description->getResourceName()
+            : $filename;
+
         return new ViolationValueObject(
             \sprintf(
                 'Resource <promote>%s</promote> must have file permission <promote>%s</promote> but is <fire>%s</fire>',
-                $description instanceof ClassDescription
-                    ? $description->getResourceName()
-                    : \basename($filename),
+                $resourceName,
                 $this->expectedPermission,
                 $actualPermission,
             ),
@@ -62,7 +64,7 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
             $description instanceof ClassDescription
                 ? $description->lines
                 : 0,
-            \basename($filename),
+            $filename,
             $this->message,
         );
     }
