@@ -33,20 +33,25 @@ final class ToUseInclude implements ExprScriptInterface
         return $notAllowed === [];
     }
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use <fire>%s</fire>',
-                $description->getResourceName(),
-                $this->includeType->label(),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must use <fire>%s</fire>',
+                    $description->getResourceName(),
+                    $this->includeType->label(),
+                ),
+                $this::class,
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $description->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $description instanceof ClassDescription
-                ? $description->lines
-                : 0,
-            $description->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

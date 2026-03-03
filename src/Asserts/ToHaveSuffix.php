@@ -25,18 +25,23 @@ final readonly class ToHaveSuffix implements ExprInterface
         return str_ends_with($class->name ?? '', $this->suffix);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource name <promote>%s</promote> must end with <promote>%s</promote>',
-                $class->getResourceName(),
-                $this->suffix,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource name <promote>%s</promote> must end with <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->suffix,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

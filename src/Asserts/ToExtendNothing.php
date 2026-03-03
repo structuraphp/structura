@@ -25,18 +25,23 @@ final readonly class ToExtendNothing implements ExprInterface
         return !$class->extends instanceof FullyQualified;
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
-                $class->getResourceName(),
-                implode(', ', $class->getExtendNames()),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
+                    $class->getResourceName(),
+                    implode(', ', $class->getExtendNames()),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

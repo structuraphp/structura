@@ -30,18 +30,23 @@ final readonly class ToNotHaveConstant implements ExprInterface
         };
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must not have <promote>%s</promote> constant',
-                $class->getResourceName(),
-                $this->visibility->value,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have <promote>%s</promote> constant',
+                    $class->getResourceName(),
+                    $this->visibility->value,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

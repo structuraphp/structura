@@ -84,6 +84,7 @@ final class ToUseStrictTypesTest extends TestCase
                 'Resource <promote>%s</promote> must use declaration <promote>strict_types=1</promote>',
                 $exceptName,
             ),
+            0,
         );
     }
 

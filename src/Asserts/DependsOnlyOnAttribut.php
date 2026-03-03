@@ -42,7 +42,10 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
         return array_diff($class->getAttributeNames(), array_unique($dependencies)) === [];
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
         $authorisedDependence = array_merge($this->names, $this->patterns);
         $dependencies = array_merge(
@@ -52,17 +55,19 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
         $violations = array_diff($class->getAttributeNames(), $dependencies);
         sort($violations);
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use attributes on these namespaces %s but use attributes <fire>%s</fire>',
-                $class->getResourceName(),
-                implode(', ', $authorisedDependence),
-                implode(', ', $violations),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must use attributes on these namespaces %s but use attributes <fire>%s</fire>',
+                    $class->getResourceName(),
+                    implode(', ', $authorisedDependence),
+                    implode(', ', $violations),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

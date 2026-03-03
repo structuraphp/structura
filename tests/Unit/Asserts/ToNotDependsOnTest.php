@@ -97,6 +97,7 @@ final class ToNotDependsOnTest extends TestCase
                 'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                 'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
+            7,
         );
     }
 
@@ -151,6 +152,7 @@ final class ToNotDependsOnTest extends TestCase
                 'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                 'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
+            0,
         );
     }
 

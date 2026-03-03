@@ -11,5 +11,8 @@ interface ExprScriptInterface extends ExprInterface
 {
     public function assert(ScriptDescription $description): bool;
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject;
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array;
 }

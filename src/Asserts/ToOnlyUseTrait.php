@@ -28,18 +28,23 @@ final readonly class ToOnlyUseTrait implements ExprInterface
         return $class->hasTrait($this->name);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
-                $class->getResourceName(),
-                $this->name,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->name,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

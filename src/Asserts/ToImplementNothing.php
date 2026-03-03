@@ -24,18 +24,23 @@ final readonly class ToImplementNothing implements ExprInterface
         return $class->interfaces === null || $class->interfaces === [];
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
-                $class->getResourceName(),
-                implode(', ', $class->interfaces ?? []),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    $class->getResourceName(),
+                    implode(', ', $class->interfaces ?? []),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

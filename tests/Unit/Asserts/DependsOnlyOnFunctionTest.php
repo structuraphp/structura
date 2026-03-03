@@ -82,6 +82,7 @@ class DependsOnlyOnFunctionTest extends TestCase
                 'strtoupper, mb_.+',
                 'array_merge, strtolower',
             ),
+            2,
         );
     }
 
@@ -123,6 +124,7 @@ class DependsOnlyOnFunctionTest extends TestCase
                 'strtoupper, mb_.+',
                 'array_merge, strtolower',
             ),
+            0,
         );
     }
 

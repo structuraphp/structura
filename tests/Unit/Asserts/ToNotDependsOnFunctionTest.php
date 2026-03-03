@@ -82,6 +82,7 @@ class ToNotDependsOnFunctionTest extends TestCase
                 'strtolower, array_.+',
                 'array_merge, strtolower',
             ),
+            2,
         );
     }
 
@@ -123,6 +124,7 @@ class ToNotDependsOnFunctionTest extends TestCase
                 'strtolower, array_.+',
                 'array_merge, strtolower',
             ),
+            0,
         );
     }
 

@@ -40,18 +40,23 @@ final readonly class ToBeBackedEnums implements ExprInterface
             || $this->scalarType->value === $class->scalarType->toLowerString();
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            sprintf(
-                'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
-                $class->getResourceName(),
-                $this->scalarType->value ?? 'int or string',
+        return [
+            new ViolationValueObject(
+                sprintf(
+                    'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->scalarType->value ?? 'int or string',
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

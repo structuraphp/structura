@@ -27,21 +27,26 @@ final readonly class ToUseDeclare implements ExprScriptInterface
         return $description->hasDeclare($this->key, $this->value);
     }
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
-                $description->getResourceName(),
-                $this->key,
-                $this->value,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
+                    $description->getResourceName(),
+                    $this->key,
+                    $this->value,
+                ),
+                $this::class,
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $description->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $description instanceof ClassDescription
-                ? $description->lines
-                : 0,
-            $description->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

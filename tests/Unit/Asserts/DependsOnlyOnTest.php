@@ -105,6 +105,7 @@ final class DependsOnlyOnTest extends TestCase
                 'Depend\Bap',
                 'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
+            7,
         );
     }
 
@@ -152,6 +153,7 @@ final class DependsOnlyOnTest extends TestCase
                 'Depend\Bap',
                 'ArrayAccess, Depend\Bar, Exception, Stringable',
             ),
+            0,
         );
     }
 

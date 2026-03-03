@@ -98,21 +98,31 @@ final class ToNotHaveAnonymousClassTest extends TestCase
                 $name,
                 $count,
             ),
+            3,
         );
     }
 
     public static function getClassWithAnonymousProvider(): Generator
     {
         yield 'class with one anonymous class' => [
-            '<?php class Foo { public function bar() { return new class {}; } }',
+            '<?php class Foo { 
+                public function bar() {
+                    return new class {};
+                }
+            }',
             'Foo',
             1,
         ];
 
         yield 'class with two anonymous classes' => [
             '<?php class Foo {
-                public function bar() { return new class {}; }
-                public function baz() { return new class {}; }
+                public function bar() {
+                    return new class {};
+                }
+
+                public function baz() {
+                    return new class {};
+                }
             }',
             'Foo',
             2,
@@ -131,7 +141,11 @@ final class ToNotHaveAnonymousClassTest extends TestCase
         ];
 
         yield 'enum with anonymous class' => [
-            '<?php enum Foo { public function bar() { return new class {}; } }',
+            '<?php enum Foo {
+                public function bar() {
+                    return new class {};
+                }
+            }',
             'Foo',
             1,
         ];
@@ -156,13 +170,15 @@ final class ToNotHaveAnonymousClassTest extends TestCase
                 'Resource <promote>tmp/run_0.php</promote> must not have anonymous class but found <fire>%d</fire>',
                 $count,
             ),
+            2,
         );
     }
 
     public static function getScriptWithAnonymousProvider(): Generator
     {
         yield 'script with one anonymous class' => [
-            '<?php $obj = new class {};',
+            '<?php
+            $obj = new class {};',
             1,
         ];
 
@@ -174,7 +190,8 @@ final class ToNotHaveAnonymousClassTest extends TestCase
         ];
 
         yield 'script with nested anonymous class' => [
-            '<?php $obj = new class {
+            '<?php
+            $obj = new class {
                 public function bar() { return new class {}; }
             };',
             2,
