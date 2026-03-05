@@ -89,13 +89,18 @@ final class ToHaveNoAttributeTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>, Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
-                $exceptName,
-                'Attribute',
-                $exceptName,
-                'Route',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    $exceptName,
+                    'Attribute',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    $exceptName,
+                    'Route',
+                ),
+            ],
             2,
         );
     }
