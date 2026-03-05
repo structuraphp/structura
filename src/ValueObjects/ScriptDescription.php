@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\ValueObjects;
 use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\Return_;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
 class ScriptDescription
@@ -28,6 +29,7 @@ class ScriptDescription
         public readonly ?Declare_ $declare,
         public readonly array $includes,
         public readonly array $anonymousClasses,
+        public readonly ?Return_ $rootReturn,
     ) {}
 
     public function getResourceName(): string
@@ -91,6 +93,11 @@ class ScriptDescription
     public function countAnonymousClasses(): int
     {
         return \count($this->anonymousClasses);
+    }
+
+    public function getRootReturn(): ?Return_
+    {
+        return $this->rootReturn;
     }
 
     public function hasDeclare(

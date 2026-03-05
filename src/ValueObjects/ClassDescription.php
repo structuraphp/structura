@@ -12,6 +12,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\TraitUse;
 use Stringable;
 use StructuraPhp\Structura\Enums\ClassType;
@@ -35,6 +36,7 @@ final class ClassDescription extends ScriptDescription
         ?Declare_ $declare,
         array $includes,
         array $anonymousClasses,
+        ?Return_ $rootReturn,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
@@ -47,7 +49,7 @@ final class ClassDescription extends ScriptDescription
         public readonly ?array $methods,
         public readonly array $constants,
     ) {
-        parent::__construct($namespace, $declare, $includes, $anonymousClasses);
+        parent::__construct($namespace, $declare, $includes, $anonymousClasses, $rootReturn);
     }
 
     public function getResourceName(): string

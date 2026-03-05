@@ -26,6 +26,7 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 final class ClassDescriptionVisitor extends NodeVisitorAbstract
 {
+    protected ?Return_ $rootReturn = null;
     private ?string $namespace = null;
 
     private ?Declare_ $declare = null;
@@ -96,6 +97,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
         $this->name = null;
         $this->scalarType = null;
         $this->traits = [];
+        $this->rootReturn = null;
 
         return null;
     }
@@ -112,6 +114,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Return_ && $this->classDeep === 0) {
             $this->inRootReturn = true;
+            $this->rootReturn = $node;
         }
 
         if ($node instanceof Class_ && $node->isAnonymous() && $this->classDeep > 0) {
@@ -160,6 +163,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 declare: $this->declare,
                 includes: $this->includes,
                 anonymousClasses: $this->anonymousClasses,
+                rootReturn: $this->rootReturn,
                 name: $this->name,
                 attrGroups: $this->attrGroups,
                 lines: $this->lines,
