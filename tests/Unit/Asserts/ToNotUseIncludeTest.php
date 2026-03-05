@@ -83,7 +83,7 @@ final class ToNotUseIncludeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not use anything but use <fire>%s</fire>',
+                'Resource <promote>%s</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
                 $name,
                 $includeType->label(),
             ),
@@ -141,7 +141,7 @@ final class ToNotUseIncludeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>tmp/run_0.php</promote> must not use anything but use <fire>%s</fire>',
+                'Resource <promote>tmp/run_0.php</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
                 $includeType->label(),
             ),
             1,

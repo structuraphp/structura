@@ -62,17 +62,38 @@ final class ToNotUseTraitTest extends TestCase
                 $exceptName,
                 'HasFactory',
             ),
+            2,
         );
     }
 
     public static function getClassLikeWithTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php return new class { use \HasFactory; };', 'Anonymous'];
+        yield 'anonymous class' => [
+            '<?php return new class { 
+                use \HasFactory;
+            };',
+            'Anonymous',
+        ];
 
-        yield 'class' => ['<?php class Foo { use \HasFactory; }', 'Foo'];
+        yield 'class' => [
+            '<?php class Foo {
+                use \HasFactory;
+            }',
+            'Foo',
+        ];
 
-        yield 'enum' => ['<?php enum Foo { use \HasFactory; };', 'Foo'];
+        yield 'enum' => [
+            '<?php enum Foo {
+                use \HasFactory;
+             };',
+            'Foo',
+        ];
 
-        yield 'interface' => ['<?php interface Foo { use \HasFactory; }', 'Foo'];
+        yield 'interface' => [
+            '<?php interface Foo {
+                use \HasFactory;
+             }',
+            'Foo',
+        ];
     }
 }

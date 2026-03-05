@@ -31,15 +31,15 @@ final readonly class ToExtendNothing implements ExprInterface
     public function getViolation(ClassDescription $class): array
     {
         $results = [];
-        foreach ($class->getExtendNames() as $extendName) {
+        foreach ($class->getExtendNames() as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
                     $class->getResourceName(),
-                    $extendName,
+                    $violation,
                 ),
                 $this::class,
-                $class->lines,
+                $violation->getLine(),
                 $class->getFileBasename(),
                 $this->message,
             );

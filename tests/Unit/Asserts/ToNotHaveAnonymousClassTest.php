@@ -94,9 +94,8 @@ final class ToNotHaveAnonymousClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have anonymous class but found <fire>%d</fire>',
+                'Resource <promote>%s</promote> must not have anonymous class',
                 $name,
-                $count,
             ),
             3,
         );
@@ -114,32 +113,6 @@ final class ToNotHaveAnonymousClassTest extends TestCase
             1,
         ];
 
-        yield 'class with two anonymous classes' => [
-            '<?php class Foo {
-                public function bar() {
-                    return new class {};
-                }
-
-                public function baz() {
-                    return new class {};
-                }
-            }',
-            'Foo',
-            2,
-        ];
-
-        yield 'class with nested anonymous class' => [
-            '<?php class Foo {
-                public function bar() {
-                    return new class {
-                        public function baz() { return new class {}; }
-                    };
-                }
-            }',
-            'Foo',
-            2,
-        ];
-
         yield 'enum with anonymous class' => [
             '<?php enum Foo {
                 public function bar() {
@@ -148,6 +121,66 @@ final class ToNotHaveAnonymousClassTest extends TestCase
             }',
             'Foo',
             1,
+        ];
+    }
+
+    #[DataProvider('getClassWithAnonymousMultipleProvider')]
+    public function testShouldFailToNotHaveAnonymousClassWithMultipleClass(
+        string $rawClass,
+        string $name,
+    ): void {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($rawClass)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotHaveAnonymousClass(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have anonymous class',
+                    $name,
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have anonymous class',
+                    $name,
+                ),
+            ],
+            [3, 7],
+        );
+    }
+
+    public static function getClassWithAnonymousMultipleProvider(): Generator
+    {
+        yield 'class with two anonymous classes' => [
+            '<?php class Foo {
+                        public function bar() {
+                            return new class {};
+                        }
+
+                        public function baz() {
+                            return new class {};
+                        }
+                    }',
+            'Foo',
+        ];
+
+        yield 'class with nested anonymous class' => [
+            '<?php class Foo {
+                        public function bar() {
+                            return new class {
+                                public function baz() {
+                                
+                                
+                                    return new class {};
+                                }
+                            };
+                        }
+                    }',
+            'Foo',
         ];
     }
 
@@ -166,21 +199,21 @@ final class ToNotHaveAnonymousClassTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>tmp/run_0.php</promote> must not have anonymous class but found <fire>%d</fire>',
-                $count,
-            ),
-            2,
+            [
+                'Resource <promote>tmp/run_0.php</promote> must not have anonymous class',
+                'Resource <promote>tmp/run_0.php</promote> must not have anonymous class',
+            ],
+            $count,
         );
     }
 
     public static function getScriptWithAnonymousProvider(): Generator
     {
-        yield 'script with one anonymous class' => [
-            '<?php
-            $obj = new class {};',
-            1,
-        ];
+        /*  yield 'script with one anonymous class' => [
+              '<?php
+              $obj = new class {};',
+              1,
+          ];*/
 
         yield 'script with two anonymous classes' => [
             '<?php

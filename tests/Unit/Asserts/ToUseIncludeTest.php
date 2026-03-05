@@ -102,6 +102,7 @@ final class ToUseIncludeTest extends TestCase
         string $rawClass,
         string $name,
         IncludeType $includeType,
+        IncludeType $actualIncludeType,
     ): void {
         $rules = $this
             ->allClasses()
@@ -114,9 +115,10 @@ final class ToUseIncludeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must use <fire>%s</fire>',
+                'Resource <promote>%s</promote> must use <promote>%s</promote> but uses <fire>%s</fire>',
                 $name,
                 $includeType->label(),
+                $actualIncludeType->label(),
             ),
         );
     }
@@ -156,6 +158,7 @@ final class ToUseIncludeTest extends TestCase
                         sprintf($expected, $code),
                         $classLikeNames[$keyClass],
                         $includeType,
+                        $include,
                     ];
                 }
             }
@@ -166,6 +169,7 @@ final class ToUseIncludeTest extends TestCase
     public function testShouldFailToUseIncludeWithScript(
         string $rawClass,
         IncludeType $includeType,
+        IncludeType $actualIncludeType,
     ): void {
         $rules = $this
             ->allScripts()
@@ -178,10 +182,10 @@ final class ToUseIncludeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>tmp/run_0.php</promote> must use <fire>%s</fire>',
+                'Resource <promote>tmp/run_0.php</promote> must use <promote>%s</promote> but uses <fire>%s</fire>',
                 $includeType->label(),
+                $actualIncludeType->label(),
             ),
-            0,
         );
     }
 
@@ -204,6 +208,7 @@ final class ToUseIncludeTest extends TestCase
                 yield sprintf('%s with %s', $includeType->label(), $include->label()) => [
                     sprintf('<?php %s', $code),
                     $includeType,
+                    $include,
                 ];
             }
         }

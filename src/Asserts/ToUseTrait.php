@@ -41,18 +41,23 @@ final readonly class ToUseTrait implements ExprInterface
      */
     public function getViolation(ClassDescription $class): array
     {
-        return [
-            new ViolationValueObject(
+        $violations = array_diff($this->names, $class->getTraitNames());
+
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
+                    'Resource <promote>%s</promote> must use trait <promote>%s</promote>',
                     $class->getResourceName(),
-                    implode(', ', $this->names),
+                    $violation,
                 ),
                 $this::class,
                 $class->lines,
                 $class->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

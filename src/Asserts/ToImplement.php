@@ -42,18 +42,23 @@ final readonly class ToImplement implements ExprInterface
      */
     public function getViolation(ClassDescription $class): array
     {
-        return [
-            new ViolationValueObject(
+        $violations = array_diff($this->names, $class->getInterfaceNames());
+
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must implement <promote>%s</promote>',
                     $class->getResourceName(),
-                    implode(', ', $this->names),
+                    $violation,
                 ),
                 $this::class,
                 $class->lines,
                 $class->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

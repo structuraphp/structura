@@ -68,7 +68,6 @@ trait ArchitectureAsserts
                     : array_column($assert->violations[$key], 'messageViolation'),
                 $message,
             );
-            // var_dump($assert->violations[$key]);exit();
             Assert::assertSame(
                 is_int($line)
                     ? $assert->violations[$key][0]->line

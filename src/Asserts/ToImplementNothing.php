@@ -30,15 +30,15 @@ final readonly class ToImplementNothing implements ExprInterface
     public function getViolation(ClassDescription $class): array
     {
         $results = [];
-        foreach ($class->interfaces ?? [] as $interfaceName) {
+        foreach ($class->interfaces ?? [] as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
                     $class->getResourceName(),
-                    $interfaceName,
+                    $violation,
                 ),
                 $this::class,
-                $class->lines,
+                $violation->getLine(),
                 $class->getFileBasename(),
                 $this->message,
             );

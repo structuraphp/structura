@@ -78,13 +78,13 @@ class ToNotDependsOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'array_merge',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'strtolower',
@@ -128,13 +128,13 @@ class ToNotDependsOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'array_merge',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'strtolower',

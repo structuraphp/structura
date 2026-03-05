@@ -75,7 +75,7 @@ final class ToUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
+                'Resource <promote>%s</promote> must use trait <promote>%s</promote>',
                 $exceptName,
                 HasFactory::class,
             ),
