@@ -7,7 +7,6 @@ namespace StructuraPhp\Structura\Asserts;
 use PhpParser\Node\Expr\Include_;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Enums\IncludeType;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -38,20 +37,27 @@ final class ToUseInclude implements ExprScriptInterface
      */
     public function getViolation(ScriptDescription $description): array
     {
-        return [
-            new ViolationValueObject(
+        $violations = array_filter(
+            $description->includes,
+            fn (Include_ $include): bool => $include->type !== $this->includeType->value,
+        );
+
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must use <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must use <promote>%s</promote> but uses <fire>%s</fire>',
                     $description->getResourceName(),
                     $this->includeType->label(),
+                    IncludeType::from($violation->type)->label(),
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
+                $violation->getLine(),
                 $description->getFileBasename(),
                 $this->message,
-            ),
-        ];
+            );
+        }
+
+        return $results;
     }
 }

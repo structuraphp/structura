@@ -40,7 +40,7 @@ final class ToNotUseInclude implements ExprScriptInterface
         foreach ($description->includes as $include) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not use anything but use <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
                     $description->getResourceName(),
                     IncludeType::from($include->type)->label(),
                 ),

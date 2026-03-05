@@ -86,7 +86,7 @@ class ToBeAttributeTest extends TestCase
             '<?php abstract class Foo {}',
         ];
 
-        yield 'abstract class with attributs' => [
+        yield 'abstract class with attribute' => [
             '<?php #[Attribute()] abstract class Foo {}',
         ];
 
@@ -94,7 +94,7 @@ class ToBeAttributeTest extends TestCase
             '<?php enum Foo {}',
         ];
 
-        yield 'enum with attributs' => [
+        yield 'enum with attribute' => [
             '<?php #[Attribute()] enum Foo {}',
         ];
 
@@ -102,7 +102,7 @@ class ToBeAttributeTest extends TestCase
             '<?php trait Foo {}',
         ];
 
-        yield 'trait with attributs' => [
+        yield 'trait with attribute' => [
             '<?php #[Attribute()] trait Foo {}',
         ];
 
@@ -110,7 +110,7 @@ class ToBeAttributeTest extends TestCase
             '<?php interface Foo {}',
         ];
 
-        yield 'interface with attributs' => [
+        yield 'interface with attribute' => [
             '<?php #[Attribute()] interface Foo {}',
         ];
     }

@@ -75,4 +75,48 @@ final class ToHaveNoAttributeTest extends TestCase
 
         yield 'trait' => ['<?php #[Attribute] trait Foo {}'];
     }
+
+    #[DataProvider('getClassLikeWithMultipleAttributes')]
+    public function testShouldFailToHaveAttributeWithMultiple(string $raw, string $exceptName = 'Foo'): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveNoAttribute(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    $exceptName,
+                    'Attribute',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    $exceptName,
+                    'Route',
+                ),
+            ],
+            2,
+        );
+    }
+
+    public static function getClassLikeWithMultipleAttributes(): Generator
+    {
+        yield 'class with multiple attributes' => [
+            '<?php
+            #[Attribute]
+            #[Route] class Foo {}',
+        ];
+
+        yield 'enum with multiple attributes' => [
+            '<?php
+            #[Attribute]
+            #[Route] enum Foo {}',
+        ];
+    }
 }

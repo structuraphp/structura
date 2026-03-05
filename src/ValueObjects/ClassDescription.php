@@ -13,6 +13,7 @@ use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\TraitUse;
+use Stringable;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
@@ -178,24 +179,19 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, Name>
      */
     public function getExtendNames(): array
     {
         if ($this->extends instanceof Name) {
-            return [$this->extends->toString()];
+            return [$this->extends];
         }
 
         if ($this->extends === null) {
             return [];
         }
 
-        $extends = [];
-        foreach ($this->extends as $extend) {
-            $extends[] = $extend->toString();
-        }
-
-        return $extends;
+        return array_values($this->extends);
     }
 
     public function hasInterface(string $name): bool
@@ -214,14 +210,14 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int,string>
+     * @return array<int,Name>
      */
     public function getTraitNames(): array
     {
         $traitNames = [];
         foreach ($this->traits as $traitsUse) {
             foreach ($traitsUse->traits as $trait) {
-                $traitNames[] = $trait->toString();
+                $traitNames[] = $trait;
             }
         }
 
@@ -246,14 +242,14 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, Name>
      */
     public function getAttributeNames(): array
     {
         $attributeNames = [];
         foreach ($this->attrGroups as $attrGroup) {
             foreach ($attrGroup->attrs as $attr) {
-                $attributeNames[] = $attr->name->toString();
+                $attributeNames[] = $attr->name;
             }
         }
 
@@ -327,7 +323,7 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int,string>
+     * @return array<int,string|Stringable>
      */
     private function getDependenciesByType(DependenciesType $dependenciesType): array
     {
