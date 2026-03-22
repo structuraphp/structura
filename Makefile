@@ -13,6 +13,9 @@ define printSection
 	@printf "${_CYAN}\n══════════════════════════════════════════════════\n${_END}"
 endef
 
+.PHONY: all ## Run all checks
+all: fix phpstan rector dependency test
+
 #  _   _      _
 # | | | |    | |
 # | |_| | ___| |_ __
@@ -96,13 +99,9 @@ dependency: ## Check if the dependency are compliant
 #   \_/\___||___/\__|
 
 .PHONY: test
-test: ## Run unit tests
+test: ## Run unit tests [usage: make test args="--filter=TestName --stop-on-failure"]
 	$(call printSection,TEST phpunit)
-	${BIN_DIR}/phpunit
-
-.PHONY: %Test
-%Test: ## it launches a test
-	${BIN_DIR}/phpunit --filter $@
+	${BIN_DIR}/phpunit $(args)
 
 phar: ## Build PHAR
 	$(call printSection,BUILD Phar)
