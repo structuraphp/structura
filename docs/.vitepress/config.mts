@@ -3,7 +3,7 @@ import {defineConfig} from 'vitepress'
 export default defineConfig({
     title: 'StructuraPHP',
     description: 'Architectural testing tool for PHP',
-    base: '/',
+    base: '/structura/',
 
     head: [
         ['link', {rel: 'icon', type: 'image/svg+xml', href: '/logo.svg'}],
