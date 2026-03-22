@@ -6,14 +6,18 @@ namespace StructuraPhp\Structura\Visitors;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\Include_;
+use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\NodeVisitorAbstract;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 
 final class ScriptDescriptionVisitor extends NodeVisitorAbstract
 {
+    protected ?Return_ $rootReturn = null;
+
     private ?Declare_ $declare = null;
 
     private ?Namespace_ $namespace = null;
@@ -25,6 +29,8 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
 
     /** @var array<int,Class_> */
     private array $anonymousClasses = [];
+
+    private int $depth = 0;
 
     public function getScript(): ?ScriptDescription
     {
@@ -44,6 +50,8 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
         $this->namespace = null;
         $this->includes = [];
         $this->anonymousClasses = [];
+        $this->rootReturn = null;
+        $this->depth = 0;
 
         return null;
     }
@@ -66,6 +74,23 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
             $this->anonymousClasses[] = $node;
         }
 
+        if ($node instanceof Class_ || $node instanceof FunctionLike) {
+            $this->depth++;
+        }
+
+        if ($node instanceof Return_ && $this->depth === 0) {
+            $this->rootReturn = $node;
+        }
+
+        return null;
+    }
+
+    public function leaveNode(Node $node): ?int
+    {
+        if ($node instanceof Class_ || $node instanceof FunctionLike) {
+            $this->depth--;
+        }
+
         return null;
     }
 
@@ -77,6 +102,7 @@ final class ScriptDescriptionVisitor extends NodeVisitorAbstract
                 declare: $this->declare,
                 includes: $this->includes,
                 anonymousClasses: $this->anonymousClasses,
+                rootReturn: $this->rootReturn,
             );
         }
 

@@ -27,6 +27,7 @@ final class ExceptTest extends TestCase
             declare: null,
             includes: [],
             anonymousClasses: [],
+            rootReturn: null,
             name: 'UserDto',
             attrGroups: [],
             lines: 1,
@@ -54,6 +55,7 @@ final class ExceptTest extends TestCase
             declare: null,
             includes: [],
             anonymousClasses: [],
+            rootReturn: null,
         );
         $scriptDescription->setFilePathname('migrations/2024_01_01_create_users_table.php');
 
@@ -71,6 +73,7 @@ final class ExceptTest extends TestCase
             declare: null,
             includes: [],
             anonymousClasses: [],
+            rootReturn: null,
         );
         $scriptDescription->setFilePathname('Config.php');
 
@@ -88,6 +91,7 @@ final class ExceptTest extends TestCase
             declare: null,
             includes: [],
             anonymousClasses: [],
+            rootReturn: null,
         );
 
         self::assertTrue($except->isExcept($scriptDescription, ToBeFinal::class));
@@ -104,6 +108,7 @@ final class ExceptTest extends TestCase
             declare: null,
             includes: [],
             anonymousClasses: [],
+            rootReturn: null,
         );
 
         self::assertTrue($except->isExcept($scriptDescription, ToBeFinal::class));

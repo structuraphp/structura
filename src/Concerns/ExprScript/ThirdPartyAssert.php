@@ -9,6 +9,7 @@ use StructuraPhp\Structura\Asserts\ToHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
+use StructuraPhp\Structura\Asserts\ToReturnArray;
 use StructuraPhp\Structura\Asserts\ToUseDeclare;
 use StructuraPhp\Structura\Asserts\ToUseInclude;
 use StructuraPhp\Structura\Enums\IncludeType;
@@ -51,5 +52,10 @@ trait ThirdPartyAssert
     public function toHaveFilePermission(string $expectedPermission, string $message = ''): self
     {
         return $this->addExpr(new ToHaveFilePermission($expectedPermission, $message));
+    }
+
+    public function toReturnArray(string $message = ''): self
+    {
+        return $this->addExpr(new ToReturnArray($message));
     }
 }

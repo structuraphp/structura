@@ -179,3 +179,19 @@ $this
     ->fromDir('src')
     ->should(fn(ExprScript $expr) => $expr->toHaveFilePermission('0644'));
 ```
+
+## toReturnArray()
+
+Assert that a PHP script returns an array at the root level using a `return` statement.
+
+::: info
+- The script **must** have a `return` statement at the root level (not nested inside functions, classes, matches or switch).
+- The returned value **must** be an array literal using the `[]` syntax or `array()` construct (must not be in a variable or a function returning an array).
+  :::
+
+```php
+$this
+  ->allScripts()
+  ->fromRaw('<?php return [];')
+  ->should(fn(ExprScript $expr) => $expr->toReturnArray());
+```
