@@ -75,7 +75,7 @@ final class ToUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must use traits <promote>%s</promote>',
+                'Resource <promote>%s</promote> must use trait <promote>%s</promote>',
                 $exceptName,
                 HasFactory::class,
             ),
@@ -84,7 +84,7 @@ final class ToUseTraitTest extends TestCase
 
     public static function getClassLikeWithoutTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 

@@ -28,20 +28,23 @@ final readonly class ToHaveAttribute implements ExprInterface
         return $class->hasAttribute($this->name);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must have attribute <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                $this->name,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must have attribute <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->name,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

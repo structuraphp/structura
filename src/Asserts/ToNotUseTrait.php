@@ -27,20 +27,26 @@ final readonly class ToNotUseTrait implements ExprInterface
         return $class->traits === [];
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must not use a trait but uses <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                implode(', ', $class->getTraitNames()),
-            ),
-            $this::class,
-            $class->traits[0]->getLine(),
-            $class->getFileBasename(),
-            $this->message,
-        );
+        $results = [];
+        foreach ($class->getTraitNames() as $violation) {
+            $results[] = new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not use a trait but uses <fire>%s</fire>',
+                    $class->getResourceName(),
+                    $violation,
+                ),
+                $this::class,
+                $violation->getLine(),
+                $class->getFileBasename(),
+                $this->message,
+            );
+        }
+
+        return $results;
     }
 }

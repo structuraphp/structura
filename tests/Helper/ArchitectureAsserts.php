@@ -48,18 +48,31 @@ trait ArchitectureAsserts
         }
     }
 
+    /**
+     * @param array<int,string>|string $message
+     * @param array<int,int>|int $line
+     */
     final protected static function assertRulesViolation(
         RuleBuilder $ruleBuilder,
-        string $message,
+        array|string $message,
+        array|int $line = 1,
     ): void {
         $executeService = new ExecuteService($ruleBuilder->getRuleObject());
         $assert = $executeService->assert()->getAssertValueObject();
 
         foreach ($assert->pass as $key => $value) {
-            Assert::assertFalse((bool) $value, $message);
+            Assert::assertFalse((bool) $value);
             Assert::assertSame(
-                implode(', ', $assert->violations[$key] ?? []),
+                is_string($message)
+                    ? implode(', ', $assert->violations[$key] ?? [])
+                    : array_column($assert->violations[$key], 'messageViolation'),
                 $message,
+            );
+            Assert::assertSame(
+                is_int($line)
+                    ? $assert->violations[$key][0]->line
+                    : array_column($assert->violations[$key], 'line'),
+                $line,
             );
         }
     }

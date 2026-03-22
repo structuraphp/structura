@@ -79,4 +79,32 @@ final class ToHaveOnlyAttributeTest extends TestCase
 
         yield 'trait' => ['<?php trait Foo {}'];
     }
+
+    public function testShouldFailToHaveMultipleAttributes(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php 
+                #[Attribute]
+                #[Error1]
+                #[Error2]
+                class Foo {}
+                PHP
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveOnlyAttribute(Attribute::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error1</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error2</fire>',
+            ],
+            [3, 4],
+        );
+    }
 }

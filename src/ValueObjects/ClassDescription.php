@@ -5,27 +5,38 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\ValueObjects;
 
 use PhpParser\Node\AttributeGroup;
+use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\TraitUse;
+use Stringable;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
 final class ClassDescription extends ScriptDescription
 {
     /**
+     * @param array<int,Include_> $includes
+     * @param array<int,Class_> $anonymousClasses
      * @param array<array-key, AttributeGroup> $attrGroups
      * @param null|Identifier $scalarType enum type
      * @param array<array-key,Name> $interfaces
      * @param null|array<Name>|Name $extends
      * @param array<TraitUse> $traits
      * @param null|array<ClassMethod> $methods
+     * @param array<ClassConst> $constants
      */
     public function __construct(
         ?string $namespace,
         ?Declare_ $declare,
+        array $includes,
+        array $anonymousClasses,
+        ?Return_ $rootReturn,
         public readonly ?string $name,
         public readonly array $attrGroups,
         public readonly int $lines,
@@ -36,8 +47,20 @@ final class ClassDescription extends ScriptDescription
         public readonly ?int $flags,
         public readonly ClassType $classType,
         public readonly ?array $methods,
+        public readonly array $constants,
     ) {
-        parent::__construct($namespace, $declare);
+        parent::__construct($namespace, $declare, $includes, $anonymousClasses, $rootReturn);
+    }
+
+    public function getResourceName(): string
+    {
+        if ($this->isAnonymous()) {
+            return is_string($this->namespace) && $this->namespace !== ''
+                ? sprintf('%s@Anonymous', $this->namespace)
+                : 'Anonymous';
+        }
+
+        return $this->namespace ?? $this->getFileBasename();
     }
 
     public function isExtendable(): bool
@@ -95,6 +118,51 @@ final class ClassDescription extends ScriptDescription
         return false;
     }
 
+    public function hasPublicConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isPublic()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasProtectedConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isProtected()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function hasPrivateConstant(): bool
+    {
+        if ($this->constants === []) {
+            return false;
+        }
+
+        foreach ($this->constants as $constant) {
+            if ($constant->isPrivate()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function hasTrait(string $name): bool
     {
         if ($this->traits === []) {
@@ -113,24 +181,19 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, Name>
      */
     public function getExtendNames(): array
     {
         if ($this->extends instanceof Name) {
-            return [$this->extends->toString()];
+            return [$this->extends];
         }
 
         if ($this->extends === null) {
             return [];
         }
 
-        $extends = [];
-        foreach ($this->extends as $extend) {
-            $extends[] = $extend->toString();
-        }
-
-        return $extends;
+        return array_values($this->extends);
     }
 
     public function hasInterface(string $name): bool
@@ -149,14 +212,14 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int,string>
+     * @return array<int,Name>
      */
     public function getTraitNames(): array
     {
         $traitNames = [];
         foreach ($this->traits as $traitsUse) {
             foreach ($traitsUse->traits as $trait) {
-                $traitNames[] = $trait->toString();
+                $traitNames[] = $trait;
             }
         }
 
@@ -181,14 +244,14 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int, string>
+     * @return array<int, Name>
      */
     public function getAttributeNames(): array
     {
         $attributeNames = [];
         foreach ($this->attrGroups as $attrGroup) {
             foreach ($attrGroup->attrs as $attr) {
-                $attributeNames[] = $attr->name->toString();
+                $attributeNames[] = $attr->name;
             }
         }
 
@@ -262,7 +325,7 @@ final class ClassDescription extends ScriptDescription
     }
 
     /**
-     * @return array<int,string>
+     * @return array<int,string|Stringable>
      */
     private function getDependenciesByType(DependenciesType $dependenciesType): array
     {

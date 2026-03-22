@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
+use PhpParser\Node\Expr\Include_;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
+use PhpParser\Node\Stmt\Return_;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
 class ScriptDescription
@@ -15,12 +18,24 @@ class ScriptDescription
     /** @var array<int,string> */
     protected array $functionDependencies = [];
 
-    protected ?string $fileBasename = null;
+    protected string $fileBasename = '';
 
+    /**
+     * @param array<int,Include_> $includes
+     * @param array<int,Class_> $anonymousClasses
+     */
     public function __construct(
         public readonly ?string $namespace,
         public readonly ?Declare_ $declare,
+        public readonly array $includes,
+        public readonly array $anonymousClasses,
+        public readonly ?Return_ $rootReturn,
     ) {}
+
+    public function getResourceName(): string
+    {
+        return $this->namespace ?? $this->getFileBasename();
+    }
 
     /**
      * @return array<int,string>
@@ -58,16 +73,31 @@ class ScriptDescription
         return $this;
     }
 
-    public function getFileBasename(): ?string
+    public function getFileBasename(): string
     {
         return $this->fileBasename;
     }
 
-    public function setFilePathname(?string $fileBasename): self
+    public function setFilePathname(string $fileBasename): self
     {
         $this->fileBasename = $fileBasename;
 
         return $this;
+    }
+
+    public function hasAnonymousClasses(): bool
+    {
+        return $this->anonymousClasses !== [];
+    }
+
+    public function countAnonymousClasses(): int
+    {
+        return \count($this->anonymousClasses);
+    }
+
+    public function getRootReturn(): ?Return_
+    {
+        return $this->rootReturn;
     }
 
     public function hasDeclare(

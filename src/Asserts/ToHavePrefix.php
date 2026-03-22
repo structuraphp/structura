@@ -25,20 +25,23 @@ final readonly class ToHavePrefix implements ExprInterface
         return str_starts_with($class->name ?? '', $this->prefix);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource name <promote>%s</promote> must start with <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                $this->prefix,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource name <promote>%s</promote> must start with <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $this->prefix,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

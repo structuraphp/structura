@@ -37,20 +37,28 @@ final readonly class ToImplement implements ExprInterface
         && array_diff($this->names, $class->getInterfaceNames()) === [];
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must implement <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                implode(', ', $this->names),
-            ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        $violations = array_diff($this->names, $class->getInterfaceNames());
+
+        $results = [];
+        foreach ($violations as $violation) {
+            $results[] = new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $violation,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            );
+        }
+
+        return $results;
     }
 }

@@ -42,9 +42,9 @@ final class DependsOnlyOnAttributTest extends TestCase
 
     public static function getClassLikeWithInheritance(): Generator
     {
-        yield 'without attributs' => ['<?php class Foo {}'];
+        yield 'without attribute' => ['<?php class Foo {}'];
 
-        yield 'without attributs and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+        yield 'without attribute and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
 
         yield 'with name' => ['<?php #[\SensitiveParameter] class Foo {}'];
 

@@ -25,20 +25,23 @@ final readonly class ToBeInterfaces implements ExprInterface
         return $class->classType === ClassType::Interface_;
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must be an interface but is <fire>%s</fire>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                $class->classType->label(),
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must be an interface but is <fire>%s</fire>',
+                    $class->getResourceName(),
+                    $class->classType->label(),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

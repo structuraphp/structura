@@ -24,7 +24,7 @@ final class ToBeAnonymousClassesTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw('<?php new class {};')
+            ->fromRaw('<?php return new class {};')
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toBeAnonymousClasses(),
@@ -34,8 +34,11 @@ final class ToBeAnonymousClassesTest extends TestCase
     }
 
     #[DataProvider('getClassLikeNonAnonymousClasses')]
-    public function testShouldFailToBeAnonymousClasses(string $raw, ClassType $classType): void
-    {
+    public function testShouldFailToBeAnonymousClasses(
+        string $raw,
+        ClassType $classType,
+        string $exceptName = 'Foo',
+    ): void {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
@@ -47,7 +50,8 @@ final class ToBeAnonymousClassesTest extends TestCase
         self::assertRulesViolation(
             $rules,
             sprintf(
-                'Resource <promote>Foo</promote> must be an anonymous class but is <fire>%s</fire>',
+                'Resource <promote>%s</promote> must be an anonymous class but is <fire>%s</fire>',
+                $exceptName,
                 $classType->label(),
             ),
         );
@@ -62,5 +66,7 @@ final class ToBeAnonymousClassesTest extends TestCase
         yield 'interface' => ['<?php interface Foo {}', ClassType::Interface_];
 
         yield 'trait' => ['<?php trait Foo {}', ClassType::Trait_];
+
+        yield 'anonymous class not returned' => ['<?php new class {};', ClassType::Class_, ''];
     }
 }

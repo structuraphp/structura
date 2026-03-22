@@ -76,12 +76,21 @@ class DependsOnlyOnFunctionTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
-                $exceptName,
-                'strtoupper, mb_.+',
-                'array_merge, strtolower',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtoupper, mb_.+',
+                    'array_merge',
+                ),
+                sprintf(
+                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtoupper, mb_.+',
+                    'strtolower',
+                ),
+            ],
+            [2, 2],
         );
     }
 
@@ -89,7 +98,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     {
         yield 'anonymous class' => [
             '<?php
-             new class {
+             return new class {
                 public function __invoke() {
                     array_merge([], []);
                     strtolower("FOO");
@@ -117,12 +126,21 @@ class DependsOnlyOnFunctionTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must depends only on functions %s but depends on %s',
-                $exceptName,
-                'strtoupper, mb_.+',
-                'array_merge, strtolower',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtoupper, mb_.+',
+                    'array_merge',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    $exceptName,
+                    'strtoupper, mb_.+',
+                    'strtolower',
+                ),
+            ],
+            0,
         );
     }
 

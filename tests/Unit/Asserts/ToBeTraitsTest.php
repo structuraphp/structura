@@ -57,7 +57,7 @@ final class ToBeTraitsTest extends TestCase
 
     public static function getClassLikeNonTrait(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', ClassType::AnonymousClass_, 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', ClassType::AnonymousClass_, 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}', ClassType::Class_];
 

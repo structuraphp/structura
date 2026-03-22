@@ -35,23 +35,26 @@ final readonly class ToHaveCorresponding implements ExprInterface
             || trait_exists($className);
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
         $callback = $this->callback;
         $className = $callback($class);
 
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource name <promote>%s</promote> must have corresponding <promote>%s</promote>',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
-                $className,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource name <promote>%s</promote> must have corresponding <promote>%s</promote>',
+                    $class->getResourceName(),
+                    $className,
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

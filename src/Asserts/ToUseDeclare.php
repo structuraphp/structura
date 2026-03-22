@@ -27,42 +27,26 @@ final readonly class ToUseDeclare implements ExprScriptInterface
         return $description->hasDeclare($this->key, $this->value);
     }
 
-    public function getViolation(ScriptDescription $description): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ScriptDescription $description): array
     {
-        return $description instanceof ClassDescription
-            ? $this->getViolationClass($description)
-            : $this->getViolationScript($description);
-    }
-
-    public function getViolationClass(ClassDescription $class): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
-                $class->namespace ?? '',
-                $this->key,
-                $this->value,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
+                    $description->getResourceName(),
+                    $this->key,
+                    $this->value,
+                ),
+                $this::class,
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $description->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            0,
-            $class->getFileBasename(),
-            $this->message,
-        );
-    }
-
-    private function getViolationScript(ScriptDescription $script): ViolationValueObject
-    {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must use declaration <promote>%s=%s</promote>',
-                $script->namespace ?? $script->getFileBasename(),
-                $this->key,
-                $this->value,
-            ),
-            $this::class,
-            0,
-            $script->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 }

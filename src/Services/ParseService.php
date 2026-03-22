@@ -90,10 +90,14 @@ final readonly class ParseService
         } catch (InvalidArgumentException $e) {
             throw new NoticeException(
                 \sprintf('<orange>Parse error, %s</orange> at %s', $e->getMessage(), $pathname),
+                $e->getCode(),
+                $e,
             );
         } catch (Exception $e) {
             throw new NoticeException(
                 \sprintf('<orange>%s</orange> at %s', $e->getMessage(), $pathname),
+                $e->getCode(),
+                $e,
             );
         }
 

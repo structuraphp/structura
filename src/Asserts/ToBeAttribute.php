@@ -59,20 +59,23 @@ final readonly class ToBeAttribute implements ExprInterface
         return false;
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            \sprintf(
-                'Resource <promote>%s</promote> must be attributable',
-                $class->isAnonymous()
-                    ? 'Anonymous'
-                    : $class->namespace,
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must be attributable',
+                    $class->getResourceName(),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
             ),
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        ];
     }
 
     /**

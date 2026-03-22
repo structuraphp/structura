@@ -87,7 +87,8 @@ class ToHaveCorrespondingTraitTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            implode(', ', $output),
+            $output,
+            [11, 11],
         );
     }
 }

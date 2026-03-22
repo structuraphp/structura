@@ -71,7 +71,7 @@ final class ToHaveMethodTest extends TestCase
 
     public static function getClassLikeWithoutMethod(): Generator
     {
-        yield 'anonymous class' => ['<?php new class {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
 
