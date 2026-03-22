@@ -10,6 +10,8 @@ export default defineConfig({
     ],
 
     themeConfig: {
+        externalLinkIcon: true,
+
         nav: [
             {text: 'Guide', link: '/guide/getting-started'},
             {text: 'Assertions', link: '/assertions/types'},

@@ -3,7 +3,7 @@
 Create the configuration file required for running the tests:
 
 ```shell
-php structura init
+php vendor/bin/structura init
 ```
 
 At the root of your project, add the namespace and directory for your architecture tests:
@@ -40,9 +40,9 @@ $config->addPathResolver('base_path', '/var/www');
 $config->addPathResolver('app_path', '/var/www/app');
 ```
 
-| Parameter       | Type     | Description                                                          |
-|-----------------|----------|----------------------------------------------------------------------|
-| `$functionName` | `string` | The function name to match in the AST (e.g. `"base_path"`)          |
+| Parameter       | Type     | Description                                                               |
+|-----------------|----------|---------------------------------------------------------------------------|
+| `$functionName` | `string` | The function name to match in the AST (e.g. `"base_path"`)                |
 | `$path`         | `string` | The absolute or relative path the function represents (e.g. `"/var/www"`) |
 
 - The function **arguments are ignored** — only the name is matched.
