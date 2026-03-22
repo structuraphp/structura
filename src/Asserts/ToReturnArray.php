@@ -18,6 +18,7 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\Float_;
 use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\Return_;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
@@ -45,7 +46,7 @@ final readonly class ToReturnArray implements ExprScriptInterface
     {
         $violation = $description->getRootReturn();
 
-        if ($violation === null) {
+        if (!$violation instanceof Return_) {
             return [
                 new ViolationValueObject(
                     \sprintf(

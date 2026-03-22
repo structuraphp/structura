@@ -62,7 +62,7 @@ final class ToReturnArrayTest extends TestCase
                 'Resource <promote>tmp/run_0.php</promote> must return an array but returns <fire>%s</fire>',
                 $returnType,
             ),
-            1
+            1,
         );
     }
 

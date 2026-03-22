@@ -27,6 +27,7 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 final class ClassDescriptionVisitor extends NodeVisitorAbstract
 {
     protected ?Return_ $rootReturn = null;
+
     private ?string $namespace = null;
 
     private ?Declare_ $declare = null;
