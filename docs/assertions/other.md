@@ -84,6 +84,56 @@ Similar to [toHaveCorresponding()](#tohavecorresponding), but for matching with 
 
 Similar to [toHaveCorresponding()](#tohavecorresponding), but for matching with an enum.
 
+## toHaveCorrespondingFile()
+
+Check the correspondence between a class and a file on disk. The assertion passes if `file_exists()` returns `true`.
+
+This is useful to ensure that each class has a corresponding configuration file (e.g., migration, or any other file artifact).
+
+```php
+$this
+    ->allClasses()
+    ->fromDir('src/Enums')
+    ->should(
+        static fn(Expr $assert): Expr => $assert
+            ->toHaveCorrespondingFile(
+                static fn (ClassDescription $classDescription): string => sprintf(
+                    '%s/lang/en/enums/%s.php',
+                    dirname(__DIR__),
+                    $classDescription->name,
+                ),
+            ),
+    );
+```
+
+## toNotHaveCorrespondingFile()
+
+Opposite of [toHaveCorrespondingFile()](#tohavecorrespondingfile). Check that no corresponding file exists on disk.
+
+The assertion passes if `file_exists()` returns `false`.
+
+```php
+$this
+    ->allClasses()
+    ->fromDir('src/Enums')
+    ->should(
+        static fn(Expr $assert): Expr => $assert
+            ->toNotHaveCorrespondingFile(
+                static fn (ClassDescription $classDescription): string => sprintf(
+                    '%s/lang/en/enums/%s.php',
+                    dirname(__DIR__),
+                    $classDescription->name,
+                ),
+            ),
+    );
+```
+
+::: details Violation message
+```
+Resource name Foo must not have corresponding file /path/to/Foo.php
+```
+:::
+
 ## toHaveCorrespondingInterface()
 
 Similar to [toHaveCorresponding()](#tohavecorresponding), but for matching with an interface.
