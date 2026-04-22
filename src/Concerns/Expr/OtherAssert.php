@@ -11,8 +11,10 @@ use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingFile;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
+use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
 
 /**
  * @mixin AbstractExpr
@@ -32,6 +34,16 @@ trait OtherAssert
     public function toHaveCorrespondingEnum(Closure $closure, string $message = ''): self
     {
         return $this->addExpr(new ToHaveCorrespondingEnum($closure, $message));
+    }
+
+    public function toHaveCorrespondingFile(Closure $closure, string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveCorrespondingFile($closure, $message));
+    }
+
+    public function toNotHaveCorrespondingFile(Closure $closure, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotHaveCorrespondingFile($closure, $message));
     }
 
     public function toHaveCorrespondingInterface(Closure $closure, string $message = ''): self

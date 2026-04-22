@@ -27,6 +27,16 @@ interface OtherAssertInterface
     /**
      * @param Closure(ClassDescription): string $closure
      */
+    public function toHaveCorrespondingFile(Closure $closure, string $message = ''): self;
+
+    /**
+     * @param Closure(ClassDescription): string $closure
+     */
+    public function toNotHaveCorrespondingFile(Closure $closure, string $message = ''): self;
+
+    /**
+     * @param Closure(ClassDescription): string $closure
+     */
     public function toHaveCorrespondingInterface(Closure $closure, string $message = ''): self;
 
     /**
