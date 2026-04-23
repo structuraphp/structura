@@ -39,7 +39,8 @@ export default defineConfig({
                         {text: '🔌 Methods', link: '/assertions/methods'},
                         {text: '🔒 Constants', link: '/assertions/constants'},
                         {text: '🕶️ Naming', link: '/assertions/naming'},
-                        {text: '🕹️ Other', link: '/assertions/other'},
+                        {text: '🧑‍🤝‍🧑 Corresponding', link: '/assertions/corresponding'},
+                        {text: '🕹️ Thrid Party', link: '/assertions/third-party'},
                         {
                             text: '🗜️ Operators', link: '/assertions/operators',
                             items: [
