@@ -6,8 +6,6 @@ namespace StructuraPhp\Structura\Concerns\Expr;
 
 use Closure;
 use StructuraPhp\Structura\AbstractExpr;
-use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
-use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
@@ -19,7 +17,7 @@ use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
 /**
  * @mixin AbstractExpr
  */
-trait OtherAssert
+trait CorrespondingAssert
 {
     public function toHaveCorresponding(Closure $closure, string $message = ''): self
     {
@@ -54,19 +52,5 @@ trait OtherAssert
     public function toHaveCorrespondingTrait(Closure $closure, string $message = ''): self
     {
         return $this->addExpr(new ToHaveCorrespondingTrait($closure, $message));
-    }
-
-    public function toBeInOneOfTheNamespaces(
-        array|string $patterns,
-        string $message = '',
-    ): self {
-        return $this->addExpr(new ToBeInOneOfTheNamespaces((array) $patterns, $message));
-    }
-
-    public function notToBeInOneOfTheNamespaces(
-        array|string $patterns,
-        string $message = '',
-    ): self {
-        return $this->addExpr(new NotToBeInOneOfTheNamespaces((array) $patterns, $message));
     }
 }

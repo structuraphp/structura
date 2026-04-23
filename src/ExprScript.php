@@ -6,10 +6,10 @@ namespace StructuraPhp\Structura;
 
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
-use StructuraPhp\Structura\Contracts\ExprScript\DeclareAssertInterface;
 use StructuraPhp\Structura\Contracts\ExprScript\DependencyAssertInterface;
+use StructuraPhp\Structura\Contracts\ExprScript\ThirdPartyAssertInterface;
 
-class ExprScript extends AbstractExpr implements DeclareAssertInterface, DependencyAssertInterface
+class ExprScript extends AbstractExpr implements ThirdPartyAssertInterface, DependencyAssertInterface
 {
     use ThirdPartyAssert;
     use DependencyAssert;

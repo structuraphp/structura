@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Contracts\ExprScript;
 
-interface DeclareAssertInterface
+interface ThirdPartyAssertInterface
 {
     public function toUseStrictTypes(string $message = ''): self;
 
