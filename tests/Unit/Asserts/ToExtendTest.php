@@ -42,6 +42,8 @@ final class ToExtendTest extends TestCase
         yield 'anonymous class' => ['<?php new class extends \Exception {};'];
 
         yield 'class' => ['<?php class Foo extends \Exception {}'];
+
+        yield 'interface' => ['<?php interface Foo extends \Exception, \ArrayIterator {}'];
     }
 
     #[DataProvider('getClassLikeExtendsNothing')]
@@ -69,5 +71,7 @@ final class ToExtendTest extends TestCase
         yield 'anonymous class' => ['<?php return new class {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo {}'];
+
+        yield 'interface' => ['<?php interface Foo {}'];
     }
 }

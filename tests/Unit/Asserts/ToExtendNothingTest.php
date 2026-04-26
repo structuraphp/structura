@@ -37,6 +37,8 @@ final class ToExtendNothingTest extends TestCase
         yield 'anonymous class' => ['<?php return new class {};'];
 
         yield 'class' => ['<?php class Foo {}'];
+
+        yield 'interface' => ['<?php interface Foo {}'];
     }
 
     #[DataProvider('getClassLikeExtends')]
@@ -64,5 +66,32 @@ final class ToExtendNothingTest extends TestCase
         yield 'anonymous class' => ['<?php return new class extends \Exception {};', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo extends \Exception {}'];
+    }
+
+    public function testShouldFailToExtendsNothingWithInterface(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php interface Foo extends \Exception, \ArrayIterator {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
+                    'Foo',
+                    'Exception',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must extend nothing but extends <fire>%s</fire>',
+                    'Foo',
+                    'ArrayIterator',
+                ),
+            ],
+            [1, 1],
+        );
     }
 }
