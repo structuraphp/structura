@@ -16,7 +16,9 @@ use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorJsonFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorNoneFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorPrettyJsonFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
@@ -144,6 +146,8 @@ final class AnalyzeCommand extends Command
         return match ($format) {
             ErrorFormatterType::Text->value => new ErrorTextFormatter(),
             ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
+            ErrorFormatterType::PrettyJson->value => new ErrorPrettyJsonFormatter(),
+            ErrorFormatterType::Json->value => new ErrorJsonFormatter(),
             default => $this->configValueObject->errorFormatter[$format]
                 ?? throw new InvalidArgumentException(
                     sprintf('Unknown error format "%s"', $format),

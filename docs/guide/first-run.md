@@ -29,6 +29,8 @@ php bin/structura analyze
 |--------|-------------|
 | `text` | Default. For human consumption. |
 | `github` | Creates GitHub Actions compatible output. |
+| `pretty-json` | Human-readable JSON with indentation. Includes styled formatter tags in error messages for further analysis. |
+| `json` | Minified JSON output for machine consumption. Same structure as `pretty-json` without indentation. |
 
 ::: tip
 You can disable error output entirely with the `--no-error` option. Note that even when error output is disabled, the command will still return a non-zero exit code if violations are found.
@@ -44,4 +46,5 @@ You can disable error output entirely with the `--no-error` option. Note that ev
 ::: tip
 You can disable progress output entirely with the `--no-progress` option.
 :::
+
 
