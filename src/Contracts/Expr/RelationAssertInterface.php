@@ -7,9 +7,9 @@ namespace StructuraPhp\Structura\Contracts\Expr;
 interface RelationAssertInterface
 {
     /**
-     * @param class-string $name
+     * @param array<int,class-string>|class-string $names
      */
-    public function toExtend(string $name, string $message = ''): self;
+    public function toExtend(array|string $names, string $message = ''): self;
 
     public function toExtendsNothing(string $message = ''): self;
 
