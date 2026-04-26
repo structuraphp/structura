@@ -18,6 +18,7 @@ final readonly class AnalyzeDto
         public bool $stopOnError,
         public bool $stopOnWarning,
         public bool $stopOnNotice,
+        public bool $noProgress,
         public ?string $filter,
         public ?string $testSuite,
     ) {}
@@ -46,6 +47,9 @@ final readonly class AnalyzeDto
             stopOnNotice: \is_bool($data[AnalyseOption::StopOnNotice->value])
                 ? $data[AnalyseOption::StopOnNotice->value]
                 : throw new InvalidArgumentException('stop on notice must be a bool'),
+            noProgress: \is_bool($data[AnalyseOption::NoProgress->value])
+                ? $data[AnalyseOption::NoProgress->value]
+                : throw new InvalidArgumentException('no progress must be a bool'),
             filter: \is_string($data[AnalyseOption::Filter->value]) || is_null($data[AnalyseOption::Filter->value])
                 ? $data[AnalyseOption::Filter->value]
                 : throw new InvalidArgumentException('filter must be a string or null'),

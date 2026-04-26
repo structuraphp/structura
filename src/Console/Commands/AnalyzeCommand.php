@@ -18,6 +18,7 @@ use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Services\FinderService;
@@ -147,6 +148,10 @@ final class AnalyzeCommand extends Command
 
     private function getProgressFormatter(): ProgressFormatterInterface
     {
+        if ($this->analyzeDto->noProgress) {
+            return new ProgressNoneFormatter();
+        }
+
         $format = $this->analyzeDto->progressFormat;
 
         return match ($format) {
