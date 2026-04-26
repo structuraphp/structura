@@ -16,6 +16,7 @@ use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorNoneFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
@@ -134,6 +135,10 @@ final class AnalyzeCommand extends Command
 
     private function getErrorFormatter(): ErrorFormatterInterface
     {
+        if ($this->analyzeDto->noError) {
+            return new ErrorNoneFormatter();
+        }
+
         $format = $this->analyzeDto->errorFormat;
 
         return match ($format) {

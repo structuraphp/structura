@@ -18,6 +18,7 @@ enum AnalyseOption: string
     case StopOnWarning = 'stop-on-warning';
     case StopOnNotice = 'stop-on-notice';
     case NoProgress = 'no-progress';
+    case NoError = 'no-error';
 
     public function description(): string
     {
@@ -30,6 +31,7 @@ enum AnalyseOption: string
             self::StopOnWarning => 'Stop execution after the first warning.',
             self::StopOnNotice => 'Stop execution after the first notice.',
             self::NoProgress => 'Disable progress output.',
+            self::NoError => 'Disable error output.',
         };
     }
 
