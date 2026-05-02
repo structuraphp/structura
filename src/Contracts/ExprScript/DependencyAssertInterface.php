@@ -45,4 +45,24 @@ interface DependencyAssertInterface
         array|string $patterns = [],
         string $message = '',
     ): self;
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns to match phpDoc class names against
+     */
+    public function dependsOnlyOnPhpDoc(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self;
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     * @param array<int,string>|string $patterns regex patterns not to match phpDoc class names against
+     */
+    public function toNotDependsOnPhpDoc(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self;
 }
