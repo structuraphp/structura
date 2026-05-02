@@ -335,6 +335,7 @@ final class ClassDescription extends ScriptDescription
             DependenciesType::Traits => $this->getTraitNames(),
             DependenciesType::Extends => $this->getExtendNames(),
             DependenciesType::Interfaces => $this->getInterfaceNames(),
+            DependenciesType::PhpDoc => $this->getDocBlockDependencies(),
         };
     }
 }

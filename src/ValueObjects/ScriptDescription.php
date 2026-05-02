@@ -8,6 +8,7 @@ use PhpParser\Node\Expr\Include_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Return_;
+use Stringable;
 use StructuraPhp\Structura\Enums\DependenciesType;
 
 class ScriptDescription
@@ -17,6 +18,9 @@ class ScriptDescription
 
     /** @var array<int,string> */
     protected array $functionDependencies = [];
+
+    /** @var array<int,string> */
+    protected array $docBlockDependencies = [];
 
     protected string $fileBasename = '';
 
@@ -54,6 +58,14 @@ class ScriptDescription
     }
 
     /**
+     * @return array<int,string>
+     */
+    public function getDocBlockDependencies(): array
+    {
+        return $this->docBlockDependencies;
+    }
+
+    /**
      * @param array<int,string> $classDependencies
      */
     public function setClassDependencies(array $classDependencies): self
@@ -69,6 +81,16 @@ class ScriptDescription
     public function setFunctionDependencies(array $dependencies): self
     {
         $this->functionDependencies = $dependencies;
+
+        return $this;
+    }
+
+    /**
+     * @param array<int,string> $docBlockDependencies
+     */
+    public function setDocBlockDependencies(array $docBlockDependencies): self
+    {
+        $this->docBlockDependencies = $docBlockDependencies;
 
         return $this;
     }
@@ -139,7 +161,7 @@ class ScriptDescription
         /** @var array<int,string>|false $match */
         $match = preg_grep(
             '/^(?:' . $this->customPregQuote($pattern) . ')$/',
-            $this->getClassDependencies(),
+            $this->getDependenciesByType($type),
         );
 
         if ($match !== false) {
@@ -206,5 +228,17 @@ class ScriptDescription
         }
 
         return strtr($subject, $mapping);
+    }
+
+    /**
+     * @return array<int,string|Stringable>
+     */
+    private function getDependenciesByType(DependenciesType $dependenciesType): array
+    {
+        return match ($dependenciesType) {
+            DependenciesType::All => $this->getClassDependencies(),
+            DependenciesType::PhpDoc => $this->getDocBlockDependencies(),
+            default => [],
+        };
     }
 }

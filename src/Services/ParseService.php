@@ -105,6 +105,9 @@ final readonly class ParseService
             ->setClassDependencies(
                 array_keys($this->dependenciesVisitor->getDependencies()),
             )
+            ->setDocBlockDependencies(
+                array_keys($this->dependenciesVisitor->getDocBlockDependencies()),
+            )
             ->setFunctionDependencies(
                 $this->functionVisitor->getDependencies(),
             )

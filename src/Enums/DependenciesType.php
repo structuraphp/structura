@@ -11,4 +11,5 @@ enum DependenciesType
     case Extends;
     case Traits;
     case Attributes;
+    case PhpDoc;
 }
