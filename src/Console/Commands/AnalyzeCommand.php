@@ -16,6 +16,7 @@ use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorGitlabFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorJsonFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorNoneFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorPrettyJsonFormatter;
@@ -146,6 +147,7 @@ final class AnalyzeCommand extends Command
         return match ($format) {
             ErrorFormatterType::Text->value => new ErrorTextFormatter(),
             ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
+            ErrorFormatterType::Gitlab->value => new ErrorGitlabFormatter(),
             ErrorFormatterType::PrettyJson->value => new ErrorPrettyJsonFormatter(),
             ErrorFormatterType::Json->value => new ErrorJsonFormatter(),
             default => $this->configValueObject->errorFormatter[$format]
