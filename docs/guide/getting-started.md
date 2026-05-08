@@ -24,6 +24,6 @@ composer require --dev structuraphp/structura
 ### Manual Binary Download
 
 ```shell
-wget https://github.com/structuraphp/structura/releases/latest/download/phparkitect.phar
+wget https://github.com/structuraphp/structura/releases/latest/download/structura.phar
 ```
 

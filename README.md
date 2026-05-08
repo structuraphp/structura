@@ -1,12 +1,14 @@
-# Structura
+<div align="center" style="display:grid;place-items:center;">
+    <p>
+      <img src="docs/structura-logo.png" alt="Structura Logo" width="400">
+    </p>
+    <h1>Structura</h1>
+    <p>Maintain a clean and consistent code structure with expressive architecture rules.</p>
 
 [![License](https://img.shields.io/github/license/structuraphp/structura.svg)](https://github.com/structuraphp/structura/blob/main/LICENSE "LICENSE")
 [![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#php-version "PHP version 8.2 minimum")
 [![Packagist Downloads](https://img.shields.io/packagist/dm/structuraphp/structura)](https://packagist.org/packages/structuraphp/structura "packagist downloads")
-
-<p align="center">
-  <img src="docs/structura-logo.png" alt="Structura Logo" width="400">
-</p>
+</div>
 
 ## About
 
