@@ -10,6 +10,7 @@ use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Contracts\PathResolverAwareInterface;
 use StructuraPhp\Structura\Enums\ExprType;
 use StructuraPhp\Structura\Exception\Console\NoticeException;
 use StructuraPhp\Structura\Expr;
@@ -62,6 +63,8 @@ final class ExecuteService
         foreach ($assertions as $assert) {
             $this->builder->addPass((string) $assert);
         }
+
+        $this->injectPathResolvers($assertions);
 
         try {
             /** @var ScriptDescription $description */
@@ -185,5 +188,27 @@ final class ExecuteService
         }
 
         throw new InvalidArgumentException();
+    }
+
+    /**
+     * Injects path resolvers into all PathResolverAwareInterface assertions,
+     * recursively descending into nested AbstractExpr groups (or/and).
+     */
+    private function injectPathResolvers(AbstractExpr $assertions): void
+    {
+        if ($this->ruleValuesObject->pathResolvers === []) {
+            return;
+        }
+
+        /** @var AbstractExpr|ExprInterface $assert */
+        foreach ($assertions as $assert) {
+            if ($assert instanceof PathResolverAwareInterface) {
+                $assert->setPathResolvers($this->ruleValuesObject->pathResolvers);
+            }
+
+            if ($assert instanceof AbstractExpr) {
+                $this->injectPathResolvers($assert);
+            }
+        }
     }
 }

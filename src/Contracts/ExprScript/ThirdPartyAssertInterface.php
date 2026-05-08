@@ -12,7 +12,11 @@ interface ThirdPartyAssertInterface
 
     public function toUseDeclare(string $key, string $value, string $message = ''): self;
 
-    public function toUseInclude(IncludeType $includeType, string $message = ''): self;
+    public function toUseInclude(
+        IncludeType $includeType,
+        ?string $pathPattern = null,
+        string $message = '',
+    ): self;
 
     public function toNotUseInclude(string $message = ''): self;
 

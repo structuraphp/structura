@@ -39,11 +39,15 @@ final class AnalyseService
     /** @var array<int, array<string, string>> */
     private array $noticeByTests = [];
 
+    /**
+     * @param array<string, string> $pathResolvers
+     */
     public function __construct(
         private readonly bool $stopOnError = false,
         private readonly bool $stopOnWarning = false,
         private readonly bool $stopOnNotice = false,
         private readonly ?string $filter = null,
+        private readonly array $pathResolvers = [],
     ) {}
 
     /**
@@ -121,6 +125,7 @@ final class AnalyseService
         string $classname,
     ): void {
         foreach ($instance->getRules() as $expectationFilter) {
+            $expectationFilter->getRuleBuilder()->setPathResolvers($this->pathResolvers);
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
             $executeService = new ExecuteService($ruleValueObject);
             $assertValueObject = $executeService->assert()->getAssertValueObject();
