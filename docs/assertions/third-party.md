@@ -119,7 +119,7 @@ $this
 
 ### With a path pattern
 
-An optional second parameter `$pathPattern` allows you to verify that the included path matches a glob pattern.
+An optional second parameter `$pathPattern` allows you to verify that the included path matches a glob pattern with [fnmatch](https://www.php.net/manual/en/function.fnmatch.php).
 
 ```php
 use StructuraPhp\Structura\Enums\IncludeType;

@@ -233,7 +233,7 @@ final class ToUseIncludeTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                "to use <promote>%s</promote> with path matching <promote>'%s'</promote>",
+                'to use <promote>%s</promote> with path matching <promote>%s</promote>',
                 $includeType->label(),
                 $pathPattern,
             ),
@@ -309,28 +309,28 @@ final class ToUseIncludeTest extends TestCase
             '<?php require "other/path.php";',
             IncludeType::Require,
             'vendor/*',
-            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'other/path.php'</fire> which does not match pattern <promote>'vendor/*'</promote>",
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>other/path.php</fire> which does not match pattern <promote>vendor/*</promote>',
         ];
 
         yield 'dynamic path (variable) is a violation' => [
             '<?php require $path;',
             IncludeType::Require,
             'vendor/*',
-            "Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>'vendor/*'</fire>",
+            'Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>vendor/*</fire>',
         ];
 
         yield 'dirname(__FILE__, 2) path does not match pattern' => [
             '<?php require dirname(__FILE__, 2) . "/config/app.php";',
             IncludeType::Require,
             'vendor/*',
-            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'./config/app.php'</fire> which does not match pattern <promote>'vendor/*'</promote>",
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>./config/app.php</fire> which does not match pattern <promote>vendor/*</promote>',
         ];
 
         yield 'dirname(__DIR__, 2) path does not match pattern' => [
             '<?php require dirname(__DIR__, 2) . "/vendor/autoload.php";',
             IncludeType::Require,
             'config/*',
-            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'./vendor/autoload.php'</fire> which does not match pattern <promote>'config/*'</promote>",
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>./vendor/autoload.php</fire> which does not match pattern <promote>config/*</promote>',
         ];
     }
 
@@ -355,7 +355,7 @@ final class ToUseIncludeTest extends TestCase
         self::assertRulesPass(
             $ruleBuilder,
             sprintf(
-                "to use <promote>%s</promote> with path matching <promote>'%s'</promote>",
+                'to use <promote>%s</promote> with path matching <promote>%s</promote>',
                 $includeType->label(),
                 $pathPattern,
             ),
@@ -419,7 +419,7 @@ final class ToUseIncludeTest extends TestCase
             'config/*',
             'base_path',
             '/var/www',
-            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'/var/www/vendor/autoload.php'</fire> which does not match pattern <promote>'config/*'</promote>",
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>/var/www/vendor/autoload.php</fire> which does not match pattern <promote>config/*</promote>',
         ];
 
         yield 'unknown function is treated as dynamic path — violation' => [
@@ -428,7 +428,7 @@ final class ToUseIncludeTest extends TestCase
             '*/vendor/autoload.php',
             'base_path',
             '/var/www',
-            "Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>'*/vendor/autoload.php'</fire>",
+            'Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>*/vendor/autoload.php</fire>',
         ];
     }
 

@@ -33,7 +33,7 @@ final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterf
     {
         if ($this->pathPattern !== null) {
             return \sprintf(
-                "to use <promote>%s</promote> with path matching <promote>'%s'</promote>",
+                'to use <promote>%s</promote> with path matching <promote>%s</promote>',
                 $this->includeType->label(),
                 $this->pathPattern,
             );
@@ -100,7 +100,7 @@ final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterf
             if ($path === null) {
                 $results[] = new ViolationValueObject(
                     \sprintf(
-                        "Resource <promote>%s</promote> uses a dynamic path which cannot be verified against pattern <fire>'%s'</fire>",
+                        'Resource <promote>%s</promote> uses a dynamic path which cannot be verified against pattern <fire>%s</fire>',
                         $description->getResourceName(),
                         $this->pathPattern,
                     ),
@@ -116,7 +116,7 @@ final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterf
             if (!fnmatch($this->pathPattern, $path)) {
                 $results[] = new ViolationValueObject(
                     \sprintf(
-                        "Resource <promote>%s</promote> uses path <fire>'%s'</fire> which does not match pattern <promote>'%s'</promote>",
+                        'Resource <promote>%s</promote> uses path <fire>%s</fire> which does not match pattern <promote>%s</promote>',
                         $description->getResourceName(),
                         $path,
                         $this->pathPattern,
