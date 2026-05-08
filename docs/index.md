@@ -2,9 +2,12 @@
 layout: home
 
 hero:
-  name: StructuraPHP
+  name: Structura
   text: Architectural Testing for PHP
   tagline: Maintain a clean and consistent code structure with expressive architecture rules.
+  image:
+    src: /structura-logo.png
+    alt: Structura Logo
   actions:
     - theme: brand
       text: Get Started
@@ -27,4 +30,3 @@ features:
     title: PHP 8.2+
     details: Leverages modern PHP features — enums, readonly, typed properties, and strict types.
 ---
-

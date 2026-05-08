@@ -14,6 +14,7 @@ final readonly class RuleValuesObject
 {
     /**
      * @param array<string, string> $raws
+     * @param array<string, string> $pathResolvers
      */
     public function __construct(
         public array $raws,
@@ -21,6 +22,7 @@ final readonly class RuleValuesObject
         public ?AbstractExpr $that,
         public ?Except $except,
         public AbstractExpr $should,
+        public array $pathResolvers = [],
     ) {}
 
     public function getDescriptorType(): DescriptorType

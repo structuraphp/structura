@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Asserts;
 
-use PhpParser\Node\Name\FullyQualified;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
@@ -22,7 +21,7 @@ final readonly class ToExtendNothing implements ExprInterface
 
     public function assert(ClassDescription $class): bool
     {
-        return !$class->extends instanceof FullyQualified;
+        return $class->isExtendable() && $class->getExtendNames() === [];
     }
 
     /**

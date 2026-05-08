@@ -7,8 +7,10 @@ namespace StructuraPhp\Structura\Concerns\ExprScript;
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
+use StructuraPhp\Structura\Asserts\DependsOnlyOnPhpDoc;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
 use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
+use StructuraPhp\Structura\Asserts\ToNotDependsOnPhpDoc;
 
 /**
  * @mixin AbstractExpr
@@ -52,6 +54,26 @@ trait DependencyAssert
     ): self {
         return $this->addExpr(
             new ToNotDependsOn((array) $names, (array) $patterns, $message),
+        );
+    }
+
+    public function dependsOnlyOnPhpDoc(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new DependsOnlyOnPhpDoc((array) $names, (array) $patterns, $message),
+        );
+    }
+
+    public function toNotDependsOnPhpDoc(
+        array|string $names = [],
+        array|string $patterns = [],
+        string $message = '',
+    ): self {
+        return $this->addExpr(
+            new ToNotDependsOnPhpDoc((array) $names, (array) $patterns, $message),
         );
     }
 }

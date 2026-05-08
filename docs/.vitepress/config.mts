@@ -1,7 +1,7 @@
 import {defineConfig} from 'vitepress'
 
 export default defineConfig({
-    title: 'StructuraPHP',
+    title: 'Structura',
     description: 'Architectural testing tool for PHP',
     base: '/structura/',
 
@@ -10,6 +10,8 @@ export default defineConfig({
     ],
 
     themeConfig: {
+        externalLinkIcon: true,
+
         nav: [
             {text: 'Guide', link: '/guide/getting-started'},
             {text: 'Assertions', link: '/assertions/types'},
@@ -39,7 +41,8 @@ export default defineConfig({
                         {text: '🔌 Methods', link: '/assertions/methods'},
                         {text: '🔒 Constants', link: '/assertions/constants'},
                         {text: '🕶️ Naming', link: '/assertions/naming'},
-                        {text: '🕹️ Other', link: '/assertions/other'},
+                        {text: '🧑‍🤝‍🧑 Corresponding', link: '/assertions/corresponding'},
+                        {text: '🕹️ Thrid Party', link: '/assertions/third-party'},
                         {
                             text: '🗜️ Operators', link: '/assertions/operators',
                             items: [
@@ -72,7 +75,7 @@ export default defineConfig({
 
         footer: {
             message: 'Released under the MIT License.',
-            copyright: 'Copyright © 2024-present StructuraPHP',
+            copyright: 'Copyright © 2024-present Structura',
         },
     },
 })

@@ -22,6 +22,9 @@ class RuleBuilder
 
     public ?Except $except = null;
 
+    /** @var array<string, string> */
+    private array $pathResolvers = [];
+
     public function addRaw(string $raw, string $pathname): self
     {
         if ($pathname === '') {
@@ -62,6 +65,16 @@ class RuleBuilder
         return $this;
     }
 
+    /**
+     * @param array<string, string> $pathResolvers
+     */
+    public function setPathResolvers(array $pathResolvers): self
+    {
+        $this->pathResolvers = $pathResolvers;
+
+        return $this;
+    }
+
     public function getRuleObject(): RuleValuesObject
     {
         return new RuleValuesObject(
@@ -70,6 +83,7 @@ class RuleBuilder
             that: $this->that,
             except: $this->except,
             should: $this->should,
+            pathResolvers: $this->pathResolvers,
         );
     }
 }

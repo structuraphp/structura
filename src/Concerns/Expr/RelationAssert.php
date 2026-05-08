@@ -23,11 +23,11 @@ use StructuraPhp\Structura\Expr;
  */
 trait RelationAssert
 {
-    public function toExtend(string $name, string $message = ''): self
+    public function toExtend(array|string $names, string $message = ''): self
     {
-        $this->extendDependencies[] = [$name];
+        $this->extendDependencies[] = (array) $names;
 
-        return $this->addExpr(new ToExtend($name, $message));
+        return $this->addExpr(new ToExtend($names, $message));
     }
 
     public function toExtendsNothing(string $message = ''): self

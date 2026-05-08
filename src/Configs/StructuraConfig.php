@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Configs;
 
+use InvalidArgumentException;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\Contracts\StructuraConfigInterface;
@@ -27,6 +28,9 @@ class StructuraConfig implements StructuraConfigInterface
     private array $testSuites = [];
 
     private ?string $autoload = null;
+
+    /** @var array<string, string> */
+    private array $pathResolvers = [];
 
     public static function make(): self
     {
@@ -85,6 +89,19 @@ class StructuraConfig implements StructuraConfigInterface
         return $this;
     }
 
+    public function addPathResolver(string $functionName, string $path): self
+    {
+        if ($functionName === 'dirname') {
+            throw new InvalidArgumentException(
+                'The function name "dirname" is reserved and cannot be registered as a path resolver.',
+            );
+        }
+
+        $this->pathResolvers[$functionName] = $path;
+
+        return $this;
+    }
+
     public function getConfig(): ConfigValueObject
     {
         return new ConfigValueObject(
@@ -94,6 +111,7 @@ class StructuraConfig implements StructuraConfigInterface
             progressFormatter: $this->progressFormatter,
             extensions: $this->extensions,
             autoload: $this->autoload,
+            pathResolvers: $this->pathResolvers,
         );
     }
 }

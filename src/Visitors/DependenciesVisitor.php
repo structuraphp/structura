@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Visitors;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Attribute;
 use PhpParser\Node\Expr\ArrowFunction;
@@ -17,20 +18,26 @@ use PhpParser\Node\NullableType;
 use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\Node\Stmt\Class_;
+use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
+use StructuraPhp\Structura\Services\DocBlockParser;
 
 final class DependenciesVisitor extends NodeVisitorAbstract
 {
     /** @var array<string,int> */
     private array $dependencies = [];
+
+    /** @var array<string,int> */
+    private array $docBlockDependencies = [];
 
     /** @var array<string,int> */
     private array $namespace = [];
@@ -47,7 +54,19 @@ final class DependenciesVisitor extends NodeVisitorAbstract
     /** @var array<string,int> */
     private array $attributes = [];
 
+    /** @var array<string, string> */
+    private array $useAliases = [];
+
     private int $classDeep = 0;
+
+    private string $currentNamespace = '';
+
+    private readonly DocBlockParser $docBlockParser;
+
+    public function __construct()
+    {
+        $this->docBlockParser = new DocBlockParser();
+    }
 
     /**
      * @return array<string,int>
@@ -61,6 +80,7 @@ final class DependenciesVisitor extends NodeVisitorAbstract
             array_keys($this->inheritance),
             array_keys($this->traits),
             array_keys($this->attributes),
+            array_keys($this->docBlockDependencies),
         );
 
         /*
@@ -108,7 +128,20 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         $this->inheritance = [];
         $this->traits = [];
         $this->attributes = [];
+        $this->useAliases = [];
         $this->classDeep = 0;
+        $this->currentNamespace = '';
+
+        return $output;
+    }
+
+    /**
+     * @return array<string,int>
+     */
+    public function getDocBlockDependencies(): array
+    {
+        $output = $this->docBlockDependencies;
+        $this->docBlockDependencies = [];
 
         return $output;
     }
@@ -119,17 +152,24 @@ final class DependenciesVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes): null
     {
         $this->dependencies = [];
+        $this->docBlockDependencies = [];
         $this->interfaces = [];
         $this->inheritance = [];
         $this->traits = [];
         $this->attributes = [];
+        $this->useAliases = [];
         $this->classDeep = 0;
+        $this->currentNamespace = '';
 
         return null;
     }
 
     public function enterNode(Node $node): null
     {
+        if ($node instanceof Namespace_ && $node->name instanceof Name) {
+            $this->currentNamespace = $node->name->toString();
+        }
+
         if ($node instanceof ClassLike) {
             $this->classDeep++;
         }
@@ -154,6 +194,15 @@ final class DependenciesVisitor extends NodeVisitorAbstract
             default => null,
         };
 
+        if (
+            $node instanceof ClassLike
+            || $node instanceof ClassMethod
+            || $node instanceof Property
+            || $node instanceof ClassConst
+        ) {
+            $this->addDocBlockDependencies($node);
+        }
+
         return null;
     }
 
@@ -164,12 +213,13 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         }
 
         foreach ($node->uses as $use) {
-            $this->addNamespace(
-                $use->name->getLine(),
-                $node->prefix->toString()
+            $fqcn = $node->prefix->toString()
                 . '\\'
-                . $use->name->toString(),
-            );
+                . $use->name->toString();
+            $alias = $use->getAlias()->toString();
+            $this->useAliases[$alias] = $fqcn;
+
+            $this->addNamespace($use->name->getLine(), $fqcn);
         }
     }
 
@@ -180,6 +230,9 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         }
 
         foreach ($node->uses as $use) {
+            $alias = $use->getAlias()->toString();
+            $this->useAliases[$alias] = $use->name->toString();
+
             $this->addNamespace($use->name->getLine(), $use->name->toString());
         }
     }
@@ -277,6 +330,44 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         foreach ($node->types as $type) {
             $this->addDependency($type->getLine(), $type->toString());
         }
+    }
+
+    private function addDocBlockDependencies(ClassConst|ClassLike|ClassMethod|Property $node): void
+    {
+        $docComment = $node->getDocComment();
+
+        if (!$docComment instanceof Doc) {
+            return;
+        }
+
+        $classNames = $this->docBlockParser->parse($docComment->getText());
+
+        foreach ($classNames as $className) {
+            $resolved = $this->resolveDocBlockName($className);
+            $this->docBlockDependencies[$resolved] = $docComment->getStartLine();
+        }
+    }
+
+    private function resolveDocBlockName(string $name): string
+    {
+        if (str_starts_with($name, '\\')) {
+            return $name;
+        }
+
+        $parts = explode('\\', $name);
+        $firstSegment = $parts[0];
+
+        if (isset($this->useAliases[$firstSegment])) {
+            $parts[0] = $this->useAliases[$firstSegment];
+
+            return implode('\\', $parts);
+        }
+
+        if ($this->currentNamespace !== '') {
+            return $this->currentNamespace . '\\' . $name;
+        }
+
+        return $name;
     }
 
     private function addDependency(int $line, string $dependency): void

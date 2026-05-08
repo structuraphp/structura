@@ -15,20 +15,21 @@ jobs:
 
     steps:
     - name: Pull repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0
       with:
         php-version: ${{ matrix.php-version }}
         tools: composer
+        ini-values: opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
 
     - name: Cache Composer packages
       id: composer-cache
-      uses: actions/cache@v5
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
@@ -36,7 +37,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Install dependencies with Composer
-      run: composer install --prefer-dist --no-progress
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
     - name: Dependencies tests
       if: matrix.php-version == env.LATEST_PHP_VERSION
@@ -48,11 +49,11 @@ jobs:
 
     - name: Static analysis
       if: matrix.php-version == env.LATEST_PHP_VERSION
-      run: vendor/bin/phpstan --memory-limit=1G analyse
+      run: vendor/bin/phpstan --memory-limit=1G analyse --error-format=github
 
     - name: Refactoring
       if: matrix.php-version == env.LATEST_PHP_VERSION
-      run: vendor/bin/rector --dry-run
+      run: vendor/bin/rector process --dry-run
 
     - name: Unit tests
       run: vendor/bin/phpunit --testdox --random-order

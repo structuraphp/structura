@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Contracts;
 
+use InvalidArgumentException;
+
 interface StructuraConfigInterface
 {
     public function setErrorFormatter(
@@ -41,4 +43,18 @@ interface StructuraConfigInterface
      * @param string $path absolute path to your project's autoload file if you are using PHAR (e.g "__DIR__ . '/vendor/autoload.php")
      */
     public function setAutoload(string $path): self;
+
+    /**
+     * Registers a custom function name as a path resolver for the `toUseInclude` assertion.
+     * When the function name is found in an include/require expression in the AST,
+     * its arguments are ignored and the registered path is returned directly.
+     *
+     * The function name `dirname` is reserved and cannot be registered.
+     *
+     * @param string $functionName the function name to resolve (e.g. "base_path", "app_path")
+     * @param string $path the absolute or relative path the function represents (e.g. "/var/www")
+     *
+     * @throws InvalidArgumentException if $functionName is "dirname"
+     */
+    public function addPathResolver(string $functionName, string $path): self;
 }

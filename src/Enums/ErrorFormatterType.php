@@ -8,4 +8,7 @@ enum ErrorFormatterType: string
 {
     case Text = 'text';
     case Github = 'github';
+    case Gitlab = 'gitlab';
+    case PrettyJson = 'pretty-json';
+    case Json = 'json';
 }

@@ -1,8 +1,14 @@
-# Structura
+<div align="center" style="display:grid;place-items:center;">
+    <p>
+      <img src="docs/structura-logo.png" alt="Structura Logo" width="400">
+    </p>
+    <h1>Structura</h1>
+    <p>Maintain a clean and consistent code structure with expressive architecture rules.</p>
 
 [![License](https://img.shields.io/github/license/structuraphp/structura.svg)](https://github.com/structuraphp/structura/blob/main/LICENSE "LICENSE")
 [![PHP from Packagist](https://img.shields.io/badge/PHP-%3E%3D8.2-%238892bf)](/README.md#php-version "PHP version 8.2 minimum")
-![Packagist Downloads](https://img.shields.io/packagist/dm/structuraphp/structura)
+[![Packagist Downloads](https://img.shields.io/packagist/dm/structuraphp/structura)](https://packagist.org/packages/structuraphp/structura "packagist downloads")
+</div>
 
 ## About
 
@@ -11,7 +17,7 @@ consistent code structure.
 
 ## 📖 Documentation
 
-Full documentation is available at **[structuraphp.github.io](https://structuraphp.github.io/)**.
+Full documentation is available at **[structuraphp.github.io/structura](https://structuraphp.github.io/structura)**.
 
 ## Quick Start
 
@@ -24,13 +30,13 @@ composer require --dev structuraphp/structura
 ### Configuration
 
 ```shell
-php structura init
+php vendor/bin/structura init
 ```
 
 ### Run
 
 ```shell
-php bin/structura analyze
+php vendor/bin/structura analyze
 ```
 
 ## Requirements

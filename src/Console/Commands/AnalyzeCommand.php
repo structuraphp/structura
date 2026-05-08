@@ -16,8 +16,13 @@ use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Error\ErrorGithubFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorGitlabFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorJsonFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorNoneFormatter;
+use StructuraPhp\Structura\Formatter\Error\ErrorPrettyJsonFormatter;
 use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
+use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Services\FinderService;
@@ -87,6 +92,7 @@ final class AnalyzeCommand extends Command
                     stopOnWarning: $this->analyzeDto->stopOnWarning,
                     stopOnNotice: $this->analyzeDto->stopOnNotice,
                     filter: $this->analyzeDto->filter,
+                    pathResolvers: $this->configValueObject->pathResolvers,
                 );
                 $analyseResult = $analyseService
                     ->analyse(
@@ -133,11 +139,18 @@ final class AnalyzeCommand extends Command
 
     private function getErrorFormatter(): ErrorFormatterInterface
     {
+        if ($this->analyzeDto->noError) {
+            return new ErrorNoneFormatter();
+        }
+
         $format = $this->analyzeDto->errorFormat;
 
         return match ($format) {
             ErrorFormatterType::Text->value => new ErrorTextFormatter(),
             ErrorFormatterType::Github->value => new ErrorGithubFormatter(),
+            ErrorFormatterType::Gitlab->value => new ErrorGitlabFormatter(),
+            ErrorFormatterType::PrettyJson->value => new ErrorPrettyJsonFormatter(),
+            ErrorFormatterType::Json->value => new ErrorJsonFormatter(),
             default => $this->configValueObject->errorFormatter[$format]
                 ?? throw new InvalidArgumentException(
                     sprintf('Unknown error format "%s"', $format),
@@ -147,6 +160,10 @@ final class AnalyzeCommand extends Command
 
     private function getProgressFormatter(): ProgressFormatterInterface
     {
+        if ($this->analyzeDto->noProgress) {
+            return new ProgressNoneFormatter();
+        }
+
         $format = $this->analyzeDto->progressFormat;
 
         return match ($format) {

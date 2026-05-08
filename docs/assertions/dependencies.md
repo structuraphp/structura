@@ -126,3 +126,50 @@ $this
     )
   );
 ```
+
+## dependsOnlyOnPhpDoc()
+
+Verifies that all class references appearing in phpDoc annotations (`@param`, `@return`, `@var`, `@throws`, etc.)
+belong only to the authorised namespaces.
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->dependsOnlyOnPhpDoc(
+        names: [\ArrayAccess::class, /* ... */],
+        patterns: ['App\Dto.+', /* ... */],
+    )
+  );
+```
+
+**Violation message:**
+```
+Resource <class> must depends only on these phpDoc namespaces <authorised> but depends <forbidden>
+```
+
+## toNotDependsOnPhpDoc()
+
+Prohibit the use of specific class references inside phpDoc annotations.
+
+You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
+
+```php
+$this
+  ->allClasses()
+  ->should(fn(Expr $expr) => $expr
+    ->toNotDependsOnPhpDoc(
+        names: [LegacyClass::class, /* ... */],
+        patterns: ['Legacy\\.+', /* ... */],
+    )
+  );
+```
+
+**Violation message:**
+```
+Resource <class> must not depends on these phpDoc namespaces <forbidden> but depends on <found>
+```
+
+
