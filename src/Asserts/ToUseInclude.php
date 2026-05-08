@@ -10,6 +10,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Name;
+use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
@@ -134,10 +135,7 @@ final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterf
 
     private function resolvePath(Expr $expr, string $filePath): ?string
     {
-        $self = $this;
-
-        $evaluator = null;
-        $evaluator = new ConstExprEvaluator(static function (Expr $node) use ($filePath, $self, &$evaluator): string {
+        $evaluator = new ConstExprEvaluator(function (Expr $node) use ($filePath): string {
             if ($node instanceof Dir) {
                 return dirname($filePath);
             }
@@ -149,31 +147,22 @@ final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterf
             if ($node instanceof FuncCall && $node->name instanceof Name) {
                 $funcName = $node->name->toString();
 
-                if (isset($self->pathResolvers[$funcName])) {
-                    return $self->pathResolvers[$funcName];
+                if (isset($this->pathResolvers[$funcName])) {
+                    return $this->pathResolvers[$funcName];
                 }
 
-                if ($funcName === 'dirname') {
-                    $arg = $node->args[0] instanceof Arg
-                        ? $node->args[0]->value
-                        : null;
+                if ($funcName === 'dirname' && isset($node->args[0]) && $node->args[0] instanceof Arg) {
+                    $resolved = $this->resolvePath($node->args[0]->value, $filePath);
 
-                    if ($arg instanceof Expr) {
-                        $resolved = $self->resolvePath($arg, $filePath);
+                    if ($resolved !== null) {
+                        $levels = isset($node->args[1])
+                            && $node->args[1] instanceof Arg
+                            && $node->args[1]->value instanceof Int_
+                            && $node->args[1]->value->value > 0
+                                ? $node->args[1]->value->value
+                                : 1;
 
-                        if ($resolved !== null) {
-                            $levels = 1;
-
-                            if (isset($node->args[1]) && $node->args[1] instanceof Arg) {
-                                $levelsValue = $evaluator?->evaluateSilently($node->args[1]->value);
-
-                                if (\is_int($levelsValue) && $levelsValue > 0) {
-                                    $levels = $levelsValue;
-                                }
-                            }
-
-                            return dirname($resolved, $levels);
-                        }
+                        return dirname($resolved, $levels);
                     }
                 }
             }
