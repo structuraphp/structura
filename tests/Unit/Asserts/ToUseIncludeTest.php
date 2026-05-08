@@ -213,4 +213,122 @@ final class ToUseIncludeTest extends TestCase
             }
         }
     }
+
+    #[DataProvider('getScriptWithPathPatternProvider')]
+    public function testToUseIncludeWithPathPatternPasses(
+        string $rawScript,
+        IncludeType $includeType,
+        string $pathPattern,
+    ): void {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($rawScript)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseInclude($includeType, $pathPattern),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                "to use <promote>%s</promote> with path matching <promote>'%s'</promote>",
+                $includeType->label(),
+                $pathPattern,
+            ),
+        );
+    }
+
+    public static function getScriptWithPathPatternProvider(): Generator
+    {
+        yield 'literal path match' => [
+            '<?php require "vendor/autoload.php";',
+            IncludeType::Require,
+            'vendor/autoload.php',
+        ];
+
+        yield 'glob pattern match' => [
+            '<?php require_once "src/config/app.php";',
+            IncludeType::RequireOnce,
+            '*/config/*.php',
+        ];
+
+        yield '__DIR__ concatenation' => [
+            '<?php require __DIR__ . "/vendor/autoload.php";',
+            IncludeType::Require,
+            '*/vendor/autoload.php',
+        ];
+
+        yield 'dirname(__FILE__)' => [
+            '<?php require dirname(__FILE__) . "/bootstrap.php";',
+            IncludeType::Require,
+            '*/bootstrap.php',
+        ];
+
+        yield 'dirname(__FILE__, 2)' => [
+            '<?php require dirname(__FILE__, 2) . "/config/app.php";',
+            IncludeType::Require,
+            '*/config/app.php',
+        ];
+
+        yield 'dirname(__DIR__, 2)' => [
+            '<?php require dirname(__DIR__, 2) . "/vendor/autoload.php";',
+            IncludeType::Require,
+            '*/vendor/autoload.php',
+        ];
+
+        yield 'dirname(__FILE__, 3)' => [
+            '<?php require dirname(__FILE__, 3) . "/bootstrap.php";',
+            IncludeType::Require,
+            '*/bootstrap.php',
+        ];
+    }
+
+    #[DataProvider('getScriptWithPathPatternViolationProvider')]
+    public function testToUseIncludeWithPathPatternViolates(
+        string $rawScript,
+        IncludeType $includeType,
+        string $pathPattern,
+        string $expectedViolation,
+    ): void {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw($rawScript)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseInclude($includeType, $pathPattern),
+            );
+
+        self::assertRulesViolation($rules, $expectedViolation);
+    }
+
+    public static function getScriptWithPathPatternViolationProvider(): Generator
+    {
+        yield 'path does not match pattern' => [
+            '<?php require "other/path.php";',
+            IncludeType::Require,
+            'vendor/*',
+            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'other/path.php'</fire> which does not match pattern <promote>'vendor/*'</promote>",
+        ];
+
+        yield 'dynamic path (variable) is a violation' => [
+            '<?php require $path;',
+            IncludeType::Require,
+            'vendor/*',
+            "Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>'vendor/*'</fire>",
+        ];
+
+        yield 'dirname(__FILE__, 2) path does not match pattern' => [
+            '<?php require dirname(__FILE__, 2) . "/config/app.php";',
+            IncludeType::Require,
+            'vendor/*',
+            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'./config/app.php'</fire> which does not match pattern <promote>'vendor/*'</promote>",
+        ];
+
+        yield 'dirname(__DIR__, 2) path does not match pattern' => [
+            '<?php require dirname(__DIR__, 2) . "/vendor/autoload.php";',
+            IncludeType::Require,
+            'config/*',
+            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'./vendor/autoload.php'</fire> which does not match pattern <promote>'config/*'</promote>",
+        ];
+    }
 }

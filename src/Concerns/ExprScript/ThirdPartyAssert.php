@@ -29,9 +29,9 @@ trait ThirdPartyAssert
         return $this->addExpr(new ToUseDeclare($key, $value, $message));
     }
 
-    public function toUseInclude(IncludeType $includeType, string $message = ''): self
+    public function toUseInclude(IncludeType $includeType, ?string $pathPattern = null, string $message = ''): self
     {
-        return $this->addExpr(new ToUseInclude($includeType, $message));
+        return $this->addExpr(new ToUseInclude($includeType, $pathPattern, $message));
     }
 
     public function toNotUseInclude(string $message = ''): self

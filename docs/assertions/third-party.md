@@ -49,7 +49,6 @@ $this
   ->should(fn(ExprScript $expr) => $expr->toNotHaveAnonymousClass());
 ```
 
-
 ## toUseStrictTypes()
 
 ```php
@@ -114,9 +113,32 @@ Allows an inclusion (`include*`/`require*`) in a script or class.
 use StructuraPhp\Structura\Enums\IncludeType;
 $this
     ->allScripts()
-    ->fromRaw('<?php require "foo.php";')
+    ->fromRaw('<?php require "vendor/autoload.php";')
     ->should(fn(ExprScript $expr) => $expr->toUseInclude(IncludeType::Require));
 ```
+
+### With a path pattern
+
+An optional second parameter `$pathPattern` allows you to verify that the included path matches a glob pattern.
+
+```php
+use StructuraPhp\Structura\Enums\IncludeType;
+$this
+    ->allScripts()
+    ->fromDir('src')
+    ->should(fn(ExprScript $expr) => $expr->toUseInclude(IncludeType::Require, '*/vendor/autoload.php'));
+```
+
+The following expressions are statically resolved:
+
+| Expression                           | Resolved value                      |
+|--------------------------------------|-------------------------------------|
+| `"literal/path.php"`                 | `literal/path.php`                  |
+| `__DIR__ . "/file.php"`              | `{file_directory}/file.php`         |
+| `__FILE__`                           | `{file_path}`                       |
+| `dirname(__FILE__) . "/file.php"`    | `{file_directory}/file.php`         |
+| `dirname(__FILE__, 2) . "/file.php"` | `{two_levels_up}/file.php`          |
+| `dirname(__DIR__, N) . "/file.php"`  | `{N_levels_up}/file.php`            |
 
 ## toNotUseInclude()
 
