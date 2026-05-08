@@ -26,15 +26,17 @@ final readonly class CustomRule implements ExprInterface
         return true; // Must return false if the test fails
     }
 
-    public function getViolation(ClassDescription $class): ViolationValueObject
+    public function getViolation(ClassDescription $class): array
     {
-        return new ViolationValueObject(
-            'error message', // Console output
-            $this::class,
-            $class->lines,
-            $class->getFileBasename(),
-            $this->message,
-        );
+        return [
+            new ViolationValueObject(
+                'error message', // Console output
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            ),
+        ];
     }
 }
 ```

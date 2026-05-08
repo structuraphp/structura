@@ -1,15 +1,17 @@
 import {defineConfig} from 'vitepress'
 
 export default defineConfig({
-    title: 'StructuraPHP',
+    title: 'Structura',
     description: 'Architectural testing tool for PHP',
-    base: '/',
+    base: '/structura/',
 
     head: [
         ['link', {rel: 'icon', type: 'image/svg+xml', href: '/logo.svg'}],
     ],
 
     themeConfig: {
+        externalLinkIcon: true,
+
         nav: [
             {text: 'Guide', link: '/guide/getting-started'},
             {text: 'Assertions', link: '/assertions/types'},
@@ -73,7 +75,7 @@ export default defineConfig({
 
         footer: {
             message: 'Released under the MIT License.',
-            copyright: 'Copyright © 2024-present StructuraPHP',
+            copyright: 'Copyright © 2024-present Structura',
         },
     },
 })
