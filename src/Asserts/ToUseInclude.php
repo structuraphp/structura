@@ -13,12 +13,16 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\MagicConst\Dir;
 use PhpParser\Node\Scalar\MagicConst\File;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Contracts\PathResolverAwareInterface;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final class ToUseInclude implements ExprScriptInterface
+final class ToUseInclude implements ExprScriptInterface, PathResolverAwareInterface
 {
+    /** @var array<string, string> */
+    private array $pathResolvers = [];
+
     public function __construct(
         private IncludeType $includeType,
         private ?string $pathPattern = null,
@@ -36,6 +40,11 @@ final class ToUseInclude implements ExprScriptInterface
         }
 
         return \sprintf('to use <promote>%s</promote>', $this->includeType->label());
+    }
+
+    public function setPathResolvers(array $pathResolvers): void
+    {
+        $this->pathResolvers = $pathResolvers;
     }
 
     public function assert(ScriptDescription $description): bool
@@ -137,26 +146,34 @@ final class ToUseInclude implements ExprScriptInterface
                 return $filePath;
             }
 
-            if ($node instanceof FuncCall && $node->name instanceof Name && $node->name->toString() === 'dirname') {
-                $arg = $node->args[0] instanceof Arg
-                    ? $node->args[0]->value
-                    : null;
+            if ($node instanceof FuncCall && $node->name instanceof Name) {
+                $funcName = $node->name->toString();
 
-                if ($arg instanceof Expr) {
-                    $resolved = $self->resolvePath($arg, $filePath);
+                if (isset($self->pathResolvers[$funcName])) {
+                    return $self->pathResolvers[$funcName];
+                }
 
-                    if ($resolved !== null) {
-                        $levels = 1;
+                if ($funcName === 'dirname') {
+                    $arg = $node->args[0] instanceof Arg
+                        ? $node->args[0]->value
+                        : null;
 
-                        if (isset($node->args[1]) && $node->args[1] instanceof Arg) {
-                            $levelsValue = $evaluator?->evaluateSilently($node->args[1]->value);
+                    if ($arg instanceof Expr) {
+                        $resolved = $self->resolvePath($arg, $filePath);
 
-                            if (\is_int($levelsValue) && $levelsValue > 0) {
-                                $levels = $levelsValue;
+                        if ($resolved !== null) {
+                            $levels = 1;
+
+                            if (isset($node->args[1]) && $node->args[1] instanceof Arg) {
+                                $levelsValue = $evaluator?->evaluateSilently($node->args[1]->value);
+
+                                if (\is_int($levelsValue) && $levelsValue > 0) {
+                                    $levels = $levelsValue;
+                                }
                             }
-                        }
 
-                        return dirname($resolved, $levels);
+                            return dirname($resolved, $levels);
+                        }
                     }
                 }
             }

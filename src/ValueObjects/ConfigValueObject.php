@@ -14,6 +14,7 @@ final readonly class ConfigValueObject
      * @param array<string,ErrorFormatterInterface> $errorFormatter
      * @param array<string,ProgressFormatterInterface> $progressFormatter
      * @param array<int,string> $extensions
+     * @param array<string,string> $pathResolvers
      */
     public function __construct(
         public array $testSuites,
@@ -22,5 +23,6 @@ final readonly class ConfigValueObject
         public array $progressFormatter,
         public array $extensions,
         public ?string $autoload,
+        public array $pathResolvers = [],
     ) {}
 }

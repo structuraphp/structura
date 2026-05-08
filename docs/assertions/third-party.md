@@ -139,6 +139,36 @@ The following expressions are statically resolved:
 | `dirname(__FILE__) . "/file.php"`    | `{file_directory}/file.php`         |
 | `dirname(__FILE__, 2) . "/file.php"` | `{two_levels_up}/file.php`          |
 | `dirname(__DIR__, N) . "/file.php"`  | `{N_levels_up}/file.php`            |
+| `base_path() . "/file.php"` ¹        | `{registered_path}/file.php`        |
+
+> ¹ Requires declaring the resolver with `addPathResolver()` in the configuration. See [configuration](/guide/configuration).
+
+### With a custom path resolver
+
+When a project uses helper functions to build paths (e.g. `base_path()`, `app_path()` in Laravel),
+you can register them in the configuration so `toUseInclude` can resolve them statically.
+The function arguments are **always ignored** — only the function name is matched and the registered path is returned directly.
+
+```php
+// structura.php
+$config->addPathResolver('base_path', '/var/www');
+$config->addPathResolver('app_path', '/var/www/app');
+```
+
+```php
+use StructuraPhp\Structura\Enums\IncludeType;
+$this
+    ->allScripts()
+    ->fromDir('bootstrap')
+    ->should(fn(ExprScript $expr) => $expr->toUseInclude(IncludeType::Require, '*/vendor/autoload.php'));
+```
+
+The script `bootstrap/app.php` containing `require base_path() . "/vendor/autoload.php";`
+will resolve to `/var/www/vendor/autoload.php` and match the pattern `*/vendor/autoload.php`.
+
+::: warning
+The function name `dirname` is reserved by the static analysis engine and **cannot** be registered as a path resolver.
+:::
 
 ## toNotUseInclude()
 

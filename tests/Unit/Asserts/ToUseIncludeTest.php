@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
 use Generator;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToUseInclude;
+use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
@@ -330,5 +332,111 @@ final class ToUseIncludeTest extends TestCase
             'config/*',
             "Resource <promote>tmp/run_0.php</promote> uses path <fire>'./vendor/autoload.php'</fire> which does not match pattern <promote>'config/*'</promote>",
         ];
+    }
+
+    #[DataProvider('getScriptWithPathResolverPassesProvider')]
+    public function testToUseIncludeWithPathResolverPasses(
+        string $rawScript,
+        IncludeType $includeType,
+        string $pathPattern,
+        string $resolverName,
+        string $resolverPath,
+    ): void {
+        $ruleBuilder = $this
+            ->allScripts()
+            ->fromRaw($rawScript)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseInclude($includeType, $pathPattern),
+            );
+
+        $ruleBuilder->setPathResolvers([$resolverName => $resolverPath]);
+
+        self::assertRulesPass(
+            $ruleBuilder,
+            sprintf(
+                "to use <promote>%s</promote> with path matching <promote>'%s'</promote>",
+                $includeType->label(),
+                $pathPattern,
+            ),
+        );
+    }
+
+    public static function getScriptWithPathResolverPassesProvider(): Generator
+    {
+        yield 'base_path() with no arguments matches registered path' => [
+            '<?php require base_path() . "/vendor/autoload.php";',
+            IncludeType::Require,
+            '*/vendor/autoload.php',
+            'base_path',
+            '/var/www',
+        ];
+
+        yield 'app_path() — arguments are ignored, concatenation resolves final path' => [
+            '<?php require app_path() . "/bootstrap.php";',
+            IncludeType::Require,
+            '*/bootstrap.php',
+            'app_path',
+            '/var/www/app',
+        ];
+
+        yield 'custom_resolver() concatenated' => [
+            '<?php require_once custom_resolver() . "/config/app.php";',
+            IncludeType::RequireOnce,
+            '*/config/app.php',
+            'custom_resolver',
+            '/srv/app',
+        ];
+    }
+
+    #[DataProvider('getScriptWithPathResolverViolationProvider')]
+    public function testToUseIncludeWithPathResolverViolates(
+        string $rawScript,
+        IncludeType $includeType,
+        string $pathPattern,
+        string $resolverName,
+        string $resolverPath,
+        string $expectedViolation,
+    ): void {
+        $ruleBuilder = $this
+            ->allScripts()
+            ->fromRaw($rawScript)
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseInclude($includeType, $pathPattern),
+            );
+
+        $ruleBuilder->setPathResolvers([$resolverName => $resolverPath]);
+
+        self::assertRulesViolation($ruleBuilder, $expectedViolation);
+    }
+
+    public static function getScriptWithPathResolverViolationProvider(): Generator
+    {
+        yield 'path does not match registered resolver path' => [
+            '<?php require base_path() . "/vendor/autoload.php";',
+            IncludeType::Require,
+            'config/*',
+            'base_path',
+            '/var/www',
+            "Resource <promote>tmp/run_0.php</promote> uses path <fire>'/var/www/vendor/autoload.php'</fire> which does not match pattern <promote>'config/*'</promote>",
+        ];
+
+        yield 'unknown function is treated as dynamic path — violation' => [
+            '<?php require unknown_fn() . "/vendor/autoload.php";',
+            IncludeType::Require,
+            '*/vendor/autoload.php',
+            'base_path',
+            '/var/www',
+            "Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>'*/vendor/autoload.php'</fire>",
+        ];
+    }
+
+    public function testAddPathResolverWithDirnameThrowsException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('"dirname"');
+
+        StructuraConfig::make()->addPathResolver('dirname', '/some/path');
     }
 }

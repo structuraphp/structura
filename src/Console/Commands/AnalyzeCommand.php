@@ -92,6 +92,7 @@ final class AnalyzeCommand extends Command
                     stopOnWarning: $this->analyzeDto->stopOnWarning,
                     stopOnNotice: $this->analyzeDto->stopOnNotice,
                     filter: $this->analyzeDto->filter,
+                    pathResolvers: $this->configValueObject->pathResolvers,
                 );
                 $analyseResult = $analyseService
                     ->analyse(
