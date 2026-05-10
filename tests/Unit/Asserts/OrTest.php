@@ -12,10 +12,11 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversMethod(Expr::class, 'or')]
+#[CoversMethod(AbstractExpr::class, 'or')]
 final class OrTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotUseTrait::class)]
-#[CoversMethod(Expr::class, 'toNotUseTrait')]
+#[CoversMethod(RelationAssert::class, 'toNotUseTrait')]
 final class ToNotUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;

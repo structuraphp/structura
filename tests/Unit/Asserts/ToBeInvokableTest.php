@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveMethod::class)]
-#[CoversMethod(Expr::class, 'toBeInvokable')]
+#[CoversMethod(TypeAssert::class, 'toBeInvokable')]
 final class ToBeInvokableTest extends TestCase
 {
     use ArchitectureAsserts;

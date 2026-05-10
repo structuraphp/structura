@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeReadonly::class)]
-#[CoversMethod(Expr::class, 'toBeReadonly')]
+#[CoversMethod(TypeAssert::class, 'toBeReadonly')]
 final class ToBeReadonlyTest extends TestCase
 {
     use ArchitectureAsserts;

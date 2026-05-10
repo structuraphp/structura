@@ -14,12 +14,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOn::class)]
-#[CoversMethod(Expr::class, 'toNotDependsOn')]
+#[CoversMethod(DependencyAssert::class, 'toNotDependsOn')]
 final class ToNotDependsOnTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Concerns;
 
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Concerns\Arr;
 
-#[CoversClass(Arr::class)]
+#[CoversMethod(Arr::class, 'implodeMore')]
 final class ArrTest extends TestCase
 {
     use Arr;

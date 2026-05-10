@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToImplement;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToImplement::class)]
-#[CoversMethod(Expr::class, 'toImplement')]
+#[CoversMethod(RelationAssert::class, 'toImplement')]
 final class ToImplementTest extends TestCase
 {
     use ArchitectureAsserts;

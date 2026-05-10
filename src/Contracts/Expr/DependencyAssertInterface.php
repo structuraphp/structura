@@ -45,14 +45,4 @@ interface DependencyAssertInterface
         array|string $patterns = [],
         string $message = '',
     ): self;
-
-    /**
-     * @param array<int,string>|string $names
-     * @param array<int,string>|string $patterns regex patterns to match class names against
-     */
-    public function dependsOnlyOnFunction(
-        array|string $names = [],
-        array|string $patterns = [],
-        string $message = '',
-    ): self;
 }

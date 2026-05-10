@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SensitiveParameter;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnAttribut::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnAttribut')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnAttribut')]
 final class DependsOnlyOnAttributTest extends TestCase
 {
     use ArchitectureAsserts;

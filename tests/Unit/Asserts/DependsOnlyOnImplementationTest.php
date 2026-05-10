@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnImplementation::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnImplementation')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnImplementation')]
 final class DependsOnlyOnImplementationTest extends TestCase
 {
     use ArchitectureAsserts;

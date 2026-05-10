@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Concerns\Console;
 
-use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Concerns\Console\Version;
 
-#[CoversClass(Version::class)]
+#[CoversMethod(Version::class, 'getInfos')]
 final class VersionTest extends TestCase
 {
     use Version;

@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToReturnArray;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToReturnArray::class)]
-#[CoversMethod(ExprScript::class, 'toReturnArray')]
+#[CoversMethod(ThirdPartyAssert::class, 'toReturnArray')]
 final class ToReturnArrayTest extends TestCase
 {
     use ArchitectureAsserts;

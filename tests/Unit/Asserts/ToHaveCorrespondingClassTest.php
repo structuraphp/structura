@@ -9,12 +9,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
+use StructuraPhp\Structura\Concerns\Expr\CorrespondingAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorrespondingClass::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingClass')]
+#[CoversMethod(CorrespondingAssert::class, 'toHaveCorrespondingClass')]
 class ToHaveCorrespondingClassTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -88,7 +89,7 @@ class ToHaveCorrespondingClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             $output,
-            [14, 18, 16, 17],
+            [15, 19, 17, 18],
         );
     }
 }

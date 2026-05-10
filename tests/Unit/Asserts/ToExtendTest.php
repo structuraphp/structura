@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToExtend::class)]
-#[CoversMethod(Expr::class, 'toExtend')]
+#[CoversMethod(RelationAssert::class, 'toExtend')]
 final class ToExtendTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToUseTrait::class)]
-#[CoversMethod(Expr::class, 'toUseTrait')]
+#[CoversMethod(RelationAssert::class, 'toUseTrait')]
 final class ToUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -8,12 +8,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingFile;
+use StructuraPhp\Structura\Concerns\Expr\CorrespondingAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorrespondingFile::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingFile')]
+#[CoversMethod(CorrespondingAssert::class, 'toHaveCorrespondingFile')]
 final class ToHaveCorrespondingFileTest extends TestCase
 {
     use ArchitectureAsserts;

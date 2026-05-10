@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeFinal::class)]
-#[CoversMethod(Expr::class, 'toBeFinal')]
+#[CoversMethod(TypeAssert::class, 'toBeFinal')]
 final class ToBeFinalTest extends TestCase
 {
     use ArchitectureAsserts;

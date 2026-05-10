@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveOnlyAttribute::class)]
-#[CoversMethod(Expr::class, 'toHaveNoAttribute')]
+#[CoversMethod(RelationAssert::class, 'toHaveNoAttribute')]
 final class ToHaveOnlyAttributeTest extends TestCase
 {
     use ArchitectureAsserts;

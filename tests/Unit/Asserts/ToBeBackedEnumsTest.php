@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Enums\ScalarType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeBackedEnums::class)]
-#[CoversMethod(Expr::class, 'toBeBackedEnums')]
+#[CoversMethod(TypeAssert::class, 'toBeBackedEnums')]
 class ToBeBackedEnumsTest extends TestCase
 {
     use ArchitectureAsserts;

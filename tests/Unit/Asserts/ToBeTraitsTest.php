@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeTraits::class)]
-#[CoversMethod(Expr::class, 'toBeTraits')]
+#[CoversMethod(TypeAssert::class, 'toBeTraits')]
 final class ToBeTraitsTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -11,12 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotDependsOnPhpDoc;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
-use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOnPhpDoc::class)]
-#[CoversMethod(ExprScript::class, 'toNotDependsOnPhpDoc')]
+#[CoversMethod(DependencyAssert::class, 'toNotDependsOnPhpDoc')]
 final class ToNotDependsOnPhpDocTest extends TestCase
 {
     use ArchitectureAsserts;

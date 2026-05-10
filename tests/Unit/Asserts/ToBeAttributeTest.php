@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeAttribute;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeAttribute::class)]
-#[CoversMethod(Expr::class, 'toBeAttribute')]
+#[CoversMethod(TypeAssert::class, 'toBeAttribute')]
 class ToBeAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -43,6 +44,36 @@ class ToBeAttributeTest extends TestCase
             Attribute::TARGET_ALL,
         ];
 
+        yield 'target class' => [
+            '<?php #[Attribute(Attribute::TARGET_CLASS)] class Foo {};',
+            Attribute::TARGET_CLASS,
+        ];
+
+        yield 'target function' => [
+            '<?php #[Attribute(Attribute::TARGET_FUNCTION)] class Foo {};',
+            Attribute::TARGET_FUNCTION,
+        ];
+
+        yield 'target method' => [
+            '<?php #[Attribute(Attribute::TARGET_METHOD)] class Foo {};',
+            Attribute::TARGET_METHOD,
+        ];
+
+        yield 'target property' => [
+            '<?php #[Attribute(Attribute::TARGET_PROPERTY)] class Foo {};',
+            Attribute::TARGET_PROPERTY,
+        ];
+
+        yield 'target class constant' => [
+            '<?php #[Attribute(Attribute::TARGET_CLASS_CONSTANT)] class Foo {};',
+            Attribute::TARGET_CLASS_CONSTANT,
+        ];
+
+        yield 'target parameter' => [
+            '<?php #[Attribute(Attribute::TARGET_PARAMETER)] class Foo {};',
+            Attribute::TARGET_PARAMETER,
+        ];
+
         yield 'target all' => [
             '<?php #[Attribute(Attribute::TARGET_ALL)] class Foo {};',
             Attribute::TARGET_ALL,
@@ -50,7 +81,12 @@ class ToBeAttributeTest extends TestCase
 
         yield 'with a multiple mask' => [
             '<?php #[Attribute(Attribute::TARGET_CLASS_CONSTANT | Attribute::TARGET_PARAMETER)] class Foo {};',
-            Attribute::TARGET_PARAMETER | Attribute::TARGET_CLASS_CONSTANT,
+            Attribute::TARGET_CLASS_CONSTANT | Attribute::TARGET_PARAMETER,
+        ];
+
+        yield 'repeatable' => [
+            '<?php #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_PARAMETER)] class Foo {};',
+            Attribute::IS_REPEATABLE | Attribute::TARGET_PARAMETER,
         ];
     }
 
@@ -80,6 +116,10 @@ class ToBeAttributeTest extends TestCase
 
         yield 'class with a bad parameter' => [
             '<?php #[Attribute(1)] class Foo {};',
+        ];
+
+        yield 'class with a bad parameter and multiple attributes' => [
+            '<?php #[AllowDynamicProperties] #[Attribute(1)]  class Foo {};',
         ];
 
         yield 'abstract class' => [

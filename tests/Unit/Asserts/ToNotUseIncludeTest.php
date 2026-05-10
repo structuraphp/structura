@@ -10,13 +10,14 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotUseInclude::class)]
-#[CoversMethod(Expr::class, 'toNotUseInclude')]
+#[CoversMethod(ThirdPartyAssert::class, 'toNotUseInclude')]
 final class ToNotUseIncludeTest extends TestCase
 {
     use ArchitectureAsserts;

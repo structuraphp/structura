@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnInheritance::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnInheritance')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnInheritance')]
 final class DependsOnlyOnInheritanceTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -89,9 +90,37 @@ final class DependsOnlyOnInheritanceTest extends TestCase
         yield 'with bad extends' => ['<?php class Foo extends \BadExtends {}'];
 
         yield 'with bad extends and good pattern' => ['<?php interface Foo extends \BadExtends, \Dependencies\Acme\Foo {}'];
+    }
 
-        yield 'with bad name and good name' => [
-            '<?php interface Foo extends \BadExtends, \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}',
-        ];
+    public function testShouldFailToExtendsWithInterfaceMultiple(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php interface Foo extends \BadExtends2, \BadExtends1, \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnInheritance(
+                        names: ControllerBase::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
+                    ControllerBase::class,
+                    'Dependencies\Acme\.*',
+                    'BadExtends2',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
+                    ControllerBase::class,
+                    'Dependencies\Acme\.*',
+                    'BadExtends1',
+                ),
+            ],
+        );
     }
 }

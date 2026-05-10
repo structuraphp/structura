@@ -39,7 +39,7 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Traits),
         );
 
-        return array_diff($class->getTraitNames(), array_unique($dependencies)) === [];
+        return array_diff($class->getTraitNames(), $dependencies) === [];
     }
 
     /**
@@ -53,7 +53,6 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Traits),
         );
         $violations = array_diff($class->getTraitNames(), $dependencies);
-        sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {

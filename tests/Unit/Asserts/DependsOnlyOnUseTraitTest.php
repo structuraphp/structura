@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnUseTrait::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnUseTrait')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnUseTrait')]
 final class DependsOnlyOnUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;

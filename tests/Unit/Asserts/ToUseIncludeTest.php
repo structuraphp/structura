@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToUseInclude;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Expr;
@@ -18,7 +19,7 @@ use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToUseInclude::class)]
-#[CoversMethod(Expr::class, 'toUseInclude')]
+#[CoversMethod(ThirdPartyAssert::class, 'toUseInclude')]
 final class ToUseIncludeTest extends TestCase
 {
     use ArchitectureAsserts;
