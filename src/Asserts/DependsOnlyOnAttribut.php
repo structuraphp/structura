@@ -39,7 +39,7 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Attributes),
         );
 
-        return array_diff($class->getAttributeNames(), array_unique($dependencies)) === [];
+        return array_diff($class->getAttributeNames(), $dependencies) === [];
     }
 
     /**
@@ -53,7 +53,6 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Attributes),
         );
         $violations = array_diff($class->getAttributeNames(), $dependencies);
-        sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {

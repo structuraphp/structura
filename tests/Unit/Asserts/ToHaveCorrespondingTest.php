@@ -9,13 +9,16 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
+use StructuraPhp\Structura\Concerns\Expr\CorrespondingAssert;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
+use StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface;
 use StructuraPhp\Structura\Tests\Fixture\Enum\UserStatus;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorresponding::class)]
-#[CoversMethod(Expr::class, 'toHaveCorresponding')]
+#[CoversMethod(CorrespondingAssert::class, 'toHaveCorresponding')]
 class ToHaveCorrespondingTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -88,5 +91,50 @@ class ToHaveCorrespondingTest extends TestCase
             $output,
             [7],
         );
+    }
+
+    public function testToHaveCorrespondingEnum(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveCorresponding(
+                        static fn (ClassDescription $class): string => UserStatus::class,
+                    ),
+            );
+
+        self::assertRulesPass($rules, 'to have corresponding');
+    }
+
+    public function testToHaveCorrespondingInterface(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveCorresponding(
+                        static fn (ClassDescription $class): string => ShouldQueueInterface::class,
+                    ),
+            );
+
+        self::assertRulesPass($rules, 'to have corresponding');
+    }
+
+    public function testToHaveCorrespondingTrait(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveCorresponding(
+                        static fn (ClassDescription $class): string => HasFactory::class,
+                    ),
+            );
+
+        self::assertRulesPass($rules, 'to have corresponding');
     }
 }

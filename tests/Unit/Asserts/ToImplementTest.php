@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
+use ArrayAccess;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
@@ -11,11 +12,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToImplement;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToImplement::class)]
-#[CoversMethod(Expr::class, 'toImplement')]
+#[CoversMethod(RelationAssert::class, 'toImplement')]
 final class ToImplementTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -54,16 +56,23 @@ final class ToImplementTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toImplement(Stringable::class),
+                    ->toImplement([Stringable::class, ArrayAccess::class]),
             );
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must implement <promote>%s</promote>',
-                $exceptName,
-                Stringable::class,
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                    $exceptName,
+                    Stringable::class,
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                    $exceptName,
+                    ArrayAccess::class,
+                ),
+            ],
         );
     }
 
@@ -76,5 +85,24 @@ final class ToImplementTest extends TestCase
         yield 'enum' => ['<?php enum Foo {};'];
 
         yield 'interface' => ['<?php interface Foo {}'];
+    }
+
+    public function testShouldFailToImplementWithPartialMatch(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo implements \Stringable {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toImplement([Stringable::class, ArrayAccess::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must implement <promote>%s</promote>',
+                ArrayAccess::class,
+            ),
+        );
     }
 }

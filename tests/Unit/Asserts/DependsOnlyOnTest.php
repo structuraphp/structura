@@ -13,12 +13,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOn::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOn')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOn')]
 final class DependsOnlyOnTest extends TestCase
 {
     use ArchitectureAsserts;

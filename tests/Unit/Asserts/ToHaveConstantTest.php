@@ -10,15 +10,16 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveConstant;
+use StructuraPhp\Structura\Concerns\Expr\ConstantAssert;
 use StructuraPhp\Structura\Enums\VisibilityType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveConstant::class)]
-#[CoversMethod(Expr::class, 'toHaveConstant')]
-#[CoversMethod(Expr::class, 'toHavePublicConstant')]
-#[CoversMethod(Expr::class, 'toHaveProtectedConstant')]
-#[CoversMethod(Expr::class, 'toHavePrivateConstant')]
+#[CoversMethod(ConstantAssert::class, 'toHaveConstant')]
+#[CoversMethod(ConstantAssert::class, 'toHavePublicConstant')]
+#[CoversMethod(ConstantAssert::class, 'toHaveProtectedConstant')]
+#[CoversMethod(ConstantAssert::class, 'toHavePrivateConstant')]
 final class ToHaveConstantTest extends TestCase
 {
     use ArchitectureAsserts;

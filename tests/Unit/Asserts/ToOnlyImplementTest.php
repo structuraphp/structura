@@ -13,11 +13,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToOnlyImplement::class)]
-#[CoversMethod(Expr::class, 'toOnlyImplement')]
+#[CoversMethod(RelationAssert::class, 'toOnlyImplement')]
 final class ToOnlyImplementTest extends TestCase
 {
     use ArchitectureAsserts;

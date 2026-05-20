@@ -40,7 +40,7 @@ final readonly class DependsOnlyOnPhpDoc implements ExprScriptInterface
             $description->getDependenciesByPatterns($this->patterns, DependenciesType::PhpDoc),
         );
 
-        return array_diff($description->getDocBlockDependencies(), array_unique($dependencies)) === [];
+        return array_diff($description->getDocBlockDependencies(), $dependencies) === [];
     }
 
     /**
@@ -54,7 +54,6 @@ final readonly class DependsOnlyOnPhpDoc implements ExprScriptInterface
             $description->getDependenciesByPatterns($this->patterns, DependenciesType::PhpDoc),
         );
         $violations = array_diff($description->getDocBlockDependencies(), $dependencies);
-        sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {

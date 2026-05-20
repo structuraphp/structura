@@ -8,10 +8,11 @@ use ArrayAccess;
 use Iterator;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversMethod(Expr::class, 'and')]
+#[CoversMethod(AbstractExpr::class, 'and')]
 final class AndTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -42,18 +42,16 @@ final readonly class ToBeAttribute implements ExprInterface
             return false;
         }
 
-        foreach ($class->attrGroups as $attrGroup) {
-            foreach ($attrGroup->attrs as $attr) {
-                if ($attr->name->toString() !== Attribute::class) {
-                    continue;
-                }
-
-                try {
-                    return $this->checkFlag($attr->args);
-                } catch (InvalidArgumentException) {
-                    return false;
+        try {
+            foreach ($class->attrGroups as $attrGroup) {
+                foreach ($attrGroup->attrs as $attr) {
+                    if ($attr->name->toString() === Attribute::class) {
+                        return $this->checkFlag($attr->args);
+                    }
                 }
             }
+        } catch (InvalidArgumentException) {
+            // Nothing, just return false if the flag is not valid
         }
 
         return false;
@@ -116,8 +114,10 @@ final readonly class ToBeAttribute implements ExprInterface
 
             $targets[] = $name->name;
         } elseif ($node instanceof BitwiseOr) {
-            $targets = array_merge($targets, $this->extractTargetValues($node->left));
-            $targets = array_merge($targets, $this->extractTargetValues($node->right));
+            $targets = array_merge(
+                $this->extractTargetValues($node->left),
+                $this->extractTargetValues($node->right),
+            );
         } elseif (is_array($node)) {
             foreach ($node as $child) {
                 $targets = array_merge($targets, $this->extractTargetValues($child));
@@ -140,7 +140,7 @@ final readonly class ToBeAttribute implements ExprInterface
             'TARGET_PARAMETER' => Attribute::TARGET_PARAMETER,
             'TARGET_ALL' => Attribute::TARGET_ALL,
             'IS_REPEATABLE' => Attribute::IS_REPEATABLE,
-            default => 0,
+            default => throw new InvalidArgumentException('The node is not a valid flag'),
         };
     }
 }

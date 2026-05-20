@@ -10,13 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotHaveAnonymousClass::class)]
-#[CoversMethod(Expr::class, 'toNotHaveAnonymousClass')]
-#[CoversMethod(ExprScript::class, 'toNotHaveAnonymousClass')]
+#[CoversMethod(ThirdPartyAssert::class, 'toNotHaveAnonymousClass')]
 final class ToNotHaveAnonymousClassTest extends TestCase
 {
     use ArchitectureAsserts;

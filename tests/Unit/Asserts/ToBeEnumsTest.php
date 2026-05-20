@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeEnums::class)]
-#[CoversMethod(Expr::class, 'toBeEnums')]
+#[CoversMethod(TypeAssert::class, 'toBeEnums')]
 final class ToBeEnumsTest extends TestCase
 {
     use ArchitectureAsserts;

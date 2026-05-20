@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnUseTrait::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnUseTrait')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnUseTrait')]
 final class DependsOnlyOnUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -89,5 +90,37 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         yield 'with bad trait and good pattern' => ['<?php class Foo { use \BadTrait, \Dependencies\Acme\Foo; }'];
 
         yield 'with bad name and good name' => ['<?php class Foo { use \BadTrait, \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
+    }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { use \BadTrait1, \BadTrait2; }')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait2',
+                ),
+            ],
+        );
     }
 }

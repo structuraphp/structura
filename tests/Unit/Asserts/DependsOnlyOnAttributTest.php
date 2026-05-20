@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SensitiveParameter;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnAttribut::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnAttribut')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnAttribut')]
 final class DependsOnlyOnAttributTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -89,5 +90,37 @@ final class DependsOnlyOnAttributTest extends TestCase
         yield 'with bad name and good name' => [
             '<?php #[\BadAttribute] #[\SensitiveParameter] class Foo {}',
         ];
+    }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php #[\BadAttribute1] #[\BadAttribute2] class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnAttribut(
+                        names: SensitiveParameter::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
+                    SensitiveParameter::class,
+                    'Dependencies\Acme\.*',
+                    'BadAttribute1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
+                    SensitiveParameter::class,
+                    'Dependencies\Acme\.*',
+                    'BadAttribute2',
+                ),
+            ],
+        );
     }
 }

@@ -8,12 +8,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[CoversClass(ToHaveFilePermission::class)]
-#[CoversMethod(ExprScript::class, 'toHaveFilePermission')]
+#[CoversMethod(ThirdPartyAssert::class, 'toHaveFilePermission')]
 final class ToHaveFilePermissionTest extends TestCase
 {
     use ArchitectureAsserts;

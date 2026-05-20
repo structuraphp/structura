@@ -10,13 +10,14 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotUseInclude::class)]
-#[CoversMethod(Expr::class, 'toNotUseInclude')]
+#[CoversMethod(ThirdPartyAssert::class, 'toNotUseInclude')]
 final class ToNotUseIncludeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -164,5 +165,32 @@ final class ToNotUseIncludeTest extends TestCase
                 $include,
             ];
         }
+    }
+
+    public function testShouldFailWithMultipleIncludes(): void
+    {
+        // Deux includes dans un même script → deux violations (tue ArrayOneItem)
+        $rules = $this
+            ->allScripts()
+            ->fromRaw('<?php require "foo.php"; require "bar.php";')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toNotUseInclude(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>tmp/run_0.php</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
+                    IncludeType::Require->label(),
+                ),
+                \sprintf(
+                    'Resource <promote>tmp/run_0.php</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
+                    IncludeType::Require->label(),
+                ),
+            ],
+            [1, 1],
+        );
     }
 }

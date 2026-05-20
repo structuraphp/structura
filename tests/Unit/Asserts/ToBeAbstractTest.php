@@ -9,11 +9,13 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Asserts\ToBeAbstract;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToBeAbstractTest::class)]
-#[CoversMethod(Expr::class, 'toBeAbstract')]
+#[CoversClass(ToBeAbstract::class)]
+#[CoversMethod(TypeAssert::class, 'toBeAbstract')]
 final class ToBeAbstractTest extends TestCase
 {
     use ArchitectureAsserts;

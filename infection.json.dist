@@ -1,0 +1,15 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "testFramework":"phpunit",
+    "staticAnalysisTool": "phpstan",
+    "mutators": {
+        "@default": true
+    },
+    "minCoveredMsi": 0.85,
+    "minMsi": 0.85,
+}

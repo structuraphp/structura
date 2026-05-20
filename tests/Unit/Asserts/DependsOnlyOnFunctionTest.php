@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnFunction::class)]
-#[CoversMethod(Expr::class, 'dependsOnlyOnFunction')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnFunction')]
 class DependsOnlyOnFunctionTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -29,14 +30,14 @@ class DependsOnlyOnFunctionTest extends TestCase
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->dependsOnlyOnFunction(
-                        names: 'strtolower',
-                        patterns: 'array_.+',
+                        names: ['strtolower', 'mb_strlen'],
+                        patterns: ['array_.+', 'date_.+'],
                     ),
             );
 
         self::assertRulesPass(
             $rules,
-            'depends only on function <promote>strtolower, array_.+</promote>',
+            'depends only on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
         );
     }
 
@@ -49,14 +50,14 @@ class DependsOnlyOnFunctionTest extends TestCase
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
                     ->dependsOnlyOnFunction(
-                        names: 'strtolower',
-                        patterns: 'array_.+',
+                        names: ['strtolower', 'mb_strlen'],
+                        patterns: ['array_.+', 'date_.+'],
                     ),
             );
 
         self::assertRulesPass(
             $rules,
-            'depends only on function <promote>strtolower, array_.+</promote>',
+            'depends only on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
         );
     }
 
@@ -69,7 +70,7 @@ class DependsOnlyOnFunctionTest extends TestCase
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->dependsOnlyOnFunction(
-                        names: 'strtoupper',
+                        names: ['strtoupper', 'date_create'],
                         patterns: 'mb_.+',
                     ),
             );
@@ -80,13 +81,13 @@ class DependsOnlyOnFunctionTest extends TestCase
                 \sprintf(
                     'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
-                    'strtoupper, mb_.+',
+                    'strtoupper, date_create, mb_.+',
                     'array_merge',
                 ),
                 sprintf(
                     'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
-                    'strtoupper, mb_.+',
+                    'strtoupper, date_create, mb_.+',
                     'strtolower',
                 ),
             ],
@@ -100,8 +101,10 @@ class DependsOnlyOnFunctionTest extends TestCase
             '<?php
              return new class {
                 public function __invoke() {
-                    array_merge([], []);
+                    mb_strlen("FOO");
                     strtolower("FOO");
+                    array_merge([], []);
+                    date_create("now");
                 }
             };',
             'Anonymous',
@@ -119,7 +122,7 @@ class DependsOnlyOnFunctionTest extends TestCase
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
                     ->dependsOnlyOnFunction(
-                        names: 'strtoupper',
+                        names: ['strtoupper', 'date_create'],
                         patterns: 'mb_.+',
                     ),
             );
@@ -130,13 +133,13 @@ class DependsOnlyOnFunctionTest extends TestCase
                 \sprintf(
                     'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
-                    'strtoupper, mb_.+',
+                    'strtoupper, date_create, mb_.+',
                     'array_merge',
                 ),
                 \sprintf(
                     'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
-                    'strtoupper, mb_.+',
+                    'strtoupper, date_create, mb_.+',
                     'strtolower',
                 ),
             ],
@@ -153,8 +156,10 @@ class DependsOnlyOnFunctionTest extends TestCase
             namespace Foo;
 
             function bar() {
-                array_merge([], []);
+                mb_strlen("BAR");
                 strtolower("FOO");
+                array_merge([], []);
+                date_create("now");
             }
             PHP,
             'Foo',
@@ -165,8 +170,10 @@ class DependsOnlyOnFunctionTest extends TestCase
             <?php
 
             function bar() {
-                array_merge([], []);
+                mb_strlen("BAR");
                 strtolower("FOO");
+                array_merge([], []);
+                date_create("now");
             }
             PHP,
             'tmp/run_0.php',

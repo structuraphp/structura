@@ -14,12 +14,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotDependsOn::class)]
-#[CoversMethod(Expr::class, 'toNotDependsOn')]
+#[CoversMethod(DependencyAssert::class, 'toNotDependsOn')]
 final class ToNotDependsOnTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -234,5 +235,37 @@ final class ToNotDependsOnTest extends TestCase
             PHP,
             'tmp/run_0.php',
         ];
+    }
+
+    public function testShouldFailToNotDependsOnOnlyIntersection(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                use ArrayAccess;
+                class Foo {
+                    public function __construct(ArrayAccess $a) {}
+                }
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOn(
+                        names: [ArrayAccess::class, Stringable::class],
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s but depends on <fire>%s</fire>',
+                ArrayAccess::class,
+                Stringable::class,
+                ArrayAccess::class,
+            ),
+            3,
+        );
     }
 }

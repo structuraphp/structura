@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToImplementNothing::class)]
-#[CoversMethod(Expr::class, 'toImplementNothing')]
+#[CoversMethod(RelationAssert::class, 'toImplementNothing')]
 final class ToImplementNothingTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -55,20 +56,27 @@ final class ToImplementNothingTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
-                $exceptName,
-                'BarInterface',
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    $exceptName,
+                    'BarInterface',
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    $exceptName,
+                    'BazInterface',
+                ),
+            ],
         );
     }
 
     public static function getClassLikeImplements(): Generator
     {
-        yield 'anonymous class' => ['<?php return new class implements BarInterface {};', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class implements BarInterface, BazInterface {};', 'Anonymous'];
 
-        yield 'class' => ['<?php class Foo implements BarInterface {}'];
+        yield 'class' => ['<?php class Foo implements BarInterface, BazInterface {}'];
 
-        yield 'enum' => ['<?php enum Foo implements BarInterface {}'];
+        yield 'enum' => ['<?php enum Foo implements BarInterface, BazInterface {}'];
     }
 }

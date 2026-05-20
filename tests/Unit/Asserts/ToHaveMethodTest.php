@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Concerns\Expr\MethodAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveMethod::class)]
-#[CoversMethod(Expr::class, 'toHaveMethod')]
+#[CoversMethod(MethodAssert::class, 'toHaveMethod')]
 final class ToHaveMethodTest extends TestCase
 {
     use ArchitectureAsserts;

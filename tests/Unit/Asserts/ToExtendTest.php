@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
+use ArrayIterator;
 use Exception;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -11,11 +12,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToExtend::class)]
-#[CoversMethod(Expr::class, 'toExtend')]
+#[CoversMethod(RelationAssert::class, 'toExtend')]
 final class ToExtendTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -73,5 +75,49 @@ final class ToExtendTest extends TestCase
         yield 'class' => ['<?php class Foo {}'];
 
         yield 'interface' => ['<?php interface Foo {}'];
+    }
+
+    public function testShouldFailToExtendsWithPartialMatch(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php interface Foo extends \Exception {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toExtend([Exception::class, ArrayIterator::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                ArrayIterator::class,
+            ),
+        );
+    }
+
+    public function testShouldFailToExtendsWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php interface Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toExtend([Exception::class, ArrayIterator::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                    Exception::class,
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                    ArrayIterator::class,
+                ),
+            ],
+        );
     }
 }

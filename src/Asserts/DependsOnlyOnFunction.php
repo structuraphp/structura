@@ -39,7 +39,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
             $description->getDependenciesFunctionByPatterns($this->patterns),
         );
 
-        return array_diff($description->getFunctionDependencies(), array_unique($dependencies)) === [];
+        return array_diff($description->getFunctionDependencies(), $dependencies) === [];
     }
 
     /**

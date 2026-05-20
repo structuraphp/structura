@@ -103,6 +103,11 @@ test: ## Run unit tests [usage: make test args="--filter=TestName --stop-on-fail
 	$(call printSection,TEST phpunit)
 	${BIN_DIR}/phpunit $(args)
 
+.PHONY: mutation-test
+mutation-test: ## Run mutation tests [usage: make test args="--filter=SourceName"]
+	$(call printSection,MUTATION TEST)
+	${BIN_DIR}/infection --threads=12 $(args)
+
 phar: ## Build PHAR
 	$(call printSection,BUILD Phar)
 	$(COMPOSER) global require humbug/box

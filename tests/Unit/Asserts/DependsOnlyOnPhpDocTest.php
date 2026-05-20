@@ -11,12 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\DependsOnlyOnPhpDoc;
+use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
-use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(DependsOnlyOnPhpDoc::class)]
-#[CoversMethod(ExprScript::class, 'dependsOnlyOnPhpDoc')]
+#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnPhpDoc')]
 final class DependsOnlyOnPhpDocTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -96,5 +96,72 @@ final class DependsOnlyOnPhpDocTest extends TestCase
             '<?php use ArrayAccess; use Forbidden\Bar; class Foo { /** @param Bar $b @return ArrayAccess */ public function test(): void {} }',
             'Forbidden\Bar',
         ];
+    }
+
+    public function testDependsOnlyOnPhpDocViolatesWithMultipleForbidden(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                use Forbidden\Bar;
+                use Forbidden\Baz;
+                class Foo {
+                    /**
+                     * @param Bar $a
+                     * @param Baz $b
+                     */
+                    public function test(): void {}
+                }
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnPhpDoc(
+                        names: ArrayAccess::class,
+                        patterns: 'Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Acme\.*',
+                    'Forbidden\Bar',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Acme\.*',
+                    'Forbidden\Baz',
+                ),
+            ],
+            [4, 4],
+        );
+    }
+
+    public function testDependsOnlyOnPhpDocPassesViaPattern(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php use Acme\Bar; class Foo { /** @param Bar $bar */ public function test(): void {} }',
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnPhpDoc(
+                        names: ArrayAccess::class,
+                        patterns: 'Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
+        );
     }
 }

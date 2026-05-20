@@ -39,7 +39,7 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
         );
 
-        return array_diff($class->getInterfaceNames(), array_unique($dependencies)) === [];
+        return array_diff($class->getInterfaceNames(), $dependencies) === [];
     }
 
     /**
@@ -53,7 +53,6 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
         );
         $violations = array_diff($class->getInterfaceNames(), $dependencies);
-        sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {
