@@ -97,7 +97,7 @@ class ToHaveCorrespondingTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw(sprintf('<?php class Foo {}'))
+            ->fromRaw('<?php class Foo {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toHaveCorresponding(
@@ -112,7 +112,7 @@ class ToHaveCorrespondingTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw(sprintf('<?php class Foo {}'))
+            ->fromRaw('<?php class Foo {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toHaveCorresponding(
@@ -127,7 +127,7 @@ class ToHaveCorrespondingTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw(sprintf('<?php class Foo {}'))
+            ->fromRaw('<?php class Foo {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toHaveCorresponding(
