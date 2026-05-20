@@ -91,4 +91,36 @@ final class DependsOnlyOnImplementationTest extends TestCase
             '<?php class Foo implements \BadImplements, \ArrayAccess {}',
         ];
     }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo implements \BadImplements1, \BadImplements2 {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnImplementation(
+                        names: ArrayAccess::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Dependencies\Acme\.*',
+                    'BadImplements1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Dependencies\Acme\.*',
+                    'BadImplements2',
+                ),
+            ],
+        );
+    }
 }

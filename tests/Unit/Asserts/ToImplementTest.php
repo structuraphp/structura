@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Asserts;
 
+use ArrayAccess;
 use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
@@ -55,16 +56,23 @@ final class ToImplementTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toImplement(Stringable::class),
+                    ->toImplement([Stringable::class, ArrayAccess::class]),
             );
 
         self::assertRulesViolation(
             $rules,
-            \sprintf(
-                'Resource <promote>%s</promote> must implement <promote>%s</promote>',
-                $exceptName,
-                Stringable::class,
-            ),
+            [
+                \sprintf(
+                    'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                    $exceptName,
+                    Stringable::class,
+                ),
+                \sprintf(
+                    'Resource <promote>%s</promote> must implement <promote>%s</promote>',
+                    $exceptName,
+                    ArrayAccess::class,
+                ),
+            ],
         );
     }
 
@@ -77,5 +85,24 @@ final class ToImplementTest extends TestCase
         yield 'enum' => ['<?php enum Foo {};'];
 
         yield 'interface' => ['<?php interface Foo {}'];
+    }
+
+    public function testShouldFailToImplementWithPartialMatch(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo implements \Stringable {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toImplement([Stringable::class, ArrayAccess::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must implement <promote>%s</promote>',
+                ArrayAccess::class,
+            ),
+        );
     }
 }

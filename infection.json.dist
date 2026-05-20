@@ -5,6 +5,7 @@
             "src"
         ]
     },
+    "testFramework":"phpunit",
     "staticAnalysisTool": "phpstan",
     "mutators": {
         "@default": true

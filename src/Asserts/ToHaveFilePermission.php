@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -52,22 +51,16 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
             }
         }
 
-        $resourceName = $description instanceof ClassDescription
-            ? $description->getResourceName()
-            : $filename;
-
         return [
             new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must have file permission <promote>%s</promote> but is <fire>%s</fire>',
-                    $resourceName,
+                    $filename,
                     $this->expectedPermission,
                     $actualPermission,
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
+                0,
                 $filename,
                 $this->message,
             ),

@@ -93,4 +93,51 @@ final class ToUseTraitTest extends TestCase
 
         yield 'interface' => ['<?php interface Foo {}'];
     }
+
+    public function testShouldFailToUseTraitWithPartialMatch(): void
+    {
+        // Classe utilise HasFactory mais pas ArchitectureAsserts : seul ArchitectureAsserts doit être en violation
+        // Cela tue UnwrapArrayDiff en vérifiant que les traits déjà satisfaits n'apparaissent pas
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toUseTrait([HasFactory::class, ArchitectureAsserts::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must use trait <promote>%s</promote>',
+                ArchitectureAsserts::class,
+            ),
+        );
+    }
+
+    public function testShouldFailToUseTraitWithMultipleViolations(): void
+    {
+        // Classe n'utilise aucun trait : les deux doivent apparaître en violation (tue ArrayOneItem)
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toUseTrait([HasFactory::class, ArchitectureAsserts::class]),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use trait <promote>%s</promote>',
+                    HasFactory::class,
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use trait <promote>%s</promote>',
+                    ArchitectureAsserts::class,
+                ),
+            ],
+        );
+    }
 }

@@ -133,4 +133,34 @@ final class ToOnlyUseTraitTest extends TestCase
             }',
         ];
     }
+
+    public function testShouldFailToOnlyUseWithTwoForbiddenTraits(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php class Foo { use \BadTraitOne; use \BadTraitTwo; }',
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyUseTrait(HasFactory::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'BadTraitOne',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'BadTraitTwo',
+                ),
+            ],
+            [1, 1],
+        );
+    }
 }

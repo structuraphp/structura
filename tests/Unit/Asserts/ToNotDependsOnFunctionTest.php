@@ -173,4 +173,66 @@ class ToNotDependsOnFunctionTest extends TestCase
             'tmp/run_0.php',
         ];
     }
+
+    public function testDuplicateFunctionCallsProduceSingleViolation(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                return new class {
+                    public function __invoke() {
+                        strtolower("foo");
+                        strtolower("bar");
+                    }
+                };
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOnFunction(names: ['strtolower']),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Anonymous</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                'strtolower',
+                'strtolower',
+            ),
+            2,
+        );
+    }
+
+    public function testOnlyIntersectionProducesViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                return new class {
+                    public function __invoke() {
+                        strtolower("foo");
+                    }
+                };
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOnFunction(names: ['strtolower', 'strtoupper']),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Anonymous</promote> must not depends on functions <promote>%s, %s</promote> but depends on <fire>%s</fire>',
+                'strtolower',
+                'strtoupper',
+                'strtolower',
+            ),
+            2,
+        );
+    }
 }

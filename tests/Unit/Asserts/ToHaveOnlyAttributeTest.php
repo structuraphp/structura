@@ -81,6 +81,26 @@ final class ToHaveOnlyAttributeTest extends TestCase
         yield 'trait' => ['<?php trait Foo {}'];
     }
 
+    public function testShouldFailWhenOneWrongAttribute(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php #[SomeOtherAttr] class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveOnlyAttribute(Attribute::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must have only attribute <promote>%s</promote> but attribute <fire>%s</fire>',
+                Attribute::class,
+                'SomeOtherAttr',
+            ),
+        );
+    }
+
     public function testShouldFailToHaveMultipleAttributes(): void
     {
         $rules = $this

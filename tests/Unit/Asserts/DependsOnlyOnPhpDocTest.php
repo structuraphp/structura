@@ -97,4 +97,71 @@ final class DependsOnlyOnPhpDocTest extends TestCase
             'Forbidden\Bar',
         ];
     }
+
+    public function testDependsOnlyOnPhpDocViolatesWithMultipleForbidden(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                use Forbidden\Bar;
+                use Forbidden\Baz;
+                class Foo {
+                    /**
+                     * @param Bar $a
+                     * @param Baz $b
+                     */
+                    public function test(): void {}
+                }
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnPhpDoc(
+                        names: ArrayAccess::class,
+                        patterns: 'Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Acme\.*',
+                    'Forbidden\Bar',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Acme\.*',
+                    'Forbidden\Baz',
+                ),
+            ],
+            [4, 4],
+        );
+    }
+
+    public function testDependsOnlyOnPhpDocPassesViaPattern(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php use Acme\Bar; class Foo { /** @param Bar $bar */ public function test(): void {} }',
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnPhpDoc(
+                        names: ArrayAccess::class,
+                        patterns: 'Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'depends only on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
+        );
+    }
 }

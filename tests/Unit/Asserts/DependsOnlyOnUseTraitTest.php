@@ -91,4 +91,36 @@ final class DependsOnlyOnUseTraitTest extends TestCase
 
         yield 'with bad name and good name' => ['<?php class Foo { use \BadTrait, \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
     }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { use \BadTrait1, \BadTrait2; }')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->dependsOnlyOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait2',
+                ),
+            ],
+        );
+    }
 }

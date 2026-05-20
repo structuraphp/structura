@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Tests\Unit\Services;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
@@ -144,9 +145,12 @@ final class AnalyseServiceTest extends TestCase
         }
     }
 
-    public function testFilterAnalyseService(): void
+    #[TestWith(['TestConfig'])]
+    #[TestWith(['  TestConfig  '])]
+    #[TestWith(['testconfig'])]
+    public function testFilterAnalyseService(string $filter): void
     {
-        $service = new AnalyseService(filter: 'TestConfig');
+        $service = new AnalyseService(filter: $filter);
 
         $result = $service->analyses($this->finder);
 

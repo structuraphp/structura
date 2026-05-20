@@ -236,4 +236,36 @@ final class ToNotDependsOnTest extends TestCase
             'tmp/run_0.php',
         ];
     }
+
+    public function testShouldFailToNotDependsOnOnlyIntersection(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                use ArrayAccess;
+                class Foo {
+                    public function __construct(ArrayAccess $a) {}
+                }
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotDependsOn(
+                        names: [ArrayAccess::class, Stringable::class],
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s but depends on <fire>%s</fire>',
+                ArrayAccess::class,
+                Stringable::class,
+                ArrayAccess::class,
+            ),
+            3,
+        );
+    }
 }
