@@ -81,6 +81,12 @@ final class AnalyseServiceTest extends TestCase
          <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
          <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
+        <pass> PASS </pass> Empty architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
+        0 classe(s) from
+         - dirs
+        That
+        Should
+
         <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
         2 classe(s) from
          - raw value
@@ -91,7 +97,7 @@ final class AnalyseServiceTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        148 classe(s) from
+        154 classe(s) from
          - dirs
         That
         Should

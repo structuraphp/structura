@@ -7,8 +7,7 @@ namespace StructuraPhp\Structura\ValueObjects;
 class AnalyseTestValueObject
 {
     public function __construct(
-        public string $textDox,
-        public string $classname,
+        public SourceTestValueObject $source,
         public RuleValuesObject $ruleValueObject,
         public AssertValueObject $assertValueObject,
     ) {}

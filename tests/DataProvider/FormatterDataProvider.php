@@ -11,6 +11,7 @@ use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 class FormatterDataProvider
@@ -54,8 +55,12 @@ class FormatterDataProvider
                 ],
                 analyseTestValueObjects: [
                     new AnalyseTestValueObject(
-                        textDox: 'Asserts architecture rules',
-                        classname: 'TestAssert',
+                        source: new SourceTestValueObject(
+                            classname: 'TestAssert',
+                            textDox: 'Asserts architecture rules',
+                            methodName: '',
+                            filePath: '',
+                        ),
                         ruleValueObject: new RuleValuesObject(
                             raws: ['example.php' => 'Foo'],
                             finder: null,

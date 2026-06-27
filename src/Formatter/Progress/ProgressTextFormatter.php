@@ -33,8 +33,8 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
                 $data->assertValueObject->countAssertsFailure() === 0
                     ? '<pass> PASS </pass>'
                     : '<violation> ERROR </violation>',
-                $data->textDox,
-                $data->classname,
+                $data->source->textDox,
+                $data->source->classname,
             );
             $this->fromOutput($data->ruleValueObject->finder, $data->ruleValueObject->raws);
             $this->thatOutput($data->ruleValueObject->that);
@@ -105,6 +105,10 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         $this->prints[] = 'Should';
 
         foreach ($assertValueObject->pass as $message => $isPass) {
+            if ($isPass === 3) {
+                continue;
+            }
+
             if ($isPass === 0) {
                 $this->prints[] = \sprintf(
                     ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
