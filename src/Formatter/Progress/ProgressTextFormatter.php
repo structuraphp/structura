@@ -36,8 +36,12 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
                 $data->source->textDox,
                 $data->source->classname,
             );
-            $this->fromOutput($data->ruleValueObject->finder, $data->ruleValueObject->raws);
-            $this->thatOutput($data->ruleValueObject->that);
+
+            foreach ($data->ruleValueObjects as $ruleValueObject) {
+                $this->fromOutput($ruleValueObject->finder, $ruleValueObject->raws);
+                $this->thatOutput($ruleValueObject->that);
+            }
+
             $this->shouldOutput($data->assertValueObject);
             $this->prints[] = '';
 
@@ -45,7 +49,7 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
                 $this->styleCustom($output)->writeln($print);
             }
 
-            unset($this->prints);
+            $this->prints = [];
         }
     }
 
@@ -106,6 +110,11 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
 
         foreach ($assertValueObject->pass as $message => $isPass) {
             if ($isPass === 3) {
+                $notice = $assertValueObject->notices[$message] ?? null;
+                if ($notice !== null) {
+                    $this->prints[] = sprintf(' <orange>◎</orange> %s', $notice);
+                }
+
                 continue;
             }
 

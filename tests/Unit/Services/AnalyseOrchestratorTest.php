@@ -80,11 +80,16 @@ final class AnalyseOrchestratorTest extends TestCase
          <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
          <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
+        <pass> PASS </pass> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
+        Should
+         <orange>◎</orange> Directory not found: "tests/Fixture/Void". Assertions were skipped.
+
         <pass> PASS </pass> Empty architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         0 classe(s) from
          - dirs
         That
         Should
+         <orange>◎</orange> No PHP files found for test "<promote>StructuraPhp\Structura\Tests\Feature\TestEmpty</promote>". Assertions were skipped.
 
         <pass> PASS </pass> Exceptions architecture rules in StructuraPhp\Structura\Tests\Feature\TestException
         2 classe(s) from

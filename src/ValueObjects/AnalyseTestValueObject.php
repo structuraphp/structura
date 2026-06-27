@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\ValueObjects;
 
-class AnalyseTestValueObject
+final class AnalyseTestValueObject
 {
+    /**
+     * @param array<int, RuleValuesObject> $ruleValueObjects
+     */
     public function __construct(
         public SourceTestValueObject $source,
-        public RuleValuesObject $ruleValueObject,
+        public array $ruleValueObjects,
         public AssertValueObject $assertValueObject,
     ) {}
 }

@@ -225,8 +225,9 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(1, $result->countAssertsNotices());
         self::assertSame([], $result->warnings);
 
+        $noticeKey = 'No PHP files found for test "<promote>Exemple</promote>". Assertions were skipped.';
         self::assertSame(
-            ['No PHP files found for test "<promote>Exemple</promote>". Assertions were skipped.' => 'No PHP files found for test "<promote>Exemple</promote>". Assertions were skipped.'],
+            [$noticeKey => $noticeKey],
             $result->notices,
         );
 
