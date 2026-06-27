@@ -27,4 +27,19 @@ final readonly class AnalyseValueObject
         public array $noticeByTests,
         public array $analyseTestValueObjects,
     ) {}
+
+    public static function merge(float $timeStart, self ...$results): self
+    {
+        return new self(
+            timeStart: $timeStart,
+            countPass: array_sum(array_column($results, 'countPass')),
+            countViolation: array_sum(array_column($results, 'countViolation')),
+            countWarning: array_sum(array_column($results, 'countWarning')),
+            countNotice: array_sum(array_column($results, 'countNotice')),
+            violationsByTests: array_merge(...array_column($results, 'violationsByTests')),
+            warningsByTests: array_merge(...array_column($results, 'warningsByTests')),
+            noticeByTests: array_merge(...array_column($results, 'noticeByTests')),
+            analyseTestValueObjects: array_merge(...array_column($results, 'analyseTestValueObjects')),
+        );
+    }
 }

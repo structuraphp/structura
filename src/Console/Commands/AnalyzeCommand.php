@@ -24,9 +24,8 @@ use StructuraPhp\Structura\Formatter\Error\ErrorTextFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
-use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Services\AnalyseOrchestrator;
 use StructuraPhp\Structura\Services\FinderService;
-use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -78,45 +77,29 @@ final class AnalyzeCommand extends Command
             config: $this->configValueObject,
             testSuite: $this->analyzeDto->testSuite,
         );
-        $rules = $finder->getClassTests();
 
-        $progressFormatter->progressStart($io, count($rules));
+        $progressFormatter->progressStart($io, count($finder->getClassTests()));
 
-        $results = [];
+        $orchestrator = new AnalyseOrchestrator(
+            stopOnError: $this->analyzeDto->stopOnError,
+            stopOnWarning: $this->analyzeDto->stopOnWarning,
+            stopOnNotice: $this->analyzeDto->stopOnNotice,
+            filter: $this->analyzeDto->filter,
+            pathResolvers: $this->configValueObject->pathResolvers,
+        );
 
         try {
-            /** @var class-string<TestBuilder> $ruleClassname */
-            foreach ($rules as $ruleClassname) {
-                $analyseService = new AnalyseService(
-                    stopOnError: $this->analyzeDto->stopOnError,
-                    stopOnWarning: $this->analyzeDto->stopOnWarning,
-                    stopOnNotice: $this->analyzeDto->stopOnNotice,
-                    filter: $this->analyzeDto->filter,
-                    pathResolvers: $this->configValueObject->pathResolvers,
-                );
-                $analyseResult = $analyseService
-                    ->analyse(
-                        microtime(true),
-                        $ruleClassname,
-                    );
-
-                $progressFormatter->progressAdvance($io, $analyseResult);
-                $results[] = $analyseResult;
-            }
+            $result = $orchestrator->run(
+                $finder,
+                static function (AnalyseValueObject $classResult) use ($progressFormatter, $io): void {
+                    $progressFormatter->progressAdvance($io, $classResult);
+                },
+            );
         } catch (StopOnException $stopOnException) {
-            $analyseResult = $stopOnException->analyseValueObject;
-
-            $progressFormatter->progressAdvance($io, $analyseResult);
-            $results[] = $analyseResult;
-
-            $result = $this->getValuesInfo($results);
-
             $progressFormatter->progressStopOn($io);
 
-            return $errorFormatter->formatErrors($result, $output);
+            return $errorFormatter->formatErrors($stopOnException->analyseValueObject, $output);
         }
-
-        $result = $this->getValuesInfo($results);
 
         $progressFormatter->progressFinish($io);
 
@@ -200,44 +183,6 @@ final class AnalyzeCommand extends Command
                 'The autoload file "%s" could not be found. For example: __DIR__ . "/vendor/autoload.php".',
                 $this->configValueObject->autoload,
             ),
-        );
-    }
-
-    /**
-     * @param array<int,AnalyseValueObject> $results
-     */
-    private function getValuesInfo(array $results): AnalyseValueObject
-    {
-        $countPass = 0;
-        $countViolation = 0;
-        $countWarning = 0;
-        $countNotice = 0;
-        $violationsByTests = [];
-        $warningsByTests = [];
-        $noticesByTests = [];
-        $analyseTestValueObjects = [];
-
-        foreach ($results as $result) {
-            $countPass += $result->countPass;
-            $countViolation += $result->countViolation;
-            $countWarning += $result->countWarning;
-            $countNotice += $result->countNotice;
-            $violationsByTests[] = $result->violationsByTests;
-            $warningsByTests[] = $result->warningsByTests;
-            $noticesByTests[] = $result->noticeByTests;
-            $analyseTestValueObjects[] = $result->analyseTestValueObjects;
-        }
-
-        return new AnalyseValueObject(
-            timeStart: $results[0]->timeStart ?? 0,
-            countPass: $countPass,
-            countViolation: $countViolation,
-            countWarning: $countWarning,
-            countNotice: $countNotice,
-            violationsByTests: array_merge(...$violationsByTests),
-            warningsByTests: array_merge(...$warningsByTests),
-            noticeByTests: array_merge(...$noticesByTests),
-            analyseTestValueObjects: array_merge(...$analyseTestValueObjects),
         );
     }
 
