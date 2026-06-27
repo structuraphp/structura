@@ -77,19 +77,69 @@ final class AnalyseService
     public function analyses(FinderService $finderService): AnalyseValueObject
     {
         $timeStart = microtime(true);
+        $results = [];
 
         try {
             /** @var class-string<TestBuilder> $ruleClassname */
             foreach ($finderService->getClassTests() as $ruleClassname) {
-                $this->executeTests($ruleClassname);
+                $service = new self(
+                    stopOnError: $this->stopOnError,
+                    stopOnWarning: $this->stopOnWarning,
+                    stopOnNotice: $this->stopOnNotice,
+                    filter: $this->filter,
+                    pathResolvers: $this->pathResolvers,
+                );
+
+                try {
+                    $results[] = $service->analyse($timeStart, $ruleClassname);
+                } catch (StopOnException $stopOnException) {
+                    $results[] = $stopOnException->analyseValueObject;
+                    throw new RuntimeException();
+                }
             }
         } catch (RuntimeException) {
-            throw new StopOnException(
-                $this->getAnalyseValueObject($timeStart),
-            );
+            throw new StopOnException($this->mergeResults($timeStart, $results));
         }
 
-        return $this->getAnalyseValueObject($timeStart);
+        return $this->mergeResults($timeStart, $results);
+    }
+
+    /**
+     * @param array<int, AnalyseValueObject> $results
+     */
+    private function mergeResults(float $timeStart, array $results): AnalyseValueObject
+    {
+        $countPass = 0;
+        $countViolation = 0;
+        $countWarning = 0;
+        $countNotice = 0;
+        $violationsByTests = [];
+        $warningsByTests = [];
+        $noticeByTests = [];
+        $analyseTestValueObjects = [];
+
+        foreach ($results as $result) {
+            $countPass += $result->countPass;
+            $countViolation += $result->countViolation;
+            $countWarning += $result->countWarning;
+            $countNotice += $result->countNotice;
+            array_push($violationsByTests, ...$result->violationsByTests);
+            array_push($warningsByTests, ...$result->warningsByTests);
+            array_push($noticeByTests, ...$result->noticeByTests);
+            array_push($analyseTestValueObjects, ...$result->analyseTestValueObjects);
+        }
+
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: $countPass,
+            countViolation: $countViolation,
+            countWarning: $countWarning,
+            countNotice: $countNotice,
+            violationsByTests: $violationsByTests,
+            warningsByTests: $warningsByTests,
+            noticeByTests: $noticeByTests,
+            analyseTestValueObjects: $analyseTestValueObjects,
+        );
     }
 
     /**
