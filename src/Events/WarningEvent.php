@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Events;
 
-use Symfony\Contracts\EventDispatcher\Event;
-
-final class WarningEvent extends Event
+final class WarningEvent extends AbstractAnalysisEvent
 {
     public function __construct(
         public readonly string $key,

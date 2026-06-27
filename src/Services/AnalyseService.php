@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Services;
 
-use Psr\EventDispatcher\EventDispatcherInterface;
 use ReflectionClass;
 use ReflectionMethod;
 use RuntimeException;
@@ -16,7 +15,6 @@ use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
@@ -36,14 +34,13 @@ final class AnalyseService
     /** @var array<int, array<string, string>> */
     private array $noticeByTests = [];
 
-    private AssertBuilder $assertBuilder;
-
-    private EventDispatcherInterface $dispatcher;
+    private readonly AssertBuilder $assertBuilder;
 
     /**
      * @param array<string, string> $pathResolvers
      */
     public function __construct(
+        private readonly AnalysisDispatcher $dispatcher,
         private readonly bool $stopOnError = false,
         private readonly bool $stopOnWarning = false,
         private readonly bool $stopOnNotice = false,
@@ -51,9 +48,20 @@ final class AnalyseService
         private readonly array $pathResolvers = [],
     ) {
         $this->assertBuilder = new AssertBuilder();
-
-        $this->dispatcher = new EventDispatcher();
         $this->dispatcher->addSubscriber($this->assertBuilder);
+    }
+
+    /**
+     * @param array<string, string> $pathResolvers
+     */
+    public static function create(
+        bool $stopOnError = false,
+        bool $stopOnWarning = false,
+        bool $stopOnNotice = false,
+        ?string $filter = null,
+        array $pathResolvers = [],
+    ): self {
+        return new self(new AnalysisDispatcher(), $stopOnError, $stopOnWarning, $stopOnNotice, $filter, $pathResolvers);
     }
 
     /**
@@ -108,6 +116,8 @@ final class AnalyseService
                 filePath: $fileName,
             );
 
+            $this->dispatcher->setCurrentSource($sourceTest);
+
             try {
                 /** @var callable $callable */
                 $callable = [$instance, $method->getName()];
@@ -124,6 +134,8 @@ final class AnalyseService
                 $this->isStopOn();
 
                 continue;
+            } finally {
+                $this->dispatcher->setCurrentSource(null);
             }
         }
     }

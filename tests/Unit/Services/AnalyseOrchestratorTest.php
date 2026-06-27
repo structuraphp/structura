@@ -96,7 +96,7 @@ final class AnalyseOrchestratorTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        156 classe(s) from
+        158 classe(s) from
          - dirs
         That
         Should

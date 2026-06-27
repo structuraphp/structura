@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Services\AnalyseService;
+use StructuraPhp\Structura\Services\AnalysisDispatcher;
 use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Tests\Feature\TestAssert;
 use StructuraPhp\Structura\Tests\Feature\TestConfig;
@@ -27,7 +28,7 @@ final class AnalyseServiceTest extends TestCase
 
     public function testAnalyseSingleClass(): void
     {
-        $service = new AnalyseService();
+        $service = new AnalyseService(new AnalysisDispatcher());
         $result = $service->analyse(microtime(true), TestConfig::class);
 
         self::assertSame(0, $result->countViolation);
@@ -38,7 +39,7 @@ final class AnalyseServiceTest extends TestCase
 
     public function testAnalyseSingleClassWithFilter(): void
     {
-        $service = new AnalyseService(filter: 'nonexistent');
+        $service = new AnalyseService(new AnalysisDispatcher(), filter: 'nonexistent');
         $result = $service->analyse(microtime(true), TestConfig::class);
 
         self::assertSame(0, $result->countViolation);
@@ -47,9 +48,28 @@ final class AnalyseServiceTest extends TestCase
 
     public function testStopOnError(): void
     {
-        $service = new AnalyseService(stopOnError: true);
+        $service = new AnalyseService(new AnalysisDispatcher(), stopOnError: true);
 
         $this->expectException(StopOnException::class);
         $service->analyse(microtime(true), TestAssert::class);
+    }
+
+    public function testCreateFactory(): void
+    {
+        $service = AnalyseService::create();
+        $result = $service->analyse(microtime(true), TestConfig::class);
+
+        self::assertSame(0, $result->countViolation);
+        self::assertSame(1, $result->countPass);
+    }
+
+    public function testDispatcherInjectsSource(): void
+    {
+        $dispatcher = new AnalysisDispatcher();
+        $service = new AnalyseService($dispatcher);
+        $result = $service->analyse(microtime(true), TestConfig::class);
+
+        self::assertNotEmpty($result->analyseTestValueObjects);
+        self::assertSame(TestConfig::class, $result->analyseTestValueObjects[0]->source->classname);
     }
 }

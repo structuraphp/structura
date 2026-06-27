@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Events;
 
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
-use Symfony\Contracts\EventDispatcher\Event;
 
-final class ViolationEvent extends Event
+final class ViolationEvent extends AbstractAnalysisEvent
 {
     /**
      * @param array<int, ViolationValueObject> $violations
