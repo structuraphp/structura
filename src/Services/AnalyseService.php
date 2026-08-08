@@ -8,47 +8,51 @@ use ReflectionClass;
 use ReflectionMethod;
 use RuntimeException;
 use StructuraPhp\Structura\Attributes\TestDox;
+use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 
-/**
- * @phpstan-import-type ViolationsByTest from AnalyseValueObject
- * @phpstan-import-type WarningByTest from AnalyseValueObject
- */
 final class AnalyseService
 {
-    private int $countPass = 0;
-
-    private int $countViolation = 0;
-
-    private int $countWarning = 0;
-
-    private int $countNotice = 0;
-
     /** @var array<int,AnalyseTestValueObject> */
     private array $analyseTestValueObjects = [];
-
-    /** @var array<int,ViolationsByTest> */
-    private array $violationsByTests = [];
-
-    /** @var array<int, WarningByTest> */
-    private array $warningsByTests = [];
-
-    /** @var array<int, array<string, string>> */
-    private array $noticeByTests = [];
 
     /**
      * @param array<string, string> $pathResolvers
      */
     public function __construct(
+        private readonly AnalysisDispatcher $dispatcher,
         private readonly bool $stopOnError = false,
         private readonly bool $stopOnWarning = false,
         private readonly bool $stopOnNotice = false,
         private readonly ?string $filter = null,
         private readonly array $pathResolvers = [],
     ) {}
+
+    /**
+     * @param array<string, string> $pathResolvers
+     */
+    public static function create(
+        bool $stopOnError = false,
+        bool $stopOnWarning = false,
+        bool $stopOnNotice = false,
+        ?string $filter = null,
+        array $pathResolvers = [],
+    ): self {
+        return new self(
+            new AnalysisDispatcher(),
+            $stopOnError,
+            $stopOnWarning,
+            $stopOnNotice,
+            $filter,
+            $pathResolvers,
+        );
+    }
 
     /**
      * @param class-string<TestBuilder> $ruleClassname
@@ -68,24 +72,6 @@ final class AnalyseService
         return $this->getAnalyseValueObject($timeStart);
     }
 
-    public function analyses(FinderService $finderService): AnalyseValueObject
-    {
-        $timeStart = microtime(true);
-
-        try {
-            /** @var class-string<TestBuilder> $ruleClassname */
-            foreach ($finderService->getClassTests() as $ruleClassname) {
-                $this->executeTests($ruleClassname);
-            }
-        } catch (RuntimeException) {
-            throw new StopOnException(
-                $this->getAnalyseValueObject($timeStart),
-            );
-        }
-
-        return $this->getAnalyseValueObject($timeStart);
-    }
-
     /**
      * @param class-string<TestBuilder> $classname
      */
@@ -95,6 +81,9 @@ final class AnalyseService
 
         $class = new ReflectionClass($classname);
         $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+
+        $fileName = $class->getFileName();
+        $fileName = is_string($fileName) ? $fileName : '';
 
         $instance = new $classname();
         foreach ($methods as $method) {
@@ -110,75 +99,86 @@ final class AnalyseService
             /** @var string $testDox */
             $testDox = $attributes[0]->getArguments()[0];
 
-            /** @var callable $callable */
-            $callable = [$instance, $method->getName()];
-            // build test
-            \call_user_func($callable);
+            $sourceTest = new SourceTestValueObject(
+                testClassname: $classname,
+                textDox: $testDox,
+                methodName: $method->getName(),
+                line: (int) $method->getStartLine(),
+                pathname: $fileName,
+            );
 
-            $this->executeAssertions($instance, $testDox, $classname);
+            $assertBuilder = new AssertBuilder();
+            $this->dispatcher->addSubscriber($assertBuilder);
+            $this->dispatcher->setCurrentSource($sourceTest);
+
+            $ruleValueObjects = [];
+
+            try {
+                /** @var callable $callable */
+                $callable = [$instance, $method->getName()];
+
+                \call_user_func($callable);
+
+                $ruleValueObjects = $this->executeAssertions($instance, $sourceTest);
+            } catch (EventException $eventException) {
+                $instance->getRules();
+
+                $this->dispatcher->dispatch($eventException->event);
+            } finally {
+                $this->dispatcher->setCurrentSource(null);
+                $this->dispatcher->removeSubscriber($assertBuilder);
+            }
+
+            $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
+                source: $sourceTest,
+                ruleValueObjects: $ruleValueObjects,
+                assertValueObject: $assertBuilder->getAssertValueObject(),
+            );
+
+            $this->isStopOn($assertBuilder);
         }
     }
 
+    /**
+     * @return array<int, RuleValuesObject>
+     */
     private function executeAssertions(
         TestBuilder $instance,
-        string $testDox,
-        string $classname,
-    ): void {
+        SourceTestValueObject $sourceTest,
+    ): array {
+        $ruleValueObjects = [];
         foreach ($instance->getRules() as $expectationFilter) {
             $expectationFilter->getRuleBuilder()->setPathResolvers($this->pathResolvers);
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
-            $executeService = new ExecuteService($ruleValueObject);
-            $assertValueObject = $executeService->assert()->getAssertValueObject();
+            $ruleValueObjects[] = $ruleValueObject;
 
-            $this->countPass += $assertValueObject->countAssertsSuccess();
-            $this->countViolation += $assertValueObject->countAssertsFailure();
-            $this->countWarning += $assertValueObject->countAssertsWarning();
-            $this->countNotice += $assertValueObject->countAssertsNotices();
-
-            $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
-                textDox: $testDox,
-                classname: $classname,
-                ruleValueObject: $ruleValueObject,
-                assertValueObject: $assertValueObject,
-            );
-
-            if ($assertValueObject->violations !== []) {
-                $this->violationsByTests[] = $assertValueObject->violations;
-            }
-
-            if ($assertValueObject->warnings !== []) {
-                $this->warningsByTests[] = $assertValueObject->warnings;
-            }
-
-            if ($assertValueObject->notices !== []) {
-                $this->noticeByTests[] = $assertValueObject->notices;
-            }
-
-            if ($this->countViolation >= 1 && $this->stopOnError) {
-                throw new RuntimeException();
-            }
-
-            if ($this->countWarning >= 1 && $this->stopOnWarning) {
-                throw new RuntimeException();
-            }
-
-            if ($this->countNotice >= 1 && $this->stopOnNotice) {
-                throw new RuntimeException();
-            }
+            $executeService = new ExecuteService($this->dispatcher, $ruleValueObject, $sourceTest);
+            $executeService->assert();
         }
+
+        return $ruleValueObjects;
     }
 
     private function getAnalyseValueObject(float $timeStart): AnalyseValueObject
     {
+        $countPass = 0;
+        $countViolation = 0;
+        $countWarning = 0;
+        $countNotice = 0;
+
+        foreach ($this->analyseTestValueObjects as $testObj) {
+            $countPass += $testObj->assertValueObject->countAssertsSuccess();
+            $countViolation += $testObj->assertValueObject->countAssertsFailure();
+            $countWarning += $testObj->assertValueObject->countAssertsWarning();
+            $countNotice += $testObj->assertValueObject->countAssertsNotices();
+        }
+
         return new AnalyseValueObject(
             timeStart: $timeStart,
-            countPass: $this->countPass,
-            countViolation: $this->countViolation,
-            countWarning: $this->countWarning,
-            countNotice: $this->countNotice,
-            violationsByTests: $this->violationsByTests,
-            warningsByTests: $this->warningsByTests,
-            noticeByTests: $this->noticeByTests,
+            countPass: $countPass,
+            countViolation: $countViolation,
+            countWarning: $countWarning,
+            countNotice: $countNotice,
             analyseTestValueObjects: $this->analyseTestValueObjects,
         );
     }
@@ -190,5 +190,22 @@ final class AnalyseService
                 strtolower(trim($str)),
                 strtolower(trim($this->filter)),
             );
+    }
+
+    private function isStopOn(AssertBuilder $assertBuilder): void
+    {
+        $assert = $assertBuilder->getAssertValueObject();
+
+        if ($this->stopOnError && $assert->countAssertsFailure() >= 1) {
+            throw new RuntimeException();
+        }
+
+        if ($this->stopOnWarning && $assert->countAssertsWarning() >= 1) {
+            throw new RuntimeException();
+        }
+
+        if ($this->stopOnNotice && $assert->countAssertsNotices() >= 1) {
+            throw new RuntimeException();
+        }
     }
 }

@@ -19,19 +19,14 @@ final class ErrorPrettyJsonFormatter implements ErrorFormatterInterface
         AnalyseValueObject $analyseValueObject,
         OutputInterface $output,
     ): int {
-        /** @var ViolationsByTest $violationsByTests */
-        $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);
-
-        /** @var WarningByTest $warningsByTests */
-        $warningsByTests = array_merge(...$analyseValueObject->warningsByTests);
-
-        /** @var array<string, string> $noticesByTests */
-        $noticesByTests = array_merge(...$analyseValueObject->noticeByTests);
+        $violations = $analyseValueObject->getViolations();
+        $warnings = $analyseValueObject->getWarnings();
+        $notices = $analyseValueObject->getNotices();
 
         $errors = [];
 
         /** @var array<int, ViolationValueObject> $violationsByTest */
-        foreach ($violationsByTests as $rule => $violationsByTest) {
+        foreach ($violations as $rule => $violationsByTest) {
             foreach ($violationsByTest as $violation) {
                 $errors[] = [
                     'rule' => $rule,
@@ -42,22 +37,22 @@ final class ErrorPrettyJsonFormatter implements ErrorFormatterInterface
             }
         }
 
-        $warnings = [];
+        $warningsJson = [];
 
         /** @var array<int, string> $warningsByTest */
-        foreach ($warningsByTests as $rule => $warningsByTest) {
+        foreach ($warnings as $rule => $warningsByTest) {
             foreach ($warningsByTest as $warning) {
-                $warnings[] = [
+                $warningsJson[] = [
                     'rule' => $rule,
                     'message' => $warning,
                 ];
             }
         }
 
-        $notices = [];
+        $noticesJson = [];
 
-        foreach ($noticesByTests as $rule => $notice) {
-            $notices[] = [
+        foreach ($notices as $rule => $notice) {
+            $noticesJson[] = [
                 'rule' => $rule,
                 'message' => $notice,
             ];
@@ -80,12 +75,12 @@ final class ErrorPrettyJsonFormatter implements ErrorFormatterInterface
             $json['errors'] = $errors;
         }
 
-        if ($warnings !== []) {
-            $json['warnings'] = $warnings;
+        if ($warningsJson !== []) {
+            $json['warnings'] = $warningsJson;
         }
 
-        if ($notices !== []) {
-            $json['notices'] = $notices;
+        if ($noticesJson !== []) {
+            $json['notices'] = $noticesJson;
         }
 
         $output->writeln(
@@ -93,7 +88,7 @@ final class ErrorPrettyJsonFormatter implements ErrorFormatterInterface
             OutputInterface::OUTPUT_RAW,
         );
 
-        return $violationsByTests === []
+        return $violations === []
             ? self::SUCCESS
             : self::ERROR;
     }

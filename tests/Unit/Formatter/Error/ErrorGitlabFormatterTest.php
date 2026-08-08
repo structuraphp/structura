@@ -64,9 +64,6 @@ class ErrorGitlabFormatterTest extends TestCase
             countViolation: 0,
             countWarning: 0,
             countNotice: 0,
-            violationsByTests: [[]],
-            warningsByTests: [[]],
-            noticeByTests: [[]],
             analyseTestValueObjects: [],
         );
 

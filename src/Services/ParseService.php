@@ -13,7 +13,8 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use StructuraPhp\Structura\Enums\DescriptorType;
-use StructuraPhp\Structura\Exception\Console\NoticeException;
+use StructuraPhp\Structura\Events\NoticeEvent;
+use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\Visitors\ClassDescriptionVisitor;
@@ -88,14 +89,24 @@ final readonly class ParseService
                 );
             }
         } catch (InvalidArgumentException $e) {
-            throw new NoticeException(
-                \sprintf('<orange>Parse error, %s</orange> at %s', $e->getMessage(), $pathname),
+            $message = \sprintf('<orange>Parse error, %s</orange> at %s', $e->getMessage(), $pathname);
+
+            throw new EventException(
+                new NoticeEvent(
+                    key: $message,
+                    message: $message,
+                ),
                 $e->getCode(),
                 $e,
             );
         } catch (Exception $e) {
-            throw new NoticeException(
-                \sprintf('<orange>%s</orange> at %s', $e->getMessage(), $pathname),
+            $message = \sprintf('<orange>%s</orange> at %s', $e->getMessage(), $pathname);
+
+            throw new EventException(
+                new NoticeEvent(
+                    key: $message,
+                    message: $message,
+                ),
                 $e->getCode(),
                 $e,
             );

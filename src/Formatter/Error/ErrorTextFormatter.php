@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
  * @phpstan-import-type WarningByTest from AnalyseValueObject
+ * @phpstan-import-type NoticesByTest from AnalyseValueObject
  */
 final class ErrorTextFormatter implements ErrorFormatterInterface
 {
@@ -24,11 +25,9 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         AnalyseValueObject $analyseValueObject,
         OutputInterface $output,
     ): int {
-        $violations = array_merge(...$analyseValueObject->violationsByTests);
-        $warnings = array_merge(...$analyseValueObject->warningsByTests);
-
-        /** @var array<string, string> $notices */
-        $notices = array_merge(...$analyseValueObject->noticeByTests);
+        $violations = $analyseValueObject->getViolations();
+        $warnings = $analyseValueObject->getWarnings();
+        $notices = $analyseValueObject->getNotices();
 
         if ($violations !== []) {
             $this->failedOutput($violations);
@@ -69,14 +68,14 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     }
 
     /**
-     * @param ViolationsByTest $violationsByTests
+     * @param ViolationsByTest $violations
      */
-    private function failedOutput(array $violationsByTests): void
+    private function failedOutput(array $violations): void
     {
         $this->prints[] = '<violation> ERROR LIST </violation>';
         $this->prints[] = '';
 
-        foreach ($violationsByTests as $violationsByTest) {
+        foreach ($violations as $violationsByTest) {
             foreach ($violationsByTest as $violation) {
                 $this->prints[] = $violation->messageViolation;
                 $this->prints[] = \sprintf(
@@ -90,28 +89,28 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
     }
 
     /**
-     * @param array<string, string> $noticesByTests
+     * @param NoticesByTest $notices
      */
-    private function noticeOutput(array $noticesByTests): void
+    private function noticeOutput(array $notices): void
     {
         $this->prints[] = '<notice> NOTICE LIST </notice>';
         $this->prints[] = '';
 
-        foreach ($noticesByTests as $noticeByTests) {
-            $this->prints[] = $noticeByTests;
+        foreach ($notices as $notice) {
+            $this->prints[] = $notice;
             $this->prints[] = '';
         }
     }
 
     /**
-     * @param WarningByTest $warningsByTests
+     * @param WarningByTest $warnings
      */
-    private function warningOutput(array $warningsByTests): void
+    private function warningOutput(array $warnings): void
     {
         $this->prints[] = '<warning> WARNING LIST </warning>';
         $this->prints[] = '';
 
-        foreach ($warningsByTests as $warningsByTest) {
+        foreach ($warnings as $warningsByTest) {
             foreach ($warningsByTest as $warning) {
                 $this->prints[] = $warning;
                 $this->prints[] = '';

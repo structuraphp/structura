@@ -8,8 +8,11 @@ use Closure;
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Contracts\FinderInterface;
 use StructuraPhp\Structura\Contracts\ThatInterface;
+use StructuraPhp\Structura\Events\NoticeEvent;
+use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -54,12 +57,25 @@ readonly class AllClasses implements FinderInterface
      */
     public function fromDir(array|string $dirs, ?Closure $closure = null): ThatInterface
     {
-        $finder = Finder::create()
-            ->files()
-            ->followLinks()
-            ->sortByName()
-            ->name('*.php')
-            ->in($dirs);
+        try {
+            $finder = Finder::create()
+                ->files()
+                ->followLinks()
+                ->sortByName()
+                ->name('*.php')
+                ->in($dirs);
+        } catch (DirectoryNotFoundException $directoryNotFoundException) {
+            $dirLabel = is_array($dirs) ? implode(', ', $dirs) : $dirs;
+
+            throw new EventException(
+                new NoticeEvent(
+                    key: $dirLabel,
+                    message: sprintf('Directory not found: "%s". Assertions were skipped.', $dirLabel),
+                ),
+                $directoryNotFoundException->getCode(),
+                $directoryNotFoundException,
+            );
+        }
 
         if ($closure instanceof Closure) {
             $closure($finder);
