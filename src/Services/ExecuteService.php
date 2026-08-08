@@ -49,7 +49,7 @@ final class ExecuteService
         if ($this->isEmptySource()) {
             $message = sprintf(
                 'No PHP files found for test "<promote>%s</promote>". Assertions were skipped.',
-                $this->sourceTest->classname ?? '',
+                $this->sourceTest->testClassname ?? '',
             );
 
             $this->dispatcher->dispatch(new NoticeEvent(

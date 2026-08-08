@@ -31,10 +31,11 @@ class FormatterDataProvider
                 analyseTestValueObjects: [
                     new AnalyseTestValueObject(
                         source: new SourceTestValueObject(
-                            classname: 'TestAssert',
+                            testClassname: 'TestAssert',
                             textDox: 'Asserts architecture rules',
                             methodName: '',
-                            filePath: '',
+                            line: 0,
+                            pathname: '',
                         ),
                         ruleValueObjects: [
                             new RuleValuesObject(

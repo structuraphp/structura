@@ -100,10 +100,11 @@ final class AnalyseService
             $testDox = $attributes[0]->getArguments()[0];
 
             $sourceTest = new SourceTestValueObject(
-                classname: $classname,
+                testClassname: $classname,
                 textDox: $testDox,
                 methodName: $method->getName(),
-                filePath: $fileName,
+                line: (int) $method->getStartLine(),
+                pathname: $fileName,
             );
 
             $assertBuilder = new AssertBuilder();

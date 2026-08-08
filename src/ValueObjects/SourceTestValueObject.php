@@ -7,9 +7,10 @@ namespace StructuraPhp\Structura\ValueObjects;
 final readonly class SourceTestValueObject
 {
     public function __construct(
-        public string $classname,
+        public string $testClassname,
         public string $textDox,
         public string $methodName,
-        public string $filePath,
+        public int $line,
+        public string $pathname,
     ) {}
 }

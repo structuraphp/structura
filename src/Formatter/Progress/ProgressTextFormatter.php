@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Formatter\Progress;
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Console\Enums\StyleCustom;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
+use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,14 +29,7 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
     public function progressAdvance(OutputInterface $output, AnalyseValueObject $analyseValueObject): void
     {
         foreach ($analyseValueObject->analyseTestValueObjects as $data) {
-            $this->prints[] = \sprintf(
-                '%s %s in %s',
-                $data->assertValueObject->countAssertsFailure() === 0
-                    ? '<pass> PASS </pass>'
-                    : '<violation> ERROR </violation>',
-                $data->source->textDox,
-                $data->source->classname,
-            );
+            $this->headOutput($data);
 
             foreach ($data->ruleValueObjects as $ruleValueObject) {
                 $this->fromOutput($ruleValueObject->finder, $ruleValueObject->raws);
@@ -77,6 +71,25 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         return $output;
     }
 
+    private function headOutput(AnalyseTestValueObject $data): void
+    {
+        $label = '<pass> PASS </pass>';
+        if ($data->assertValueObject->countAssertsFailure() > 0) {
+            $label = '<violation> ERROR </violation>';
+        } elseif ($data->assertValueObject->countAssertsWarning() > 0) {
+            $label = '<warning> WARNING </warning>';
+        } elseif ($data->assertValueObject->countAssertsNotices() > 0) {
+            $label = '<notice> NOTICE </notice>';
+        }
+
+        $this->prints[] = \sprintf(
+            '%s %s in %s',
+            $label,
+            $data->source->textDox,
+            $data->source->testClassname,
+        );
+    }
+
     /**
      * @param array<string,string> $raws
      */
@@ -109,31 +122,27 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         $this->prints[] = 'Should';
 
         foreach ($assertValueObject->pass as $message => $isPass) {
-            if ($isPass === 3) {
-                $notice = $assertValueObject->notices[$message] ?? null;
-                if ($notice !== null) {
-                    $this->prints[] = sprintf(' <orange>◎</orange> %s', $notice);
-                }
-
-                continue;
-            }
-
             if ($isPass === 0) {
                 $this->prints[] = \sprintf(
                     ' <fire>✘</fire> %s <fire>%d error(s)</fire>',
                     $message,
                     $assertValueObject->countViolation($message),
                 );
-            } else {
-                $countWarning = $assertValueObject->countWarning($message);
-                $warning = $countWarning !== 0
-                    ? sprintf(' <yellow>%d warning(s)</yellow>', $countWarning)
-                    : '';
-
+            } elseif ($isPass === 1) {
                 $this->prints[] = \sprintf(
-                    ' <green>✔</green> %s%s',
+                    ' <green>✔</green> %s',
                     $message,
-                    $warning,
+                );
+            } elseif ($isPass === 2) {
+                $this->prints[] = \sprintf(
+                    ' <yellow>❗</yellow> %s <yellow>%d warning(s)</yellow>',
+                    $message,
+                    $assertValueObject->countWarning($message),
+                );
+            } elseif ($isPass === 3) {
+                $this->prints[] = sprintf(
+                    ' <orange>◎</orange> %s',
+                    $assertValueObject->notices[$message] ?? '',
                 );
             }
         }

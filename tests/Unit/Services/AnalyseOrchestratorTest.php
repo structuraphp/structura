@@ -55,7 +55,7 @@ final class AnalyseOrchestratorTest extends TestCase
          <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>38 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
-         <green>✔</green> to have prefix <promote>To</promote> <yellow>1 warning(s)</yellow>
+         <yellow>❗</yellow> to have prefix <promote>To</promote> <yellow>1 warning(s)</yellow>
          <green>✔</green> to extend nothing
          <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
          <green>✔</green> to have method <promote>__construct</promote>
@@ -80,11 +80,11 @@ final class AnalyseOrchestratorTest extends TestCase
          <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
          <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
-        <pass> PASS </pass> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
+        <notice> NOTICE </notice> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         Should
          <orange>◎</orange> Directory not found: "tests/Fixture/Void". Assertions were skipped.
 
-        <pass> PASS </pass> Empty architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
+        <notice> NOTICE </notice> Empty architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         0 classe(s) from
          - dirs
         That

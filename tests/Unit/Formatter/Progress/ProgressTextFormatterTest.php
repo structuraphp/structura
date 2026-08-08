@@ -36,7 +36,7 @@ class ProgressTextFormatterTest extends TestCase
          - to be classes
         Should
          <green>✔</green> to extend <promote>y</promote>
-         <green>✔</green> to be readonly <yellow>1 warning(s)</yellow>
+         <yellow>❗</yellow> to be readonly <yellow>1 warning(s)</yellow>
          <fire>✘</fire> to be final <fire>1 error(s)</fire>
          <orange>◎</orange> error notice
 

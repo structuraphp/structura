@@ -201,10 +201,11 @@ final class ExecuteServiceTest extends TestCase
             );
 
         $sourceTest = new SourceTestValueObject(
-            classname: 'Exemple',
+            testClassname: 'Exemple',
             textDox: 'my empty directory test',
             methodName: 'exemple',
-            filePath: __FILE__,
+            line: 0,
+            pathname: __FILE__,
         );
 
         $service = new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), $sourceTest);
