@@ -108,6 +108,39 @@ mutation-test: ## Run mutation tests [usage: make test args="--filter=SourceName
 	$(call printSection,MUTATION TEST)
 	${BIN_DIR}/infection --threads=12 $(args)
 
+#  ______                  _
+# | ___ \                | |
+# | |_/ / ___ _ __   ___| |__
+# | ___ \/ _ \ '_ \ / __| '_ \
+# | |_/ /  __/ | | | (__| | | |
+# \____/ \___|_| |_|\___|_| |_|
+
+# Tolerance: 10% plus 1 microsecond, so that sub-microsecond variants
+# (ErrorNoneFormatter, trivial assertions) do not fail on measurement noise.
+BENCH_ASSERT = mode(variant.time.avg) < mode(baseline.time.avg) * 1.10 + 1 microsecond
+
+# On a hybrid CPU (Intel P/E cores), pin the run to one performance core,
+# otherwise the same code can be measured twice as slow depending on where the
+# process lands: make bench BENCH_CPU=2 (see benchmarks/README.md).
+BENCH_CPU ?=
+BENCH_TASKSET = $(if $(BENCH_CPU),taskset -c $(BENCH_CPU),)
+
+.PHONY: bench
+bench: ## Run benchmarks against the stored baseline [usage: make bench args="--filter=AssertBench" BENCH_CPU=2]
+	$(call printSection,BENCHMARK)
+	$(BENCH_TASKSET) ${BIN_DIR}/phpbench run --report=aggregate --ref=baseline \
+		--assert='$(BENCH_ASSERT)' $(args)
+
+.PHONY: bench-baseline
+bench-baseline: ## Store the current results as the reference baseline
+	$(call printSection,BENCHMARK BASELINE)
+	$(BENCH_TASKSET) ${BIN_DIR}/phpbench run --report=aggregate --tag=baseline --progress=none $(args)
+
+.PHONY: bench-report
+bench-report: ## Display the stored baseline report
+	$(call printSection,BENCHMARK REPORT)
+	${BIN_DIR}/phpbench report --ref=baseline --report=aggregate
+
 phar: ## Build PHAR
 	$(call printSection,BUILD Phar)
 	$(COMPOSER) global require humbug/box

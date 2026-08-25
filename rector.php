@@ -9,9 +9,15 @@ use Rector\ValueObject\PhpVersion;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
+        __DIR__ . '/benchmarks',
         __DIR__ . '/bin',
         __DIR__ . '/src',
         __DIR__ . '/tests',
+    ]);
+
+    // frozen benchmark corpus: never refactored, it would invalidate the baselines
+    $rectorConfig->skip([
+        __DIR__ . '/benchmarks/Fixture',
     ]);
 
     $rectorConfig->phpVersion(PhpVersion::PHP_82);
@@ -24,7 +30,7 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::EARLY_RETURN,
         SetList::TYPE_DECLARATION,
         SetList::INSTANCEOF,
-        PHPUnitSetList::PHPUNIT_120,
+        PHPUnitSetList::COMPOSER_BASED,
     ]);
 
     $rectorConfig->phpstanConfig(__DIR__ . '/phpstan.neon.dist');
