@@ -10,6 +10,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "StructuraPhp\\Structura\\Benchmarks\\": "benchmarks",
             "StructuraPhp\\Structura\\Tests\\": "tests"
         }
     },
@@ -28,6 +29,7 @@
         "bamarni/composer-bin-plugin": "^1.9",
         "friendsofphp/php-cs-fixer": "^3.94",
         "infection/infection": "^0.32",
+        "phpbench/phpbench": "^1.4",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
