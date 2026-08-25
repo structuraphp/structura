@@ -30,7 +30,7 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::EARLY_RETURN,
         SetList::TYPE_DECLARATION,
         SetList::INSTANCEOF,
-        PHPUnitSetList::PHPUNIT_120,
+        PHPUnitSetList::COMPOSER_BASED,
     ]);
 
     $rectorConfig->phpstanConfig(__DIR__ . '/phpstan.neon.dist');
