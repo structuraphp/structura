@@ -7,5 +7,5 @@
     "runner.php_config": {
         "opcache.enable_cli": "1"
     },
-    "storage.xml_storage_path": "build/phpbench/storage",
+    "storage.xml_storage_path": "build/phpbench/storage"
 }

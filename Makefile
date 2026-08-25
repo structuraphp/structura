@@ -139,7 +139,7 @@ bench-baseline: ## Store the current results as the reference baseline
 .PHONY: bench-report
 bench-report: ## Display the stored baseline report
 	$(call printSection,BENCHMARK REPORT)
-	${BIN_DIR}/phpbench report --uuid=tag:baseline --report=aggregate
+	${BIN_DIR}/phpbench report --ref=baseline --report=aggregate
 
 phar: ## Build PHAR
 	$(call printSection,BUILD Phar)
