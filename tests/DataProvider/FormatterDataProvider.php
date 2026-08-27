@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Tests\DataProvider;
 
 use Generator;
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleDescriptionValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -37,14 +36,11 @@ class FormatterDataProvider
                             line: 0,
                             pathname: '',
                         ),
-                        ruleValueObjects: [
-                            new RuleValuesObject(
-                                raws: ['example.php' => 'Foo'],
-                                finder: null,
-                                that: (new AbstractExpr())
-                                    ->addExpr(new ToBeClasses()),
-                                except: null,
-                                should: (new AbstractExpr()),
+                        ruleDescriptions: [
+                            new RuleDescriptionValueObject(
+                                sourceCount: 1,
+                                fromFinder: false,
+                                thatExpressions: [(string) new ToBeClasses()],
                             ),
                         ],
                         assertValueObject: new AssertValueObject(

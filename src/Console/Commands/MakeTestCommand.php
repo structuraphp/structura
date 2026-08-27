@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Console\Commands;
 
-use Closure;
 use Exception;
-use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\LoadsConfig;
 use StructuraPhp\Structura\Concerns\Console\Version;
-use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\MakeTestDto;
 use StructuraPhp\Structura\Services\MakeTestService;
-use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\MakeTestValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,6 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class MakeTestCommand extends Command
 {
+    use LoadsConfig;
     use Version;
 
     /** @var string */
@@ -43,7 +41,7 @@ final class MakeTestCommand extends Command
 
         $io->writeln($this->getInfos($this->makeTestDto->configPath));
 
-        $structuraConfig = $this->getConfigValueObject();
+        $structuraConfig = $this->loadConfigValueObject($this->makeTestDto->configPath);
 
         $makeService = new MakeTestService($structuraConfig);
 
@@ -104,19 +102,5 @@ final class MakeTestCommand extends Command
         );
 
         return MakeTestDto::fromArray($data);
-    }
-
-    private function getConfigValueObject(): ConfigValueObject
-    {
-        /** @var Closure(StructuraConfig): void|StructuraConfig $closure */
-        $closure = require $this->makeTestDto->configPath;
-        if (!$closure instanceof Closure) {
-            throw new InvalidArgumentException();
-        }
-
-        $config = new StructuraConfig();
-        $closure($config);
-
-        return $config->getConfig();
     }
 }

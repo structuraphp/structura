@@ -6,10 +6,11 @@ namespace StructuraPhp\Structura\Services;
 
 use Closure;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use StructuraPhp\Structura\Contracts\AnalyseOrchestratorInterface;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 
-final readonly class AnalyseOrchestrator
+final readonly class AnalyseOrchestrator implements AnalyseOrchestratorInterface
 {
     /**
      * @param array<string, string> $pathResolvers

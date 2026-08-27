@@ -17,7 +17,14 @@ and its visitors, the analysis orchestration and the console formatters.
 | `ParseServiceBench.php`          | Cost of the finder, the parser and the visitors                             |
 | `ExecuteServiceBench.php`        | Whole architecture test: finder, parser, `that`/`except`, assertions, events|
 | `AnalyseOrchestratorBench.php`   | Orchestration: discovery, reflection, events, merge, `--filter`, stop-on    |
+| `ParallelAnalyseOrchestratorBench.php` | Same suite spread over 2 and 4 worker processes                       |
+| `structura.php`                  | Configuration the parallel workers reload to rebuild the `Suite/` test suite |
 | `FormatterBench.php`             | The 6 error formatters and the 3 progress formatters                        |
+
+`ParallelAnalyseOrchestratorBench` is not comparable to `AnalyseOrchestratorBench`: it spawns real
+processes, so it measures the fixed cost of parallelism (spawn, configuration reload, test file
+loading) on a suite far too small to amortise it. Expect it to be several times slower than the
+sequential bench; track it for regressions in that overhead, not for a speed-up.
 
 Each benchmark keeps the setup out of the measurement: `AssertBench` parses the corpus
 once per iteration in its before method, `VisitorBench` pre-parses it into raw ASTs, and

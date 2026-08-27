@@ -7,15 +7,19 @@ namespace StructuraPhp\Structura\Services;
 use ReflectionClass;
 use ReflectionMethod;
 use RuntimeException;
+use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
+use StructuraPhp\Structura\ValueObjects\RuleDescriptionValueObject;
 use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
+use Symfony\Component\Finder\Finder;
 
 final class AnalyseService
 {
@@ -111,7 +115,7 @@ final class AnalyseService
             $this->dispatcher->addSubscriber($assertBuilder);
             $this->dispatcher->setCurrentSource($sourceTest);
 
-            $ruleValueObjects = [];
+            $ruleDescriptions = [];
 
             try {
                 /** @var callable $callable */
@@ -119,7 +123,7 @@ final class AnalyseService
 
                 \call_user_func($callable);
 
-                $ruleValueObjects = $this->executeAssertions($instance, $sourceTest);
+                $ruleDescriptions = $this->executeAssertions($instance, $sourceTest);
             } catch (EventException $eventException) {
                 $instance->getRules();
 
@@ -131,7 +135,7 @@ final class AnalyseService
 
             $this->analyseTestValueObjects[] = new AnalyseTestValueObject(
                 source: $sourceTest,
-                ruleValueObjects: $ruleValueObjects,
+                ruleDescriptions: $ruleDescriptions,
                 assertValueObject: $assertBuilder->getAssertValueObject(),
             );
 
@@ -140,23 +144,48 @@ final class AnalyseService
     }
 
     /**
-     * @return array<int, RuleValuesObject>
+     * @return array<int, RuleDescriptionValueObject>
      */
     private function executeAssertions(
         TestBuilder $instance,
         SourceTestValueObject $sourceTest,
     ): array {
-        $ruleValueObjects = [];
+        $ruleDescriptions = [];
         foreach ($instance->getRules() as $expectationFilter) {
             $expectationFilter->getRuleBuilder()->setPathResolvers($this->pathResolvers);
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
-            $ruleValueObjects[] = $ruleValueObject;
 
             $executeService = new ExecuteService($this->dispatcher, $ruleValueObject, $sourceTest);
             $executeService->assert();
+
+            $ruleDescriptions[] = $this->describeRule($ruleValueObject);
         }
 
-        return $ruleValueObjects;
+        return $ruleDescriptions;
+    }
+
+    /**
+     * Projects a rule onto the serializable subset progress formatters actually consume.
+     */
+    private function describeRule(RuleValuesObject $ruleValueObject): RuleDescriptionValueObject
+    {
+        $finder = $ruleValueObject->finder;
+        $that = $ruleValueObject->that;
+
+        $thatExpressions = $that instanceof AbstractExpr
+            ? array_map(
+                static fn (AbstractExpr|ExprInterface $expr): string => (string) $expr,
+                iterator_to_array($that, false),
+            )
+            : null;
+
+        return new RuleDescriptionValueObject(
+            sourceCount: $finder instanceof Finder
+                ? $finder->count()
+                : \count($ruleValueObject->raws),
+            fromFinder: $finder instanceof Finder,
+            thatExpressions: $thatExpressions,
+        );
     }
 
     private function getAnalyseValueObject(float $timeStart): AnalyseValueObject
