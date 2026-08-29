@@ -22,6 +22,7 @@ final readonly class AnalyzeDto
         public bool $noError,
         public ?string $filter,
         public ?string $testSuite,
+        public ?string $processes,
     ) {}
 
     /**
@@ -60,6 +61,9 @@ final readonly class AnalyzeDto
             testSuite: \is_string($data[AnalyseOption::Testsuite->value]) || is_null($data[AnalyseOption::Testsuite->value])
                 ? $data[AnalyseOption::Testsuite->value]
                 : throw new InvalidArgumentException('testsuite must be a string or null'),
+            processes: \is_string($data[AnalyseOption::Processes->value]) || is_null($data[AnalyseOption::Processes->value])
+                ? $data[AnalyseOption::Processes->value]
+                : throw new InvalidArgumentException('processes must be a string or null'),
         );
     }
 }

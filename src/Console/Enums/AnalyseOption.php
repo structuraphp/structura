@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Console\Enums;
 
 use StructuraPhp\Structura\Enums\ErrorFormatterType;
 use StructuraPhp\Structura\Enums\ProgressFormatterType;
+use StructuraPhp\Structura\Services\ProcessCountResolver;
 use Symfony\Component\Console\Input\InputOption;
 
 enum AnalyseOption: string
@@ -19,6 +20,7 @@ enum AnalyseOption: string
     case StopOnNotice = 'stop-on-notice';
     case NoProgress = 'no-progress';
     case NoError = 'no-error';
+    case Processes = 'processes';
 
     public function description(): string
     {
@@ -32,6 +34,7 @@ enum AnalyseOption: string
             self::StopOnNotice => 'Stop execution after the first notice.',
             self::NoProgress => 'Disable progress output.',
             self::NoError => 'Disable error output.',
+            self::Processes => 'Number of processes used to analyse the test suite, or "auto" for one per CPU core.',
         };
     }
 
@@ -40,6 +43,7 @@ enum AnalyseOption: string
         return match ($this) {
             self::ErrorFormat => 'f',
             self::ProgressFormat => 'p',
+            self::Processes => 'j',
             default => null,
         };
     }
@@ -50,6 +54,7 @@ enum AnalyseOption: string
             self::ErrorFormat,
             self::ProgressFormat,
             self::Testsuite,
+            self::Processes,
             self::Filter => InputOption::VALUE_REQUIRED,
             default => InputOption::VALUE_NONE,
         };
@@ -72,6 +77,7 @@ enum AnalyseOption: string
         return match ($this) {
             self::ErrorFormat => array_column(ErrorFormatterType::cases(), 'value'),
             self::ProgressFormat => array_column(ProgressFormatterType::cases(), 'value'),
+            self::Processes => [ProcessCountResolver::AUTO, '2', '4', '8'],
             default => [],
         };
     }

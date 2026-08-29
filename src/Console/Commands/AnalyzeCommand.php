@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Console\Commands;
 
-use Closure;
 use InvalidArgumentException;
+use StructuraPhp\Structura\Concerns\Console\LoadsConfig;
 use StructuraPhp\Structura\Concerns\Console\Version;
-use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
 use StructuraPhp\Structura\Console\Enums\AnalyseOption;
+use StructuraPhp\Structura\Console\Enums\CommonOption;
+use StructuraPhp\Structura\Contracts\AnalyseOrchestratorInterface;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\Enums\ErrorFormatterType;
@@ -26,6 +27,8 @@ use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseOrchestrator;
 use StructuraPhp\Structura\Services\FinderService;
+use StructuraPhp\Structura\Services\Parallel\ParallelAnalyseOrchestrator;
+use StructuraPhp\Structura\Services\ProcessCountResolver;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -41,6 +44,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final class AnalyzeCommand extends Command
 {
+    use LoadsConfig;
     use Version;
 
     /** @var string */
@@ -67,9 +71,9 @@ final class AnalyzeCommand extends Command
         $io->writeln($this->getInfos($this->analyzeDto->configPath));
         $io->newLine();
 
-        $this->configValueObject = $this->getConfigValueObject();
+        $this->configValueObject = $this->loadConfigValueObject($this->analyzeDto->configPath);
 
-        $this->autoload($io);
+        $this->autoloadProject($this->configValueObject, $io);
         $errorFormatter = $this->getErrorFormatter();
         $progressFormatter = $this->getProgressFormatter();
 
@@ -80,13 +84,7 @@ final class AnalyzeCommand extends Command
 
         $progressFormatter->progressStart($io, count($finder->getClassTests()));
 
-        $orchestrator = new AnalyseOrchestrator(
-            stopOnError: $this->analyzeDto->stopOnError,
-            stopOnWarning: $this->analyzeDto->stopOnWarning,
-            stopOnNotice: $this->analyzeDto->stopOnNotice,
-            filter: $this->analyzeDto->filter,
-            pathResolvers: $this->configValueObject->pathResolvers,
-        );
+        $orchestrator = $this->getOrchestrator();
 
         try {
             $result = $orchestrator->run(
@@ -118,6 +116,67 @@ final class AnalyzeCommand extends Command
                 suggestedValues: $option->suggestedValues(),
             );
         }
+    }
+
+    /**
+     * Sequential by default; the parallel orchestrator kicks in only when more than one process
+     * is requested, either through --processes or through structura.php.
+     */
+    private function getOrchestrator(): AnalyseOrchestratorInterface
+    {
+        $processes = (new ProcessCountResolver())->resolve(
+            $this->analyzeDto->processes,
+            $this->configValueObject->processes,
+        );
+
+        if ($processes === 1) {
+            return new AnalyseOrchestrator(
+                stopOnError: $this->analyzeDto->stopOnError,
+                stopOnWarning: $this->analyzeDto->stopOnWarning,
+                stopOnNotice: $this->analyzeDto->stopOnNotice,
+                filter: $this->analyzeDto->filter,
+                pathResolvers: $this->configValueObject->pathResolvers,
+            );
+        }
+
+        return new ParallelAnalyseOrchestrator(
+            processes: $processes,
+            workerOptions: $this->getWorkerOptions(),
+        );
+    }
+
+    /**
+     * Options replayed on every worker so it analyses exactly what this command was asked to.
+     *
+     * @return array<int, string>
+     */
+    private function getWorkerOptions(): array
+    {
+        $options = [
+            '--' . CommonOption::Config->value . '=' . $this->analyzeDto->configPath,
+        ];
+
+        if (\is_string($this->analyzeDto->testSuite)) {
+            $options[] = '--' . AnalyseOption::Testsuite->value . '=' . $this->analyzeDto->testSuite;
+        }
+
+        if (\is_string($this->analyzeDto->filter)) {
+            $options[] = '--' . AnalyseOption::Filter->value . '=' . $this->analyzeDto->filter;
+        }
+
+        if ($this->analyzeDto->stopOnError) {
+            $options[] = '--' . AnalyseOption::StopOnError->value;
+        }
+
+        if ($this->analyzeDto->stopOnWarning) {
+            $options[] = '--' . AnalyseOption::StopOnWarning->value;
+        }
+
+        if ($this->analyzeDto->stopOnNotice) {
+            $options[] = '--' . AnalyseOption::StopOnNotice->value;
+        }
+
+        return $options;
     }
 
     private function getErrorFormatter(): ErrorFormatterInterface
@@ -159,33 +218,6 @@ final class AnalyzeCommand extends Command
         };
     }
 
-    private function autoload(SymfonyStyle $output): void
-    {
-        if (!str_starts_with(__FILE__, 'phar://')) {
-            return;
-        }
-
-        if (!is_string($this->configValueObject->autoload)) {
-            $output->warning(
-                'This command is not running inside a PHAR archive, '
-                . 'so the autoload configuration is not required in this environment.',
-            );
-
-            return;
-        }
-
-        if (is_file($this->configValueObject->autoload)) {
-            require $this->configValueObject->autoload;
-        }
-
-        $output->error(
-            sprintf(
-                'The autoload file "%s" could not be found. For example: __DIR__ . "/vendor/autoload.php".',
-                $this->configValueObject->autoload,
-            ),
-        );
-    }
-
     private function getAnalyseDto(InputInterface $input): AnalyzeDto
     {
         /** @var array<string,null|scalar> $data */
@@ -197,19 +229,5 @@ final class AnalyzeCommand extends Command
         );
 
         return AnalyzeDto::fromArray($data);
-    }
-
-    private function getConfigValueObject(): ConfigValueObject
-    {
-        /** @var Closure(StructuraConfig): void|StructuraConfig $closure */
-        $closure = require $this->analyzeDto->configPath;
-        if (!$closure instanceof Closure) {
-            throw new InvalidArgumentException();
-        }
-
-        $config = new StructuraConfig();
-        $closure($config);
-
-        return $config->getConfig();
     }
 }

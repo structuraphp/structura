@@ -45,6 +45,26 @@ interface StructuraConfigInterface
     public function setAutoload(string $path): self;
 
     /**
+     * Number of processes used to analyse the test suite.
+     *
+     * Test classes are distributed across that many worker processes. The default of 1 keeps the
+     * analysis sequential. Parallel runs produce the exact same output as sequential ones, but a
+     * listener registered on the orchestration event bus never sees the events dispatched inside
+     * the workers.
+     *
+     * @param int $processes number of processes, must be greater than or equal to 1
+     *
+     * @throws InvalidArgumentException if $processes is lower than 1
+     */
+    public function setProcesses(int $processes): self;
+
+    /**
+     * Uses as many processes as there are usable CPU cores, falling back to 1 when the core count
+     * cannot be detected. Resolved immediately, at configuration time.
+     */
+    public function setProcessesAuto(): self;
+
+    /**
      * Registers a custom function name as a path resolver for the `toUseInclude` assertion.
      * When the function name is found in an include/require expression in the AST,
      * its arguments are ignored and the registered path is returned directly.
