@@ -17,13 +17,21 @@ if (version_compare('8.2.0', PHP_VERSION, '>')) {
     exit(1);
 }
 
-if (isset($GLOBALS['_composer_autoload_path'])) {
+$structuraEnvAutoload = getenv('STRUCTURA_COMPOSER_AUTOLOAD');
+
+// A parallel worker is told by its parent which autoload file to boot on. That is the only
+// reliable source: the relative candidates below cannot be trusted when the package is installed
+// as a dependency, symlinked by a path repository, or driven from another host application.
+if (is_string($structuraEnvAutoload) && $structuraEnvAutoload !== '' && file_exists($structuraEnvAutoload)) {
+    define('STRUCTURA_COMPOSER_AUTOLOAD_PATH', $structuraEnvAutoload);
+} elseif (isset($GLOBALS['_composer_autoload_path'])) {
     define('STRUCTURA_COMPOSER_AUTOLOAD_PATH', $GLOBALS['_composer_autoload_path']);
 
     unset($GLOBALS['_composer_autoload_path']);
 } else {
     foreach (
         [
+            __DIR__ . '/../../../autoload.php',
             __DIR__ . '/../../autoload.php',
             __DIR__ . '/../vendor/autoload.php',
             __DIR__ . '/vendor/autoload.php',
@@ -38,6 +46,8 @@ if (isset($GLOBALS['_composer_autoload_path'])) {
 
     unset($file);
 }
+
+unset($structuraEnvAutoload);
 
 if (!defined('STRUCTURA_COMPOSER_AUTOLOAD_PATH')) {
     fwrite(

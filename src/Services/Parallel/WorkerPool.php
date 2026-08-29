@@ -46,6 +46,7 @@ final class WorkerPool
     public function __construct(
         private readonly int $size,
         private readonly array $workerOptions = [],
+        private readonly ComposerAutoloadLocator $autoloadLocator = new ComposerAutoloadLocator(),
     ) {}
 
     /**
@@ -78,10 +79,11 @@ final class WorkerPool
     private function start(int $count): void
     {
         $command = $this->baseCommand();
+        $env = $this->workerEnv();
 
         for ($index = 0; $index < $count; $index++) {
             $inputStream = new InputStream();
-            $process = new Process([...$command, ...$this->workerOptions]);
+            $process = new Process([...$command, ...$this->workerOptions], null, $env);
             $process->setInput($inputStream);
             $process->setTimeout(null);
             $process->start();
@@ -257,6 +259,24 @@ final class WorkerPool
         $this->inputStreams = [];
         $this->buffers = [];
         $this->inFlight = [];
+    }
+
+    /**
+     * Environment handed to every worker so it boots on the same autoload file as this process.
+     *
+     * A worker has to require an autoload file before any Structura class exists, and none of the
+     * paths relative to the entry point can be trusted once the package is installed as a
+     * dependency, so the parent resolves it and forwards it.
+     *
+     * @return array<string, string>
+     */
+    private function workerEnv(): array
+    {
+        $autoload = $this->autoloadLocator->locate();
+
+        return \is_string($autoload)
+            ? [ComposerAutoloadLocator::ENV_VARIABLE => $autoload]
+            : [];
     }
 
     /**
