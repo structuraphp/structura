@@ -59,8 +59,14 @@ interface StructuraConfigInterface
     public function setProcesses(int $processes): self;
 
     /**
-     * Uses as many processes as there are usable CPU cores, falling back to 1 when the core count
-     * cannot be detected. Resolved immediately, at configuration time.
+     * Uses as many processes as there are usable CPU cores, capped at 8
+     * (ProcessCountResolver::MAX_AUTO_PROCESSES), and falling back to 1 when the core count cannot
+     * be detected. Resolved immediately, at configuration time.
+     *
+     * The test suite is not discovered yet at that point, so this cannot additionally bound the
+     * count by the number of test classes -- passing --processes=auto on the command line does,
+     * because it is resolved once the suite is known. The two only ever differ below 16 classes,
+     * and WorkerPool never starts more workers than there are classes to analyse anyway.
      */
     public function setProcessesAuto(): self;
 

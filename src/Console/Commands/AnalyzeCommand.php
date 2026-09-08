@@ -82,9 +82,11 @@ final class AnalyzeCommand extends Command
             testSuite: $this->analyzeDto->testSuite,
         );
 
-        $progressFormatter->progressStart($io, count($finder->getClassTests()));
+        $classCount = count($finder->getClassTests());
 
-        $orchestrator = $this->getOrchestrator();
+        $progressFormatter->progressStart($io, $classCount);
+
+        $orchestrator = $this->getOrchestrator($classCount);
 
         try {
             $result = $orchestrator->run(
@@ -121,12 +123,16 @@ final class AnalyzeCommand extends Command
     /**
      * Sequential by default; the parallel orchestrator kicks in only when more than one process
      * is requested, either through --processes or through structura.php.
+     *
+     * @param int $classCount test classes to analyse, so that "auto" never asks for more workers
+     *                        than the suite can keep busy
      */
-    private function getOrchestrator(): AnalyseOrchestratorInterface
+    private function getOrchestrator(int $classCount): AnalyseOrchestratorInterface
     {
         $processes = (new ProcessCountResolver())->resolve(
             $this->analyzeDto->processes,
             $this->configValueObject->processes,
+            $classCount,
         );
 
         if ($processes === 1) {

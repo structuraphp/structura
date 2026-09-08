@@ -118,6 +118,10 @@ class StructuraConfig implements StructuraConfigInterface
         return $this;
     }
 
+    /**
+     * Resolved without a class count: the test suite is unknown at configuration time, so only the
+     * MAX_AUTO_PROCESSES ceiling applies here, not the "at least two classes per process" rule.
+     */
     public function setProcessesAuto(): self
     {
         $this->processes = (new ProcessCountResolver())->detect();

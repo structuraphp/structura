@@ -66,6 +66,60 @@ final class ProcessCountResolverTest extends TestCase
     }
 
     /**
+     * Every extra worker costs a PHP boot, a configuration reload and a share of the parent
+     * polling loop, so detection is capped instead of following the logical thread count.
+     */
+    public function testAutoIsCappedAtTheProcessCeiling(): void
+    {
+        $resolver = $this->resolver(22);
+
+        self::assertSame(ProcessCountResolver::MAX_AUTO_PROCESSES, $resolver->detect());
+        self::assertSame(
+            ProcessCountResolver::MAX_AUTO_PROCESSES,
+            $resolver->resolve(ProcessCountResolver::AUTO),
+        );
+    }
+
+    /**
+     * Asking for more workers than the suite can keep busy only adds startup cost, so the count is
+     * also bounded by the number of test classes when they are known.
+     */
+    #[TestWith([1, 1])]
+    #[TestWith([2, 1])]
+    #[TestWith([6, 3])]
+    #[TestWith([16, 8])]
+    #[TestWith([100, 8])]
+    public function testAutoIsBoundedByTheNumberOfTestClasses(int $classes, int $expected): void
+    {
+        self::assertSame(
+            $expected,
+            $this->resolver(22)->resolve(ProcessCountResolver::AUTO, 1, $classes),
+        );
+    }
+
+    /**
+     * A machine with few cores stays the binding constraint, however large the suite is.
+     */
+    public function testAutoNeverExceedsTheCoreCount(): void
+    {
+        self::assertSame(4, $this->resolver(4)->resolve(ProcessCountResolver::AUTO, 1, 100));
+    }
+
+    /**
+     * An explicit count is a deliberate request: WorkerPool already bounds it by the queue size,
+     * so neither the ceiling nor the class count overrides it.
+     */
+    public function testExplicitCountIsNeverCapped(): void
+    {
+        self::assertSame(22, $this->resolver()->resolve('22', 1, 6));
+    }
+
+    public function testConfiguredCountIsNeverCapped(): void
+    {
+        self::assertSame(22, $this->resolver()->resolve(null, 22, 6));
+    }
+
+    /**
      * @param int<1, max> $cores
      */
     private function resolver(int $cores = 4): ProcessCountResolver
