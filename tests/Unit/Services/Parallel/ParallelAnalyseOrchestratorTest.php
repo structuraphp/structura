@@ -19,7 +19,6 @@ use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Services\Parallel\AnalyseResultSerializer;
 use StructuraPhp\Structura\Services\Parallel\OrderedResultCollector;
 use StructuraPhp\Structura\Services\Parallel\ParallelAnalyseOrchestrator;
-use StructuraPhp\Structura\Services\Parallel\WorkerPool;
 use StructuraPhp\Structura\Tests\Helper\AnalyseResultRecorder;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
@@ -31,7 +30,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
  * compares a parallel run against a sequential run of the very same suite.
  */
 #[CoversClass(ParallelAnalyseOrchestrator::class)]
-#[CoversClass(WorkerPool::class)]
 #[CoversClass(OrderedResultCollector::class)]
 #[CoversClass(AnalyseResultSerializer::class)]
 final class ParallelAnalyseOrchestratorTest extends TestCase

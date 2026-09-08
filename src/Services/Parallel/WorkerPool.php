@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Services\Parallel;
 
 use Closure;
-use Phar;
-use StructuraPhp\Structura\Console\Commands\WorkerCommand;
 use StructuraPhp\Structura\Exception\Console\WorkerProtocolException;
 use Symfony\Component\Process\InputStream;
-use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /**
@@ -22,6 +19,10 @@ use Symfony\Component\Process\Process;
  *
  * Uses symfony/process rather than pcntl so that parallel analysis works on every platform,
  * Windows included.
+ *
+ * Reading the protocol and building the worker command line live in WorkerMessageReader and
+ * WorkerCommandLine: neither needs a running process, and keeping them out of here is what makes
+ * their failure paths testable.
  */
 final class WorkerPool
 {
@@ -34,8 +35,8 @@ final class WorkerPool
     /** @var array<int, InputStream> */
     private array $inputStreams = [];
 
-    /** @var array<int, string> partial STDOUT line still waiting for its newline, per worker */
-    private array $buffers = [];
+    /** @var array<int, WorkerMessageReader> one protocol reader per worker */
+    private array $readers = [];
 
     /** @var array<int, null|string> class currently being analysed by each worker */
     private array $inFlight = [];
@@ -47,6 +48,7 @@ final class WorkerPool
         private readonly int $size,
         private readonly array $workerOptions = [],
         private readonly ComposerAutoloadLocator $autoloadLocator = new ComposerAutoloadLocator(),
+        private readonly WorkerCommandLine $commandLine = new WorkerCommandLine(),
     ) {}
 
     /**
@@ -78,19 +80,19 @@ final class WorkerPool
 
     private function start(int $count): void
     {
-        $command = $this->baseCommand();
-        $env = $this->workerEnv();
+        $command = $this->commandLine->build($this->workerOptions);
+        $env = $this->commandLine->env($this->autoloadLocator->locate());
 
         for ($index = 0; $index < $count; $index++) {
             $inputStream = new InputStream();
-            $process = new Process([...$command, ...$this->workerOptions], null, $env);
+            $process = new Process($command, null, $env);
             $process->setInput($inputStream);
             $process->setTimeout(null);
             $process->start();
 
             $this->processes[$index] = $process;
             $this->inputStreams[$index] = $inputStream;
-            $this->buffers[$index] = '';
+            $this->readers[$index] = new WorkerMessageReader();
             $this->inFlight[$index] = null;
         }
     }
@@ -112,7 +114,7 @@ final class WorkerPool
             $progressed = false;
 
             foreach ($this->processes as $index => $process) {
-                foreach ($this->readLines($index, $process) as $line) {
+                foreach ($this->readers[$index]->push($process->getIncrementalOutput()) as $line) {
                     $progressed = true;
                     $pending--;
 
@@ -163,6 +165,12 @@ final class WorkerPool
     /**
      * Guards against every worker having exited while jobs remain, which would otherwise spin
      * the polling loop forever.
+     *
+     * Defensive only, and shadowed in practice: dispatchJobs() hands a job to every idle live
+     * worker on each turn, so a dead worker almost always still holds an in flight class and the
+     * "Worker died while analysing" check in pump() reports it first. Reaching this message would
+     * take every worker dying in the window between answering and being fed again, which is why
+     * no test covers it.
      */
     private function assertPoolAlive(): void
     {
@@ -198,20 +206,6 @@ final class WorkerPool
     }
 
     /**
-     * @return array<int, string> complete lines emitted since the last read
-     */
-    private function readLines(int $index, Process $process): array
-    {
-        $this->buffers[$index] .= $process->getIncrementalOutput();
-
-        $lines = explode("\n", $this->buffers[$index]);
-        // The trailing element is either an empty string or a partial line: keep it buffered.
-        $this->buffers[$index] = array_pop($lines);
-
-        return array_values(array_filter($lines, static fn (string $line): bool => trim($line) !== ''));
-    }
-
-    /**
      * @param Closure(string, array<array-key, mixed>, bool): bool $onResult
      *
      * @return bool false when the caller asked to stop
@@ -220,29 +214,9 @@ final class WorkerPool
     {
         $this->inFlight[$index] = null;
 
-        /** @var mixed $message */
-        $message = json_decode($line, true);
-        if (!\is_array($message)) {
-            throw new WorkerProtocolException('Unreadable worker output: ' . $line);
-        }
+        $message = $this->readers[$index]->decode($line);
 
-        if (($message['type'] ?? null) === 'error') {
-            throw new WorkerProtocolException(
-                \sprintf(
-                    'Worker failed on "%s": %s',
-                    \is_string($message['class'] ?? null) ? $message['class'] : 'unknown',
-                    \is_string($message['message'] ?? null) ? $message['message'] : 'unknown error',
-                ),
-            );
-        }
-
-        $classname = $message['class'] ?? null;
-        $data = $message['data'] ?? null;
-        if (!\is_string($classname) || !\is_array($data)) {
-            throw new WorkerProtocolException('Incomplete worker result: ' . $line);
-        }
-
-        return $onResult($classname, $data, ($message['stopOn'] ?? false) === true);
+        return $onResult($message->classname, $message->data, $message->stopOn);
     }
 
     private function close(): void
@@ -257,68 +231,7 @@ final class WorkerPool
 
         $this->processes = [];
         $this->inputStreams = [];
-        $this->buffers = [];
+        $this->readers = [];
         $this->inFlight = [];
-    }
-
-    /**
-     * Environment handed to every worker so it boots on the same autoload file as this process.
-     *
-     * A worker has to require an autoload file before any Structura class exists, and none of the
-     * paths relative to the entry point can be trusted once the package is installed as a
-     * dependency, so the parent resolves it and forwards it.
-     *
-     * @return array<string, string>
-     */
-    private function workerEnv(): array
-    {
-        $autoload = $this->autoloadLocator->locate();
-
-        return \is_string($autoload)
-            ? [ComposerAutoloadLocator::ENV_VARIABLE => $autoload]
-            : [];
-    }
-
-    /**
-     * Command re-entering the Structura entry point.
-     *
-     * Resolved from the package itself rather than from $_SERVER['argv'][0], because the parent
-     * is not necessarily the structura binary: the analysis can be driven from a PHPUnit test or
-     * from any other host application.
-     *
-     * @return array<int, string>
-     */
-    private function baseCommand(): array
-    {
-        $finder = new PhpExecutableFinder();
-        $php = $finder->find(false);
-        if ($php === false) {
-            throw new WorkerProtocolException('Unable to locate the PHP binary to start workers.');
-        }
-
-        return [$php, ...$finder->findArguments(), $this->entryPoint(), WorkerCommand::NAME];
-    }
-
-    private function entryPoint(): string
-    {
-        $phar = Phar::running(false);
-        if ($phar !== '') {
-            return $phar;
-        }
-
-        $binary = \dirname(__DIR__, 3) . '/bin/structura';
-        if (is_file($binary)) {
-            return $binary;
-        }
-
-        $argv = $_SERVER['argv'] ?? null;
-
-        $entryPoint = \is_array($argv) ? ($argv[0] ?? null) : null;
-
-        return \is_string($entryPoint) && $entryPoint !== ''
-            ? $entryPoint
-            : throw new WorkerProtocolException(
-                'Unable to determine the Structura entry point to start workers.',
-            );
     }
 }
