@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\Contracts\StructuraConfigInterface;
+use StructuraPhp\Structura\Services\ProcessCountResolver;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
 use StructuraPhp\Structura\ValueObjects\RootNamespaceValueObject;
 
@@ -31,6 +32,8 @@ class StructuraConfig implements StructuraConfigInterface
 
     /** @var array<string, string> */
     private array $pathResolvers = [];
+
+    private int $processes = 1;
 
     public static function make(): self
     {
@@ -102,6 +105,30 @@ class StructuraConfig implements StructuraConfigInterface
         return $this;
     }
 
+    public function setProcesses(int $processes): self
+    {
+        if ($processes < 1) {
+            throw new InvalidArgumentException(
+                \sprintf('The number of processes must be greater than or equal to 1, %d given.', $processes),
+            );
+        }
+
+        $this->processes = $processes;
+
+        return $this;
+    }
+
+    /**
+     * Resolved without a class count: the test suite is unknown at configuration time, so only the
+     * MAX_AUTO_PROCESSES ceiling applies here, not the "at least two classes per process" rule.
+     */
+    public function setProcessesAuto(): self
+    {
+        $this->processes = (new ProcessCountResolver())->detect();
+
+        return $this;
+    }
+
     public function getConfig(): ConfigValueObject
     {
         return new ConfigValueObject(
@@ -112,6 +139,7 @@ class StructuraConfig implements StructuraConfigInterface
             extensions: $this->extensions,
             autoload: $this->autoload,
             pathResolvers: $this->pathResolvers,
+            processes: $this->processes,
         );
     }
 }

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Benchmarks;
 
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Benchmarks\Fixture\Models\Order;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleDescriptionValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -123,16 +122,11 @@ final readonly class AnalyseValueObjectFactory
                 line: 21,
                 pathname: 'benchmarks/Suite/' . $classname . '.php',
             ),
-            ruleValueObjects: [
-                new RuleValuesObject(
-                    raws: [
-                        'benchmarks/Fixture/Models/Order.php' => '<?php final class Order {}',
-                        'benchmarks/Fixture/Models/Model.php' => '<?php abstract class Model {}',
-                    ],
-                    finder: null,
-                    that: (new AbstractExpr())->addExpr(new ToBeClasses()),
-                    except: null,
-                    should: (new AbstractExpr())->addExpr(new ToBeFinal()),
+            ruleDescriptions: [
+                new RuleDescriptionValueObject(
+                    sourceCount: 2,
+                    fromFinder: false,
+                    thatExpressions: [(string) new ToBeClasses()],
                 ),
             ],
             assertValueObject: new AssertValueObject(

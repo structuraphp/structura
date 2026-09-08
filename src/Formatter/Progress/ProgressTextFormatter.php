@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Formatter\Progress;
 
-use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Console\Enums\StyleCustom;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
+use StructuraPhp\Structura\ValueObjects\RuleDescriptionValueObject;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
 
 /**
  * @phpstan-import-type ViolationsByTest from AnalyseValueObject
@@ -31,9 +30,9 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         foreach ($analyseValueObject->analyseTestValueObjects as $data) {
             $this->headOutput($data);
 
-            foreach ($data->ruleValueObjects as $ruleValueObject) {
-                $this->fromOutput($ruleValueObject->finder, $ruleValueObject->raws);
-                $this->thatOutput($ruleValueObject->that);
+            foreach ($data->ruleDescriptions as $ruleDescription) {
+                $this->fromOutput($ruleDescription);
+                $this->thatOutput($ruleDescription);
             }
 
             $this->shouldOutput($data->assertValueObject);
@@ -90,29 +89,21 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         );
     }
 
-    /**
-     * @param array<string,string> $raws
-     */
-    private function fromOutput(?Finder $finder, array $raws = []): void
+    private function fromOutput(RuleDescriptionValueObject $ruleDescription): void
     {
-        if ($finder instanceof Finder) {
-            $this->prints[] = $finder->count() . ' classe(s) from';
-            $this->prints[] = ' - dirs';
-        } else {
-            $this->prints[] = count($raws) . ' classe(s) from';
-            $this->prints[] = ' - raw value';
-        }
+        $this->prints[] = $ruleDescription->sourceCount . ' classe(s) from';
+        $this->prints[] = $ruleDescription->fromFinder ? ' - dirs' : ' - raw value';
     }
 
-    private function thatOutput(?AbstractExpr $builder): void
+    private function thatOutput(RuleDescriptionValueObject $ruleDescription): void
     {
-        if (!$builder instanceof AbstractExpr) {
+        if ($ruleDescription->thatExpressions === null) {
             return;
         }
 
         $this->prints[] = 'That';
 
-        foreach ($builder as $expr) {
+        foreach ($ruleDescription->thatExpressions as $expr) {
             $this->prints[] = \sprintf(' - %s', $expr);
         }
     }

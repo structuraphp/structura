@@ -24,5 +24,6 @@ final readonly class ConfigValueObject
         public array $extensions,
         public ?string $autoload,
         public array $pathResolvers = [],
+        public int $processes = 1,
     ) {}
 }

@@ -11,5 +11,6 @@ return static function (StructuraConfigInterface $config): void {
         'tests/Feature',
     );
 
+    $config->setProcesses(4);
     // $config->setAutoload(__DIR__ . '/vendor/autoload.php');
 };
