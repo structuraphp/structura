@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Concerns\Expr\MethodAssert;
 use StructuraPhp\Structura\Concerns\Expr\NameAssert;
 use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
-use StructuraPhp\Structura\Concerns\Expr\ThridPartyAssert;
+use StructuraPhp\Structura\Concerns\Expr\ThirdPartyAssert;
 use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert as ScriptDependencyAssert;
 use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert as ScriptThirdPartyAssert;
@@ -34,7 +34,7 @@ class Expr extends AbstractExpr implements TypeAssertInterface, DependencyAssert
     use ConstantAssert;
     use NameAssert;
     use CorrespondingAssert;
-    use ThridPartyAssert;
+    use ThirdPartyAssert;
     use ScriptThirdPartyAssert;
     use ScriptDependencyAssert;
 
