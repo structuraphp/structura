@@ -16,7 +16,7 @@ final class TestVoid extends TestBuilder
     {
         $this
             ->allClasses()
-            ->fromDir('src')
+            ->fromDir('tests/Fixture/Void')
             ->that($this->that(...))
             ->except($this->except(...))
             ->should($this->should(...));
