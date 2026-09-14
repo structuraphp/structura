@@ -11,17 +11,6 @@ use StructuraPhp\Structura\Testing\TestBuilder;
 
 final class TestEmpty extends TestBuilder
 {
-    #[TestDox('Void architecture rules')]
-    public function testVoidArchitecture(): void
-    {
-        $this
-            ->allClasses()
-            ->fromDir('tests/Fixture/Void')
-            ->that($this->that(...))
-            ->except($this->except(...))
-            ->should($this->should(...));
-    }
-
     #[TestDox('Empty architecture rules')]
     public function testEmptyArchitecture(): void
     {

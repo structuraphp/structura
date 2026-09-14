@@ -42,7 +42,7 @@ export default defineConfig({
                         {text: '🔒 Constants', link: '/assertions/constants'},
                         {text: '🕶️ Naming', link: '/assertions/naming'},
                         {text: '🧑‍🤝‍🧑 Corresponding', link: '/assertions/corresponding'},
-                        {text: '🕹️ Thrid Party', link: '/assertions/third-party'},
+                        {text: '🕹️ Third Party', link: '/assertions/third-party'},
                         {
                             text: '🗜️ Operators', link: '/assertions/operators',
                             items: [

@@ -10,12 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
-use StructuraPhp\Structura\Concerns\Expr\ThridPartyAssert;
+use StructuraPhp\Structura\Concerns\Expr\ThirdPartyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeInOneOfTheNamespaces::class)]
-#[CoversMethod(ThridPartyAssert::class, 'toBeInOneOfTheNamespaces')]
+#[CoversMethod(ThirdPartyAssert::class, 'toBeInOneOfTheNamespaces')]
 class ToBeInOneOfTheNamespacesTest extends TestCase
 {
     use ArchitectureAsserts;

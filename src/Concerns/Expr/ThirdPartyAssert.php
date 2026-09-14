@@ -11,7 +11,7 @@ use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
 /**
  * @mixin AbstractExpr
  */
-trait ThridPartyAssert
+trait ThirdPartyAssert
 {
     public function toBeInOneOfTheNamespaces(
         array|string $patterns,

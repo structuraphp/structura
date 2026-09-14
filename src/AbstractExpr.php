@@ -69,7 +69,7 @@ class AbstractExpr implements IteratorAggregate
     }
 
     /**
-     * @return Generator<AbstractExpr|ExprInterface>
+     * @return Generator<int, AbstractExpr|ExprInterface>
      */
     public function getIterator(): Traversable
     {

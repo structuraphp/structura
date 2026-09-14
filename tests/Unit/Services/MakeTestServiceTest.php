@@ -27,7 +27,7 @@ final class MakeTestServiceTest extends TestCase
         $makeTestValueObject = $service->make(
             new MakeTestValueObject(
                 testClassName: 'TestVoid',
-                path: 'src',
+                path: 'tests/Fixture/Void',
             ),
         );
 

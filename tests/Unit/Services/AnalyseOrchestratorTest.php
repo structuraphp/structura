@@ -41,24 +41,20 @@ final class AnalyseOrchestratorTest extends TestCase
         $formatter->progressAdvance($buffer, $result);
 
         self::assertSame(5, $result->countViolation);
-        self::assertSame(13, $result->countPass);
+        self::assertSame(8, $result->countPass);
         self::assertSame(1, $result->countWarning);
+        self::assertSame(2, $result->countNotice);
 
         $expected = <<<'EOF'
-        <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        52 classe(s) from
+        <violation> ERROR </violation> Http architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
+        7 classe(s) from
          - dirs
         That
-         - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
+         - to be classes
         Should
-         <green>✔</green> to be classes
-         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>38 error(s)</fire>
-         <green>✔</green> to have method <promote>__toString</promote>
-         <green>✔</green> to use declare <promote>strict_types=1</promote>
-         <yellow>❗</yellow> to have prefix <promote>To</promote> <yellow>1 warning(s)</yellow>
-         <green>✔</green> to extend nothing
-         <fire>✘</fire> to not use trait <fire>7 error(s)</fire>
-         <green>✔</green> to have method <promote>__construct</promote>
+         <yellow>❗</yellow> to use declare <promote>strict_types=1</promote> <yellow>1 warning(s)</yellow>
+         <fire>✘</fire> to extend nothing <fire>3 error(s)</fire>
+         <fire>✘</fire> to not use trait <fire>1 error(s)</fire>
 
         <pass> PASS </pass> Binary architecture rules in StructuraPhp\Structura\Tests\Feature\TestConfig
         1 classe(s) from
@@ -80,10 +76,6 @@ final class AnalyseOrchestratorTest extends TestCase
          <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
          <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
-        <notice> NOTICE </notice> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
-        Should
-         <orange>◎</orange> Directory not found: "tests/Fixture/Void". Assertions were skipped.
-
         <notice> NOTICE </notice> Empty architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         0 classe(s) from
          - dirs
@@ -100,11 +92,9 @@ final class AnalyseOrchestratorTest extends TestCase
            | to extend <promote>DomainException</promote>
              & to extend <promote>BadMethodCallException</promote>
 
-        <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        158 classe(s) from
-         - dirs
-        That
+        <notice> NOTICE </notice> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
         Should
+         <orange>◎</orange> Directory not found: "tests/Fixture/Void". Assertions were skipped.
 
         EOF;
 
@@ -113,7 +103,7 @@ final class AnalyseOrchestratorTest extends TestCase
         $fetch = explode(PHP_EOL, $buffer->fetch());
 
         foreach ($expected as $key => $line) {
-            self::assertSame($line, $fetch[$key]);
+            self::assertSame($line, $fetch[$key], 'in line ' . $key);
         }
     }
 
@@ -124,10 +114,11 @@ final class AnalyseOrchestratorTest extends TestCase
         try {
             $orchestrator->run($this->finder);
         } catch (StopOnException $stopOnException) {
+            // stops on TestAssert, the first test class of the suite
             $result = $stopOnException->analyseValueObject;
 
             self::assertSame(2, $result->countViolation);
-            self::assertSame(5, $result->countPass);
+            self::assertSame(0, $result->countPass);
             self::assertSame(1, $result->countWarning);
             self::assertSame(0, $result->countNotice);
         }
@@ -140,10 +131,11 @@ final class AnalyseOrchestratorTest extends TestCase
         try {
             $orchestrator->run($this->finder);
         } catch (StopOnException $stopOnException) {
+            // stops on TestAssert, the only test class raising a warning
             $result = $stopOnException->analyseValueObject;
 
             self::assertSame(2, $result->countViolation);
-            self::assertSame(5, $result->countPass);
+            self::assertSame(0, $result->countPass);
             self::assertSame(1, $result->countWarning);
             self::assertSame(0, $result->countNotice);
         }
