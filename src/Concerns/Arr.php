@@ -9,7 +9,7 @@ trait Arr
     /**
      * @param array<int,string> $array
      */
-    public function implodeMore(array $array, string $glue = ', ', int $max = 3): string
+    private function implodeMore(array $array, string $glue = ', ', int $max = 3): string
     {
         $count = \count($array);
         if ($count <= $max) {
