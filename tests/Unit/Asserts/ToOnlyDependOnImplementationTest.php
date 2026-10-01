@@ -10,14 +10,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnImplementation;
 use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnImplementation::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnImplementation')]
-final class DependsOnlyOnImplementationTest extends TestCase
+#[CoversClass(ToOnlyDependOnImplementation::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnImplementation')]
+final class ToOnlyDependOnImplementationTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -29,7 +29,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnImplementation(
+                    ->toOnlyDependOnImplementation(
                         names: ArrayAccess::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -64,7 +64,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnImplementation(
+                    ->toOnlyDependOnImplementation(
                         names: ArrayAccess::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -99,7 +99,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
             ->fromRaw('<?php class Foo implements \BadImplements1, \BadImplements2 {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnImplementation(
+                    ->toOnlyDependOnImplementation(
                         names: ArrayAccess::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),

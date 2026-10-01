@@ -10,12 +10,12 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class ToNotDependsOn implements ExprScriptInterface
+final readonly class ToOnlyDependOnFunction implements ExprScriptInterface
 {
     use Arr;
 
     /**
-     * @param array<int,class-string> $names
+     * @param array<int,string> $names
      * @param array<int,string> $patterns
      */
     public function __construct(
@@ -27,7 +27,7 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to not depend on these namespaces <promote>%s</promote>',
+            'to only depend on function <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -36,10 +36,10 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $description->getDependenciesByPatterns($this->patterns),
+            $description->getDependenciesFunctionByPatterns($this->patterns),
         );
 
-        return array_intersect($description->getClassDependencies(), $dependencies) === [];
+        return array_diff($description->getFunctionDependencies(), $dependencies) === [];
     }
 
     /**
@@ -47,21 +47,21 @@ final readonly class ToNotDependsOn implements ExprScriptInterface
      */
     public function getViolation(ScriptDescription $description): array
     {
-        $unauthorizedDependence = implode(', ', array_merge($this->names, $this->patterns));
+        $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
-            $description->getDependenciesByPatterns($this->patterns),
+            $description->getDependenciesFunctionByPatterns($this->patterns),
         );
-        $violations = array_intersect($description->getClassDependencies(), $dependencies);
+        $violations = array_diff($description->getFunctionDependencies(), $dependencies);
         sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
-                    $unauthorizedDependence,
+                    $authorisedDependence,
                     $violation,
                 ),
                 $this::class,

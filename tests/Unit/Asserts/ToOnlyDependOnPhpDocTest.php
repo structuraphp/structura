@@ -10,26 +10,26 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnPhpDoc;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnPhpDoc::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnPhpDoc')]
-final class DependsOnlyOnPhpDocTest extends TestCase
+#[CoversClass(ToOnlyDependOnPhpDoc::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnPhpDoc')]
+final class ToOnlyDependOnPhpDocTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getPassingCases')]
-    public function testDependsOnlyOnPhpDocPasses(string $raw): void
+    public function testToOnlyDependOnPhpDocPasses(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnPhpDoc(
+                    ->toOnlyDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Acme\.*',
                     ),
@@ -61,14 +61,14 @@ final class DependsOnlyOnPhpDocTest extends TestCase
     }
 
     #[DataProvider('getViolatingCases')]
-    public function testDependsOnlyOnPhpDocViolates(string $raw, string $violation): void
+    public function testToOnlyDependOnPhpDocViolates(string $raw, string $violation): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnPhpDoc(
+                    ->toOnlyDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Acme\.*',
                     ),
@@ -98,7 +98,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
         ];
     }
 
-    public function testDependsOnlyOnPhpDocViolatesWithMultipleForbidden(): void
+    public function testToOnlyDependOnPhpDocViolatesWithMultipleForbidden(): void
     {
         $rules = $this
             ->allClasses()
@@ -118,7 +118,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnPhpDoc(
+                    ->toOnlyDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Acme\.*',
                     ),
@@ -144,7 +144,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
         );
     }
 
-    public function testDependsOnlyOnPhpDocPassesViaPattern(): void
+    public function testToOnlyDependOnPhpDocPassesViaPattern(): void
     {
         $rules = $this
             ->allClasses()
@@ -153,7 +153,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnPhpDoc(
+                    ->toOnlyDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Acme\.*',
                     ),

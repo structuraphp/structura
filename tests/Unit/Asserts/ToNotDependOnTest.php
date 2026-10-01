@@ -13,27 +13,27 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
-use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToNotDependsOn::class)]
-#[CoversMethod(DependencyAssert::class, 'toNotDependsOn')]
-final class ToNotDependsOnTest extends TestCase
+#[CoversClass(ToNotDependOn::class)]
+#[CoversMethod(DependencyAssert::class, 'toNotDependOn')]
+final class ToNotDependOnTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithNoDependsProvider')]
-    public function testToNotDependsOnWithClass(string $raw): void
+    public function testToNotDependOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOn(
+                    ->toNotDependOn(
                         names: [JsonSerializable::class],
                         patterns: ['Depend\Baz'],
                     ),
@@ -50,14 +50,14 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testToNotDependsOnWithScript(string $raw, string $exceptName): void
+    public function testToNotDependOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->toNotDependsOn(
+                    ->toNotDependOn(
                         names: [JsonSerializable::class],
                         patterns: ['Depend\Baz'],
                     ),
@@ -74,14 +74,14 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getClassLikeWithNoDependsProvider')]
-    public function testShouldFailToNotDependsOnWithClass(string $raw): void
+    public function testShouldFailToNotDependOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOn(
+                    ->toNotDependOn(
                         names: [
                             ArrayAccess::class,
                             Exception::class,
@@ -143,7 +143,7 @@ final class ToNotDependsOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testShouldFailToNotDependsOnWithScript(
+    public function testShouldFailToNotDependOnWithScript(
         string $raw,
         string $exceptName,
     ): void {
@@ -152,7 +152,7 @@ final class ToNotDependsOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->toNotDependsOn(
+                    ->toNotDependOn(
                         names: [
                             ArrayAccess::class,
                             Exception::class,
@@ -237,7 +237,7 @@ final class ToNotDependsOnTest extends TestCase
         ];
     }
 
-    public function testShouldFailToNotDependsOnOnlyIntersection(): void
+    public function testShouldFailToNotDependOnOnlyIntersection(): void
     {
         $rules = $this
             ->allClasses()
@@ -252,7 +252,7 @@ final class ToNotDependsOnTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOn(
+                    ->toNotDependOn(
                         names: [ArrayAccess::class, Stringable::class],
                     ),
             );

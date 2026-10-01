@@ -9,27 +9,27 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
+use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToNotDependsOnFunction::class)]
-#[CoversMethod(DependencyAssert::class, 'toNotDependsOnFunction')]
-class ToNotDependsOnFunctionTest extends TestCase
+#[CoversClass(ToNotDependOnFunction::class)]
+#[CoversMethod(DependencyAssert::class, 'toNotDependOnFunction')]
+class ToNotDependOnFunctionTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testNotDependsOnFunctionWithClass(string $raw, string $exceptName): void
+    public function testNotDependOnFunctionWithClass(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnFunction(
+                    ->toNotDependOnFunction(
                         names: 'strtoupper',
                         patterns: 'mb_.+',
                     ),
@@ -42,14 +42,14 @@ class ToNotDependsOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testNotDependsOnFunctionWithScript(string $raw, string $exceptName): void
+    public function testNotDependOnFunctionWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->toNotDependsOnFunction(
+                    ->toNotDependOnFunction(
                         names: 'strtoupper',
                         patterns: 'mb_.+',
                     ),
@@ -62,14 +62,14 @@ class ToNotDependsOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testShouldFailNotDependsOnFunction(string $raw, string $exceptName = 'Foo'): void
+    public function testShouldFailNotDependOnFunction(string $raw, string $exceptName = 'Foo'): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnFunction(
+                    ->toNotDependOnFunction(
                         names: 'strtolower',
                         patterns: 'array_.+',
                     ),
@@ -110,7 +110,7 @@ class ToNotDependsOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testShouldFailNotDependsOnFunctionWithScript(
+    public function testShouldFailNotDependOnFunctionWithScript(
         string $raw,
         string $exceptName,
     ): void {
@@ -119,7 +119,7 @@ class ToNotDependsOnFunctionTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->toNotDependsOnFunction(
+                    ->toNotDependOnFunction(
                         names: 'strtolower',
                         patterns: 'array_.+',
                     ),
@@ -191,7 +191,7 @@ class ToNotDependsOnFunctionTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnFunction(names: ['strtolower']),
+                    ->toNotDependOnFunction(names: ['strtolower']),
             );
 
         self::assertRulesViolation(
@@ -221,7 +221,7 @@ class ToNotDependsOnFunctionTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnFunction(names: ['strtolower', 'strtoupper']),
+                    ->toNotDependOnFunction(names: ['strtolower', 'strtoupper']),
             );
 
         self::assertRulesViolation(

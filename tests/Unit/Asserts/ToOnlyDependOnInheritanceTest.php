@@ -9,15 +9,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnInheritance;
 use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnInheritance::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnInheritance')]
-final class DependsOnlyOnInheritanceTest extends TestCase
+#[CoversClass(ToOnlyDependOnInheritance::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnInheritance')]
+final class ToOnlyDependOnInheritanceTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -29,7 +29,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnInheritance(
+                    ->toOnlyDependOnInheritance(
                         names: ControllerBase::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -68,7 +68,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnInheritance(
+                    ->toOnlyDependOnInheritance(
                         names: ControllerBase::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -99,7 +99,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
             ->fromRaw('<?php interface Foo extends \BadExtends2, \BadExtends1, \StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnInheritance(
+                    ->toOnlyDependOnInheritance(
                         names: ControllerBase::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),

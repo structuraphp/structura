@@ -9,15 +9,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnUseTrait;
 use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnUseTrait::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnUseTrait')]
-final class DependsOnlyOnUseTraitTest extends TestCase
+#[CoversClass(ToOnlyDependOnUseTrait::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnUseTrait')]
+final class ToOnlyDependOnUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -29,7 +29,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnUseTrait(
+                    ->toOnlyDependOnUseTrait(
                         names: HasFactory::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -66,7 +66,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnUseTrait(
+                    ->toOnlyDependOnUseTrait(
                         names: HasFactory::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -99,7 +99,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
             ->fromRaw('<?php class Foo { use \BadTrait1, \BadTrait2; }')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnUseTrait(
+                    ->toOnlyDependOnUseTrait(
                         names: HasFactory::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),

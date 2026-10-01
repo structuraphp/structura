@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Feature;
 
-use StructuraPhp\Structura\Asserts\DependsOnlyOn;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
-use StructuraPhp\Structura\Asserts\ToNotDependsOn;
+use StructuraPhp\Structura\Asserts\ToNotDependOn;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
 use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Except;
@@ -38,7 +38,7 @@ final class TestAssert extends TestBuilder
     {
         $expr
             ->toBeClasses()
-            ->toNotDependsOn([
+            ->toNotDependOn([
                 ClassDescription::class,
             ])
             ->toHaveMethod('__toString')
@@ -52,8 +52,8 @@ final class TestAssert extends TestBuilder
     private function exception(Except $except): void
     {
         $except
-            ->byClassname(ToBeAbstract::class, ToNotDependsOn::class)
-            ->byClassname(DependsOnlyOn::class, ToHavePrefix::class)
+            ->byClassname(ToBeAbstract::class, ToNotDependOn::class)
+            ->byClassname(ToOnlyDependOn::class, ToHavePrefix::class)
             // warning
             ->byClassname(ToBeReadonly::class, ToHavePrefix::class);
     }

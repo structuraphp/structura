@@ -10,7 +10,7 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOn implements ExprScriptInterface
+final readonly class ToNotDependOn implements ExprScriptInterface
 {
     use Arr;
 
@@ -27,7 +27,7 @@ final readonly class DependsOnlyOn implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to only depend on these namespaces <promote>%s</promote>',
+            'to not depend on these namespaces <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -39,7 +39,7 @@ final readonly class DependsOnlyOn implements ExprScriptInterface
             $description->getDependenciesByPatterns($this->patterns),
         );
 
-        return array_diff($description->getClassDependencies(), $dependencies) === [];
+        return array_intersect($description->getClassDependencies(), $dependencies) === [];
     }
 
     /**
@@ -47,21 +47,21 @@ final readonly class DependsOnlyOn implements ExprScriptInterface
      */
     public function getViolation(ScriptDescription $description): array
     {
-        $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
+        $unauthorizedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
             $description->getDependenciesByPatterns($this->patterns),
         );
-        $violations = array_diff($description->getClassDependencies(), $dependencies);
+        $violations = array_intersect($description->getClassDependencies(), $dependencies);
         sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
-                    $authorisedDependence,
+                    $unauthorizedDependence,
                     $violation,
                 ),
                 $this::class,

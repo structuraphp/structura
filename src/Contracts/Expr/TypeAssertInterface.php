@@ -32,5 +32,5 @@ interface TypeAssertInterface
     /**
      * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag
      */
-    public function toBeAttribute(int $flag = Attribute::TARGET_ALL, string $message = ''): self;
+    public function toBeAttributes(int $flag = Attribute::TARGET_ALL, string $message = ''): self;
 }

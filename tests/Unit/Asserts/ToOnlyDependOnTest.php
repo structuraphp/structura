@@ -12,27 +12,27 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
-use StructuraPhp\Structura\Asserts\DependsOnlyOn;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOn::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOn')]
-final class DependsOnlyOnTest extends TestCase
+#[CoversClass(ToOnlyDependOn::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOn')]
+final class ToOnlyDependOnTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithDependsProvider')]
-    public function testDependsOnlyOnWithClass(string $raw): void
+    public function testToOnlyDependOnWithClass(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOn(
+                    ->toOnlyDependOn(
                         names: [
                             ArrayAccess::class,
                             Exception::class,
@@ -57,14 +57,14 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testDependsOnlyOnWithScript(string $raw, string $exceptName): void
+    public function testToOnlyDependOnWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->dependsOnlyOn(
+                    ->toOnlyDependOn(
                         names: [
                             ArrayAccess::class,
                             Exception::class,
@@ -89,14 +89,14 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getClassLikeWithDependsProvider')]
-    public function testShouldFailDependsOnlyOn(string $raw): void
+    public function testShouldFailToOnlyDependOn(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
+                    ->toOnlyDependOn(patterns: ['Depend\Bap']),
             );
 
         self::assertRulesViolation(
@@ -151,7 +151,7 @@ final class DependsOnlyOnTest extends TestCase
     }
 
     #[DataProvider('getScriptWithDependsProvider')]
-    public function testShouldFailDependsOnlyOnWithScript(
+    public function testShouldFailToOnlyDependOnWithScript(
         string $raw,
         string $exceptName,
     ): void {
@@ -160,7 +160,7 @@ final class DependsOnlyOnTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->dependsOnlyOn(patterns: ['Depend\Bap']),
+                    ->toOnlyDependOn(patterns: ['Depend\Bap']),
             );
 
         self::assertRulesViolation(

@@ -11,26 +11,26 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToNotDependsOnPhpDoc::class)]
-#[CoversMethod(DependencyAssert::class, 'toNotDependsOnPhpDoc')]
-final class ToNotDependsOnPhpDocTest extends TestCase
+#[CoversClass(ToNotDependOnPhpDoc::class)]
+#[CoversMethod(DependencyAssert::class, 'toNotDependOnPhpDoc')]
+final class ToNotDependOnPhpDocTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getPassingCases')]
-    public function testToNotDependsOnPhpDocPasses(string $raw): void
+    public function testToNotDependOnPhpDocPasses(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnPhpDoc(
+                    ->toNotDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Forbidden\.*',
                     ),
@@ -54,14 +54,14 @@ final class ToNotDependsOnPhpDocTest extends TestCase
     }
 
     #[DataProvider('getViolatingCases')]
-    public function testToNotDependsOnPhpDocViolates(string $raw, string $violation): void
+    public function testToNotDependOnPhpDocViolates(string $raw, string $violation): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnPhpDoc(
+                    ->toNotDependOnPhpDoc(
                         names: ArrayAccess::class,
                         patterns: 'Forbidden\.*',
                     ),
@@ -91,7 +91,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
         ];
     }
 
-    public function testToNotDependsOnPhpDocOnlyViolatesIntersection(): void
+    public function testToNotDependOnPhpDocOnlyViolatesIntersection(): void
     {
         $rules = $this
             ->allClasses()
@@ -107,7 +107,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnPhpDoc(
+                    ->toNotDependOnPhpDoc(
                         names: [ArrayAccess::class, Stringable::class],
                     ),
             );
@@ -124,7 +124,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
         );
     }
 
-    public function testToNotDependsOnPhpDocViolationsAreSorted(): void
+    public function testToNotDependOnPhpDocViolationsAreSorted(): void
     {
         $rules = $this
             ->allClasses()
@@ -144,7 +144,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnPhpDoc(
+                    ->toNotDependOnPhpDoc(
                         patterns: 'Forbidden\.*',
                     ),
             );
@@ -167,7 +167,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
         );
     }
 
-    public function testToNotDependsOnPhpDocMultipleViolations(): void
+    public function testToNotDependOnPhpDocMultipleViolations(): void
     {
         // Deux dépendances interdites en phpdoc (tue ArrayOneItem)
         $rules = $this
@@ -188,7 +188,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
             )
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->toNotDependsOnPhpDoc(
+                    ->toNotDependOnPhpDoc(
                         names: [ArrayAccess::class],
                         patterns: 'Forbidden\.*',
                     ),

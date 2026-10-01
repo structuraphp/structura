@@ -11,7 +11,7 @@ use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class ToNotDependsOnPhpDoc implements ExprScriptInterface
+final readonly class ToNotDependOnPhpDoc implements ExprScriptInterface
 {
     use Arr;
 

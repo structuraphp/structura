@@ -9,7 +9,7 @@ use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class NotToBeInOneOfTheNamespaces implements ExprInterface
+final readonly class ToNotBeInNamespaces implements ExprInterface
 {
     use Arr;
 

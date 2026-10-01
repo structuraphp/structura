@@ -9,27 +9,27 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnFunction;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnFunction::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnFunction')]
-class DependsOnlyOnFunctionTest extends TestCase
+#[CoversClass(ToOnlyDependOnFunction::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnFunction')]
+class ToOnlyDependOnFunctionTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testDependsOnlyOnFunctionWithClass(string $raw, string $exceptName): void
+    public function testToOnlyDependOnFunctionWithClass(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnFunction(
+                    ->toOnlyDependOnFunction(
                         names: ['strtolower', 'mb_strlen'],
                         patterns: ['array_.+', 'date_.+'],
                     ),
@@ -42,14 +42,14 @@ class DependsOnlyOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testDependsOnlyOnFunctionWithScript(string $raw, string $exceptName): void
+    public function testToOnlyDependOnFunctionWithScript(string $raw, string $exceptName): void
     {
         $rules = $this
             ->allScripts()
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->dependsOnlyOnFunction(
+                    ->toOnlyDependOnFunction(
                         names: ['strtolower', 'mb_strlen'],
                         patterns: ['array_.+', 'date_.+'],
                     ),
@@ -62,14 +62,14 @@ class DependsOnlyOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getClassLikeWithFunction')]
-    public function testShouldFailDependsOnlyOnFunction(string $raw, string $exceptName = 'Foo'): void
+    public function testShouldFailToOnlyDependOnFunction(string $raw, string $exceptName = 'Foo'): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnFunction(
+                    ->toOnlyDependOnFunction(
                         names: ['strtoupper', 'date_create'],
                         patterns: 'mb_.+',
                     ),
@@ -112,7 +112,7 @@ class DependsOnlyOnFunctionTest extends TestCase
     }
 
     #[DataProvider('getScriptWithFunction')]
-    public function testShouldFailDependsOnlyOnFunctionWithScript(
+    public function testShouldFailToOnlyDependOnFunctionWithScript(
         string $raw,
         string $exceptName,
     ): void {
@@ -121,7 +121,7 @@ class DependsOnlyOnFunctionTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (ExprScript $assert): ExprScript => $assert
-                    ->dependsOnlyOnFunction(
+                    ->toOnlyDependOnFunction(
                         names: ['strtoupper', 'date_create'],
                         patterns: 'mb_.+',
                     ),

@@ -12,22 +12,14 @@ use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\ParamProviders;
 use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
-use StructuraPhp\Structura\Asserts\DependsOnlyOn;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnImplementation;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnInheritance;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnPhpDoc;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnUseTrait;
-use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
-use StructuraPhp\Structura\Asserts\ToBeAttribute;
+use StructuraPhp\Structura\Asserts\ToBeAttributes;
 use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
-use StructuraPhp\Structura\Asserts\ToBeInOneOfTheNamespaces;
+use StructuraPhp\Structura\Asserts\ToBeInNamespaces;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
@@ -50,14 +42,22 @@ use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
-use StructuraPhp\Structura\Asserts\ToNotDependsOn;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToNotBeInNamespaces;
+use StructuraPhp\Structura\Asserts\ToNotDependOn;
+use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnAttribute;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnImplementation;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnInheritance;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
 use StructuraPhp\Structura\Asserts\ToReturnArray;
@@ -149,47 +149,16 @@ final class AssertBench
     private static function asserts(): array
     {
         return [
-            'dependsOnlyOn' => new DependsOnlyOn(
-                [DateTimeImmutable::class],
-                [self::FIXTURE_NAMESPACE . '.+'],
-            ),
-            'dependsOnlyOnAttribut' => new DependsOnlyOnAttribut(
-                [Cached::class, Route::class],
-                ['Attribute'],
-            ),
-            'dependsOnlyOnFunction' => new DependsOnlyOnFunction(
-                ['sprintf', 'count'],
-                ['array_.+', 'str.+'],
-            ),
-            'dependsOnlyOnImplementation' => new DependsOnlyOnImplementation(
-                [],
-                [self::FIXTURE_NAMESPACE . 'Contracts\.+'],
-            ),
-            'dependsOnlyOnInheritance' => new DependsOnlyOnInheritance(
-                ['RuntimeException', 'DomainException', 'InvalidArgumentException'],
-                [self::FIXTURE_NAMESPACE . '.+'],
-            ),
-            'dependsOnlyOnPhpDoc' => new DependsOnlyOnPhpDoc(
-                [],
-                [self::FIXTURE_NAMESPACE . '.+'],
-            ),
-            'dependsOnlyOnUseTrait' => new DependsOnlyOnUseTrait(
-                [],
-                [self::FIXTURE_NAMESPACE . 'Concerns\.+'],
-            ),
-            'notToBeInOneOfTheNamespaces' => new NotToBeInOneOfTheNamespaces(
-                ['App\.+', 'Illuminate\.+'],
-            ),
             'toBeAbstract' => new ToBeAbstract(),
             'toBeAnonymousClasses' => new ToBeAnonymousClasses(),
-            'toBeAttribute' => new ToBeAttribute(
+            'toBeAttributes' => new ToBeAttributes(
                 Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE,
             ),
             'toBeBackedEnums' => new ToBeBackedEnums(ScalarType::String),
             'toBeClasses' => new ToBeClasses(),
             'toBeEnums' => new ToBeEnums(),
             'toBeFinal' => new ToBeFinal(),
-            'toBeInOneOfTheNamespaces' => new ToBeInOneOfTheNamespaces(
+            'toBeInNamespaces' => new ToBeInNamespaces(
                 [self::FIXTURE_NAMESPACE . '.+'],
             ),
             'toBeInterfaces' => new ToBeInterfaces(),
@@ -241,15 +210,18 @@ final class AssertBench
             'toHaveSuffix' => new ToHaveSuffix('Controller'),
             'toImplement' => new ToImplement(ControllerInterface::class),
             'toImplementNothing' => new ToImplementNothing(''),
-            'toNotDependsOn' => new ToNotDependsOn(
+            'toNotBeInNamespaces' => new ToNotBeInNamespaces(
+                ['App\.+', 'Illuminate\.+'],
+            ),
+            'toNotDependOn' => new ToNotDependOn(
                 [DateTimeImmutable::class],
                 ['Symfony\.+'],
             ),
-            'toNotDependsOnFunction' => new ToNotDependsOnFunction(
+            'toNotDependOnFunction' => new ToNotDependOnFunction(
                 ['dd', 'dump', 'var_dump'],
                 ['eval.*'],
             ),
-            'toNotDependsOnPhpDoc' => new ToNotDependsOnPhpDoc(
+            'toNotDependOnPhpDoc' => new ToNotDependOnPhpDoc(
                 [],
                 ['Illuminate\.+'],
             ),
@@ -261,6 +233,34 @@ final class AssertBench
             ),
             'toNotUseInclude' => new ToNotUseInclude(),
             'toNotUseTrait' => new ToNotUseTrait(),
+            'toOnlyDependOn' => new ToOnlyDependOn(
+                [DateTimeImmutable::class],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnAttribute' => new ToOnlyDependOnAttribute(
+                [Cached::class, Route::class],
+                ['Attribute'],
+            ),
+            'toOnlyDependOnFunction' => new ToOnlyDependOnFunction(
+                ['sprintf', 'count'],
+                ['array_.+', 'str.+'],
+            ),
+            'toOnlyDependOnImplementation' => new ToOnlyDependOnImplementation(
+                [],
+                [self::FIXTURE_NAMESPACE . 'Contracts\.+'],
+            ),
+            'toOnlyDependOnInheritance' => new ToOnlyDependOnInheritance(
+                ['RuntimeException', 'DomainException', 'InvalidArgumentException'],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnPhpDoc' => new ToOnlyDependOnPhpDoc(
+                [],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnUseTrait' => new ToOnlyDependOnUseTrait(
+                [],
+                [self::FIXTURE_NAMESPACE . 'Concerns\.+'],
+            ),
             'toOnlyImplement' => new ToOnlyImplement(JobInterface::class),
             'toOnlyUseTrait' => new ToOnlyUseTrait(HasUuid::class),
             'toReturnArray' => new ToReturnArray(),

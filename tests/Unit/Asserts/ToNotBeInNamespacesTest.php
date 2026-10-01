@@ -9,26 +9,26 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\NotToBeInOneOfTheNamespaces;
+use StructuraPhp\Structura\Asserts\ToNotBeInNamespaces;
 use StructuraPhp\Structura\Concerns\Expr\ThridPartyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(NotToBeInOneOfTheNamespaces::class)]
-#[CoversMethod(ThridPartyAssert::class, 'toBeInOneOfTheNamespaces')]
-class NotToBeInOneOfTheNamespacesTest extends TestCase
+#[CoversClass(ToNotBeInNamespaces::class)]
+#[CoversMethod(ThridPartyAssert::class, 'toBeInNamespaces')]
+class ToNotBeInNamespacesTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeForPass')]
-    public function testToBeInOneOfTheNamespaces(string $raw): void
+    public function testToBeInNamespaces(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->notToBeInOneOfTheNamespaces('Foo\.*'),
+                    ->toNotBeInNamespaces('Foo\.*'),
             );
 
         self::assertRulesPass(
@@ -52,7 +52,7 @@ class NotToBeInOneOfTheNamespacesTest extends TestCase
     }
 
     #[DataProvider('getClasseLikeForFail')]
-    public function testShouldFailToBeInOneOfTheNamespaces(
+    public function testShouldFailToBeInNamespaces(
         string $raw,
         string $exceptName = 'Acme\Bar\Foo',
     ): void {
@@ -61,7 +61,7 @@ class NotToBeInOneOfTheNamespacesTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->notToBeInOneOfTheNamespaces('Acme\.*'),
+                    ->toNotBeInNamespaces('Acme\.*'),
             );
 
         self::assertRulesViolation(

@@ -10,7 +10,7 @@ interface ThirdPartyAssertInterface
      * @param array<int,string>|string $patterns class names or regular expression patterns to
      *                                           be matched with namespaces
      */
-    public function toBeInOneOfTheNamespaces(
+    public function toBeInNamespaces(
         array|string $patterns,
         string $message = '',
     ): self;
@@ -19,7 +19,7 @@ interface ThirdPartyAssertInterface
      * @param array<int,string>|string $patterns class names or regular expression patterns not
      *                                           to be matched with namespaces
      */
-    public function notToBeInOneOfTheNamespaces(
+    public function toNotBeInNamespaces(
         array|string $patterns,
         string $message = '',
     ): self;

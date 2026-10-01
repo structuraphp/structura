@@ -38,9 +38,9 @@ final class ExecuteServiceBench
             ->should(static function (Expr $expr): void {
                 $expr
                     ->toUseDeclare('strict_types', '1')
-                    ->toBeInOneOfTheNamespaces(['StructuraPhp\Structura\Benchmarks\Fixture\.+'])
-                    ->toNotDependsOn(patterns: ['Symfony\.+'])
-                    ->toNotDependsOnFunction(['dd', 'dump', 'var_dump']);
+                    ->toBeInNamespaces(['StructuraPhp\Structura\Benchmarks\Fixture\.+'])
+                    ->toNotDependOn(patterns: ['Symfony\.+'])
+                    ->toNotDependOnFunction(['dd', 'dump', 'var_dump']);
             })
             ->getRuleObject();
 

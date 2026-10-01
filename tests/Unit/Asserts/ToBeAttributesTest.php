@@ -10,14 +10,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToBeAttribute;
+use StructuraPhp\Structura\Asserts\ToBeAttributes;
 use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(ToBeAttribute::class)]
-#[CoversMethod(TypeAssert::class, 'toBeAttribute')]
-class ToBeAttributeTest extends TestCase
+#[CoversClass(ToBeAttributes::class)]
+#[CoversMethod(TypeAssert::class, 'toBeAttributes')]
+class ToBeAttributesTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -25,13 +25,13 @@ class ToBeAttributeTest extends TestCase
      * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag
      */
     #[DataProvider('getClassLikeForPass')]
-    public function testToBeAttribute(string $raw, int $flag): void
+    public function testToBeAttributes(string $raw, int $flag): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn (Expr $assert): Expr => $assert->toBeAttribute($flag),
+                static fn (Expr $assert): Expr => $assert->toBeAttributes($flag),
             );
 
         self::assertRulesPass($rules, 'to be attribute');
@@ -91,13 +91,13 @@ class ToBeAttributeTest extends TestCase
     }
 
     #[DataProvider('getClasseLikeForFail')]
-    public function testShouldFailToBeAttribute(string $raw, string $exceptName = 'Foo'): void
+    public function testShouldFailToBeAttributes(string $raw, string $exceptName = 'Foo'): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn (Expr $assert): Expr => $assert->toBeAttribute(),
+                static fn (Expr $assert): Expr => $assert->toBeAttributes(),
             );
 
         self::assertRulesViolation(

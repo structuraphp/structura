@@ -10,14 +10,14 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use SensitiveParameter;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnAttribut;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnAttribute;
 use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
-#[CoversClass(DependsOnlyOnAttribut::class)]
-#[CoversMethod(DependencyAssert::class, 'dependsOnlyOnAttribut')]
-final class DependsOnlyOnAttributTest extends TestCase
+#[CoversClass(ToOnlyDependOnAttribute::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnAttribute')]
+final class ToOnlyDependOnAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
 
@@ -29,7 +29,7 @@ final class DependsOnlyOnAttributTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnAttribut(
+                    ->toOnlyDependOnAttribute(
                         names: SensitiveParameter::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -64,7 +64,7 @@ final class DependsOnlyOnAttributTest extends TestCase
             ->fromRaw($raw)
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnAttribut(
+                    ->toOnlyDependOnAttribute(
                         names: SensitiveParameter::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),
@@ -99,7 +99,7 @@ final class DependsOnlyOnAttributTest extends TestCase
             ->fromRaw('<?php #[\BadAttribute1] #[\BadAttribute2] class Foo {}')
             ->should(
                 static fn (Expr $assert): Expr => $assert
-                    ->dependsOnlyOnAttribut(
+                    ->toOnlyDependOnAttribute(
                         names: SensitiveParameter::class,
                         patterns: 'Dependencies\Acme\.*',
                     ),

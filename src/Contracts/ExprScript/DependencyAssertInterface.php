@@ -10,7 +10,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns to match class names against
      */
-    public function dependsOnlyOn(
+    public function toOnlyDependOn(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -20,7 +20,7 @@ interface DependencyAssertInterface
      * @param array<int,string>|string $names
      * @param array<int,string>|string $patterns regex patterns to match class names against
      */
-    public function dependsOnlyOnFunction(
+    public function toOnlyDependOnFunction(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -30,7 +30,7 @@ interface DependencyAssertInterface
      * @param array<int,string>|string $names
      * @param array<int,string>|string $patterns regex patterns to match class names against
      */
-    public function toNotDependsOnFunction(
+    public function toNotDependOnFunction(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -40,7 +40,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function toNotDependsOn(
+    public function toNotDependOn(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -50,7 +50,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns to match phpDoc class names against
      */
-    public function dependsOnlyOnPhpDoc(
+    public function toOnlyDependOnPhpDoc(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -60,7 +60,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match phpDoc class names against
      */
-    public function toNotDependsOnPhpDoc(
+    public function toNotDependOnPhpDoc(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',

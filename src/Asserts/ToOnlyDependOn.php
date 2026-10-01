@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
-use StructuraPhp\Structura\Contracts\ExprInterface;
-use StructuraPhp\Structura\Enums\DependenciesType;
+use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnInheritance implements ExprInterface
+final readonly class ToOnlyDependOn implements ExprScriptInterface
 {
     use Arr;
 
@@ -27,45 +27,48 @@ final readonly class DependsOnlyOnInheritance implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to only depend on inheritance <promote>%s</promote>',
+            'to only depend on these namespaces <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
 
-    public function assert(ClassDescription $class): bool
+    public function assert(ScriptDescription $description): bool
     {
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Extends),
+            $description->getDependenciesByPatterns($this->patterns),
         );
 
-        return array_diff($class->getExtendNames(), $dependencies) === [];
+        return array_diff($description->getClassDependencies(), $dependencies) === [];
     }
 
     /**
      * @return array<int, ViolationValueObject>
      */
-    public function getViolation(ClassDescription $class): array
+    public function getViolation(ScriptDescription $description): array
     {
         $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Extends),
+            $description->getDependenciesByPatterns($this->patterns),
         );
-        $violations = array_diff($class->getExtendNames(), $dependencies);
+        $violations = array_diff($description->getClassDependencies(), $dependencies);
+        sort($violations);
 
         $results = [];
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must only extend classes from these namespaces %s but extends <fire>%s</fire>',
-                    $class->getResourceName(),
+                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
+                    $description->getResourceName(),
                     $authorisedDependence,
                     $violation,
                 ),
                 $this::class,
-                $violation->getLine(),
-                $class->getFileBasename(),
+                $description instanceof ClassDescription
+                    ? $description->lines
+                    : 0,
+                $description->getFileBasename(),
                 $this->message,
             );
         }

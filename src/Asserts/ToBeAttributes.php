@@ -17,7 +17,7 @@ use StructuraPhp\Structura\Enums\FlagType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class ToBeAttribute implements ExprInterface
+final readonly class ToBeAttributes implements ExprInterface
 {
     /**
      * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag

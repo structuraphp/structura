@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Enums\DependenciesType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnImplementation implements ExprInterface
+final readonly class ToOnlyDependOnInheritance implements ExprInterface
 {
     use Arr;
 
@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to only depend on implementation <promote>%s</promote>',
+            'to only depend on inheritance <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -36,10 +36,10 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
     {
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Extends),
         );
 
-        return array_diff($class->getInterfaceNames(), $dependencies) === [];
+        return array_diff($class->getExtendNames(), $dependencies) === [];
     }
 
     /**
@@ -50,21 +50,21 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
         $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
-            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Extends),
         );
-        $violations = array_diff($class->getInterfaceNames(), $dependencies);
+        $violations = array_diff($class->getExtendNames(), $dependencies);
 
         $results = [];
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement interfaces from these namespaces %s but implements <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only extend classes from these namespaces %s but extends <fire>%s</fire>',
                     $class->getResourceName(),
                     $authorisedDependence,
                     $violation,
                 ),
                 $this::class,
-                $class->lines,
+                $violation->getLine(),
                 $class->getFileBasename(),
                 $this->message,
             );

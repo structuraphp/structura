@@ -123,7 +123,7 @@ $this
   );
 ```
 
-## toBeAttribute()
+## toBeAttributes()
 
 Must be:
 
@@ -136,6 +136,6 @@ $this
   ->allClasses()
   ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
   ->should(
-    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+    static fn (Expr $assert): Expr => $assert->toBeAttributes(\Attribute::TARGET_CLASS_CONSTANT),
   );
 ```

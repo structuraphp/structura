@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Enums\DependenciesType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnUseTrait implements ExprInterface
+final readonly class ToOnlyDependOnUseTrait implements ExprInterface
 {
     use Arr;
 

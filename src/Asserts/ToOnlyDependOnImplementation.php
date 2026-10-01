@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
-use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\DependenciesType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
-use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final readonly class DependsOnlyOnFunction implements ExprScriptInterface
+final readonly class ToOnlyDependOnImplementation implements ExprInterface
 {
     use Arr;
 
     /**
-     * @param array<int,string> $names
+     * @param array<int,class-string> $names
      * @param array<int,string> $patterns
      */
     public function __construct(
@@ -27,48 +27,45 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to only depend on function <promote>%s</promote>',
+            'to only depend on implementation <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
 
-    public function assert(ScriptDescription $description): bool
+    public function assert(ClassDescription $class): bool
     {
         $dependencies = array_merge(
             $this->names,
-            $description->getDependenciesFunctionByPatterns($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
         );
 
-        return array_diff($description->getFunctionDependencies(), $dependencies) === [];
+        return array_diff($class->getInterfaceNames(), $dependencies) === [];
     }
 
     /**
      * @return array<int, ViolationValueObject>
      */
-    public function getViolation(ScriptDescription $description): array
+    public function getViolation(ClassDescription $class): array
     {
         $authorisedDependence = implode(', ', array_merge($this->names, $this->patterns));
         $dependencies = array_merge(
             $this->names,
-            $description->getDependenciesFunctionByPatterns($this->patterns),
+            $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
         );
-        $violations = array_diff($description->getFunctionDependencies(), $dependencies);
-        sort($violations);
+        $violations = array_diff($class->getInterfaceNames(), $dependencies);
 
         $results = [];
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
-                    $description->getResourceName(),
+                    'Resource <promote>%s</promote> must only implement interfaces from these namespaces %s but implements <fire>%s</fire>',
+                    $class->getResourceName(),
                     $authorisedDependence,
                     $violation,
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
-                $description->getFileBasename(),
+                $class->lines,
+                $class->getFileBasename(),
                 $this->message,
             );
         }
