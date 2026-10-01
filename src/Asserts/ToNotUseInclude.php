@@ -9,7 +9,7 @@ use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final class ToNotUseInclude implements ExprScriptInterface
+final readonly class ToNotUseInclude implements ExprScriptInterface
 {
     public function __construct(
         private string $message = '',
