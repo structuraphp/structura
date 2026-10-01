@@ -11,7 +11,7 @@ use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 final readonly class ToImplementNothing implements ExprInterface
 {
     public function __construct(
-        public string $message,
+        private string $message = '',
     ) {}
 
     public function __toString(): string
