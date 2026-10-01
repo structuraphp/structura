@@ -44,7 +44,7 @@ final class TestAssert extends TestBuilder
             ->toHaveMethod('__toString')
             ->toUseDeclare('strict_types', '1')
             ->toHavePrefix('To')
-            ->toExtendsNothing()
+            ->toExtendNothing()
             ->toNotUseTrait()
             ->toHaveConstructor();
     }

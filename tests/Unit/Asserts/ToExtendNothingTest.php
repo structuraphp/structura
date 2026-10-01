@@ -15,19 +15,19 @@ use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToExtendNothing::class)]
-#[CoversMethod(RelationAssert::class, 'toExtendsNothing')]
+#[CoversMethod(RelationAssert::class, 'toExtendNothing')]
 final class ToExtendNothingTest extends TestCase
 {
     use ArchitectureAsserts;
 
     #[DataProvider('getClassLikeExtendsNothing')]
-    public function testToExtendsNothing(string $raw): void
+    public function testToExtendNothing(string $raw): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
+                static fn (Expr $assert): Expr => $assert->toExtendNothing(),
             );
 
         self::assertRulesPass($rules, 'to extend nothing');
@@ -43,13 +43,13 @@ final class ToExtendNothingTest extends TestCase
     }
 
     #[DataProvider('getClassLikeExtends')]
-    public function testShouldFailToExtendsNothing(string $raw, string $exceptName = 'Foo'): void
+    public function testShouldFailToExtendNothing(string $raw, string $exceptName = 'Foo'): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw($raw)
             ->should(
-                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
+                static fn (Expr $assert): Expr => $assert->toExtendNothing(),
             );
 
         self::assertRulesViolation(
@@ -69,13 +69,13 @@ final class ToExtendNothingTest extends TestCase
         yield 'class' => ['<?php class Foo extends \Exception {}'];
     }
 
-    public function testShouldFailToExtendsNothingWithInterface(): void
+    public function testShouldFailToExtendNothingWithInterface(): void
     {
         $rules = $this
             ->allClasses()
             ->fromRaw('<?php interface Foo extends \Exception, \ArrayIterator {}')
             ->should(
-                static fn (Expr $assert): Expr => $assert->toExtendsNothing(),
+                static fn (Expr $assert): Expr => $assert->toExtendNothing(),
             );
 
         self::assertRulesViolation(

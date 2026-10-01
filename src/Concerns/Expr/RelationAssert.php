@@ -30,7 +30,7 @@ trait RelationAssert
         return $this->addExpr(new ToExtend($names, $message));
     }
 
-    public function toExtendsNothing(string $message = ''): self
+    public function toExtendNothing(string $message = ''): self
     {
         return $this->addExpr(new ToExtendNothing($message));
     }

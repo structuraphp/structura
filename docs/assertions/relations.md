@@ -9,13 +9,13 @@ $this
   ->should(fn(Expr $expr) => $expr->toExtend(Exception::class));
 ```
 
-## toExtendsNothing()
+## toExtendNothing()
 
 ```php
 $this
   ->allClasses()
   ->fromRaw('<?php class Foo {}')
-  ->should(fn(Expr $expr) => $expr->toExtendsNothing());
+  ->should(fn(Expr $expr) => $expr->toExtendNothing());
 ```
 
 ## toImplement()
