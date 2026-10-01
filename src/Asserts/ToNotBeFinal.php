@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Asserts;
+
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\FlagType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
+
+final readonly class ToNotBeFinal implements ExprInterface
+{
+    public function __construct(
+        private string $message = '',
+    ) {}
+
+    public function __toString(): string
+    {
+        return 'to not be final';
+    }
+
+    public function assert(ClassDescription $class): bool
+    {
+        return $class->classType !== ClassType::Class_
+            || ($class->flags & FlagType::ModifierFinal->value) === 0;
+    }
+
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
+    {
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not be a final class',
+                    $class->getResourceName(),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            ),
+        ];
+    }
+}

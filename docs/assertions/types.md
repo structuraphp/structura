@@ -93,6 +93,20 @@ $this
   );
 ```
 
+## toNotBeFinal()
+
+Opposite of [toBeFinal()](#tobefinal). Interfaces, traits, enums and anonymous classes always pass:
+only a `final class` is a violation. Useful for base classes meant to be extended.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Base')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeFinal(),
+  );
+```
+
 ## toBeInterfaces()
 
 ```php

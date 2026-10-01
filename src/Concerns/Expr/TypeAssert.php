@@ -17,6 +17,7 @@ use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
 use StructuraPhp\Structura\Asserts\ToNotBeAbstract;
+use StructuraPhp\Structura\Asserts\ToNotBeFinal;
 use StructuraPhp\Structura\Enums\ScalarType;
 
 /**
@@ -57,6 +58,11 @@ trait TypeAssert
     public function toBeFinal(string $message = ''): self
     {
         return $this->addExpr(new ToBeFinal($message));
+    }
+
+    public function toNotBeFinal(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotBeFinal($message));
     }
 
     public function toBeInterfaces(string $message = ''): self

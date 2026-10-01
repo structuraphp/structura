@@ -23,6 +23,8 @@ interface TypeAssertInterface
 
     public function toBeFinal(string $message = ''): self;
 
+    public function toNotBeFinal(string $message = ''): self;
+
     public function toBeInterfaces(string $message = ''): self;
 
     public function toBeInvokable(string $message = ''): self;
