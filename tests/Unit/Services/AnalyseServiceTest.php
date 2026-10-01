@@ -69,7 +69,7 @@ final class AnalyseServiceTest extends TestCase
         $service = new AnalyseService($dispatcher);
         $result = $service->analyse(microtime(true), TestConfig::class);
 
-        self::assertNotEmpty($result->analyseTestValueObjects);
+        self::assertNotCount(0, $result->analyseTestValueObjects);
         self::assertSame(TestConfig::class, $result->analyseTestValueObjects[0]->source->testClassname);
     }
 }

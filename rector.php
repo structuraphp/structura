@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\CodeQuality\Rector\Concat\DirnameDirConcatStringToDirectStringPathRector;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\SetList;
@@ -18,6 +19,7 @@ return static function (RectorConfig $rectorConfig): void {
     // frozen benchmark corpus: never refactored, it would invalidate the baselines
     $rectorConfig->skip([
         __DIR__ . '/benchmarks/Fixture',
+        DirnameDirConcatStringToDirectStringPathRector::class,
     ]);
 
     $rectorConfig->phpVersion(PhpVersion::PHP_82);

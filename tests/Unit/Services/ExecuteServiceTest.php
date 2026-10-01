@@ -61,10 +61,10 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(0, $result->countViolation(self::KEY));
 
         $violation = $result->violations;
-        self::assertEmpty($violation);
+        self::assertCount(0, $violation);
 
         $warning = $result->warnings;
-        self::assertEmpty($warning);
+        self::assertCount(0, $warning);
     }
 
     public function testViolation(): void
@@ -102,7 +102,7 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame('', $violation->messageCustom);
 
         $warning = $result->warnings;
-        self::assertEmpty($warning);
+        self::assertCount(0, $warning);
     }
 
     /**
@@ -136,10 +136,10 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(0, $result->countViolation(self::KEY));
 
         $violation = $result->violations;
-        self::assertEmpty($violation);
+        self::assertCount(0, $violation);
 
         $warning = $result->warnings;
-        self::assertEmpty($warning);
+        self::assertCount(0, $warning);
     }
 
     /**
@@ -173,7 +173,7 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(0, $result->countViolation(self::KEY));
 
         $violation = $result->violations;
-        self::assertEmpty($violation);
+        self::assertCount(0, $violation);
 
         $warning = $result->warnings;
         self::assertSame(

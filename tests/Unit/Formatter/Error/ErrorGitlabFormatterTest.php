@@ -30,7 +30,7 @@ class ErrorGitlabFormatterTest extends TestCase
         $decoded = json_decode($json, true);
 
         self::assertIsArray($decoded);
-        self::assertNotEmpty($decoded);
+        self::assertNotCount(0, $decoded);
 
         /** @var array<string, mixed> $issue */
         $issue = $decoded[0];
@@ -75,6 +75,6 @@ class ErrorGitlabFormatterTest extends TestCase
         $decoded = json_decode($json, true);
 
         self::assertIsArray($decoded);
-        self::assertEmpty($decoded);
+        self::assertCount(0, $decoded);
     }
 }
