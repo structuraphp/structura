@@ -13,9 +13,9 @@ use StructuraPhp\Structura\Asserts\ToHaveSuffix;
  */
 trait NameAssert
 {
-    public function toHavePrefix(string $prefix): self
+    public function toHavePrefix(string $prefix, string $message = ''): self
     {
-        return $this->addExpr(new ToHavePrefix($prefix));
+        return $this->addExpr(new ToHavePrefix($prefix, $message));
     }
 
     public function toHaveSuffix(string $suffix, string $message = ''): self
