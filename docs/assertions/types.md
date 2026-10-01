@@ -11,6 +11,20 @@ $this
   );
 ```
 
+## toNotBeAbstract()
+
+Opposite of [toBeAbstract()](#tobeabstract). Interfaces, traits, enums and anonymous classes always pass:
+only an `abstract class` is a violation.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Controller')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeAbstract(),
+  );
+```
+
 ## toBeAnonymousClasses()
 
 A PHP script is considered an anonymous class **only** if it explicitly returns the anonymous class using a `return`

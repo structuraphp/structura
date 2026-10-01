@@ -16,6 +16,7 @@ use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Asserts\ToNotBeAbstract;
 use StructuraPhp\Structura\Enums\ScalarType;
 
 /**
@@ -26,6 +27,11 @@ trait TypeAssert
     public function toBeAbstract(string $message = ''): self
     {
         return $this->addExpr(new ToBeAbstract($message));
+    }
+
+    public function toNotBeAbstract(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotBeAbstract($message));
     }
 
     public function toBeAnonymousClasses(string $message = ''): self

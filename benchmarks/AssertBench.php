@@ -42,6 +42,7 @@ use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Asserts\ToNotBeAbstract;
 use StructuraPhp\Structura\Asserts\ToNotBeInNamespaces;
 use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
@@ -210,6 +211,7 @@ final class AssertBench
             'toHaveSuffix' => new ToHaveSuffix('Controller'),
             'toImplement' => new ToImplement(ControllerInterface::class),
             'toImplementNothing' => new ToImplementNothing(''),
+            'toNotBeAbstract' => new ToNotBeAbstract(),
             'toNotBeInNamespaces' => new ToNotBeInNamespaces(
                 ['App\.+', 'Illuminate\.+'],
             ),

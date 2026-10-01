@@ -11,6 +11,8 @@ interface TypeAssertInterface
 {
     public function toBeAbstract(string $message = ''): self;
 
+    public function toNotBeAbstract(string $message = ''): self;
+
     public function toBeAnonymousClasses(string $message = ''): self;
 
     public function toBeClasses(string $message = ''): self;
