@@ -22,7 +22,7 @@ final readonly class ToBeBackedEnums implements ExprInterface
     {
         return sprintf(
             'to be backed enums type of <promote>%s</promote>',
-            $this->scalarType->value ?? 'int or string',
+            $this->scalarType?->label() ?? 'int or string',
         );
     }
 
@@ -50,7 +50,7 @@ final readonly class ToBeBackedEnums implements ExprInterface
                 sprintf(
                     'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
                     $class->getResourceName(),
-                    $this->scalarType->value ?? 'int or string',
+                    $this->scalarType?->label() ?? 'int or string',
                 ),
                 $this::class,
                 $class->lines,

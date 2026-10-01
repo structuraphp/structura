@@ -8,4 +8,12 @@ enum ScalarType: string
 {
     case Int = 'int';
     case String = 'string';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Int => 'int',
+            self::String => 'string',
+        };
+    }
 }
