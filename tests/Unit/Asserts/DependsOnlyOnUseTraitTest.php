@@ -38,7 +38,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'to use trait on these namespaces <promote>%s, %s</promote>',
+                'depends only on trait <promote>%s, %s</promote>',
                 HasFactory::class,
                 'Dependencies\Acme\.*',
             ),

@@ -77,8 +77,8 @@ final class AnalyseOrchestratorTest extends TestCase
          <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>3 error(s)</fire>
          <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Models\User</promote> <fire>1 error(s)</fire>
-         <green>✔</green> to use trait on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
-         <green>✔</green> depends only on inheritance <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
+         <green>✔</green> depends only on trait <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
+         <green>✔</green> depends only on implementation <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
         <notice> NOTICE </notice> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         Should

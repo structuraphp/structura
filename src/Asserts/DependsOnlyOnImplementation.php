@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'depends only on inheritance <promote>%s</promote>',
+            'depends only on implementation <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }

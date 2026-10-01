@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnUseTrait implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to use trait on these namespaces <promote>%s</promote>',
+            'depends only on trait <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }

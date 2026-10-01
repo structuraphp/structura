@@ -37,7 +37,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on inheritance <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
+            'depends only on implementation <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
         );
     }
 
