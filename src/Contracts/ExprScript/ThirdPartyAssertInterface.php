@@ -10,7 +10,11 @@ interface ThirdPartyAssertInterface
 {
     public function toUseStrictTypes(string $message = ''): self;
 
-    public function toUseDeclare(string $key, string $value, string $message = ''): self;
+    public function toUseDeclare(
+        string $key,
+        string $value,
+        string $message = '',
+    ): self;
 
     public function toUseInclude(
         IncludeType $includeType,
