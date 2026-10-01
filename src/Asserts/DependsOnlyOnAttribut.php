@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'depends only on attribut <promote>%s</promote>',
+            'to only depend on attribute <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -58,7 +58,7 @@ final readonly class DependsOnlyOnAttribut implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must use attributes on these namespaces %s but use attributes <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only use attributes from these namespaces %s but uses attributes <fire>%s</fire>',
                     $class->getResourceName(),
                     $authorisedDependence,
                     $violation,

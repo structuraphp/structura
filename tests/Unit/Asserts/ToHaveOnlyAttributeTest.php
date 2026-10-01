@@ -94,7 +94,7 @@ final class ToHaveOnlyAttributeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must have only attribute <promote>%s</promote> but attribute <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>%s</promote> but has attribute <fire>%s</fire>',
                 Attribute::class,
                 'SomeOtherAttr',
             ),
@@ -122,8 +122,8 @@ final class ToHaveOnlyAttributeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             [
-                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error1</fire>',
-                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error2</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but has attribute <fire>Error1</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but has attribute <fire>Error2</fire>',
             ],
             [3, 4],
         );

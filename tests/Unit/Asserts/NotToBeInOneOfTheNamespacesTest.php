@@ -33,7 +33,7 @@ class NotToBeInOneOfTheNamespacesTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'not to be in one of the namespaces <promote>Foo\.*</promote>',
+            'to not be in one of the namespaces <promote>Foo\.*</promote>',
         );
     }
 
@@ -67,7 +67,7 @@ class NotToBeInOneOfTheNamespacesTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not to be in one of the namespaces <promote>%s</promote>',
+                'Resource <promote>%s</promote> must not be in one of the namespaces <promote>%s</promote>',
                 $exceptName,
                 'Acme\.*',
             ),

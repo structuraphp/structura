@@ -24,7 +24,7 @@ final readonly class NotToBeInOneOfTheNamespaces implements ExprInterface
     public function __toString(): string
     {
         return sprintf(
-            'not to be in one of the namespaces <promote>%s</promote>',
+            'to not be in one of the namespaces <promote>%s</promote>',
             $this->implodeMore($this->patterns),
         );
     }
@@ -42,7 +42,7 @@ final readonly class NotToBeInOneOfTheNamespaces implements ExprInterface
         return [
             new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not to be in one of the namespaces <promote>%s</promote>',
+                    'Resource <promote>%s</promote> must not be in one of the namespaces <promote>%s</promote>',
                     $class->getResourceName(),
                     implode(', ', $this->patterns),
                 ),

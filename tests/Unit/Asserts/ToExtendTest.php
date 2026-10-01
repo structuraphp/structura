@@ -62,7 +62,7 @@ final class ToExtendTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must extend by <promote>Exception</promote>',
+                'Resource <promote>%s</promote> must extend <promote>Exception</promote>',
                 $exceptName,
             ),
         );
@@ -90,7 +90,7 @@ final class ToExtendTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                'Resource <promote>Foo</promote> must extend <promote>%s</promote>',
                 ArrayIterator::class,
             ),
         );
@@ -110,11 +110,11 @@ final class ToExtendTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                    'Resource <promote>Foo</promote> must extend <promote>%s</promote>',
                     Exception::class,
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must extend by <promote>%s</promote>',
+                    'Resource <promote>Foo</promote> must extend <promote>%s</promote>',
                     ArrayIterator::class,
                 ),
             ],

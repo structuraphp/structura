@@ -102,7 +102,7 @@ class ToBeAttributeTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            \sprintf('Resource <promote>%s</promote> must be attributable', $exceptName),
+            \sprintf('Resource <promote>%s</promote> must be an attribute class', $exceptName),
         );
     }
 

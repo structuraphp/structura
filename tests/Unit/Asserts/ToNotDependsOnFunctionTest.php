@@ -37,7 +37,7 @@ class ToNotDependsOnFunctionTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'not depends on function <promote>strtoupper, mb_.+</promote>',
+            'to not depend on function <promote>strtoupper, mb_.+</promote>',
         );
     }
 
@@ -57,7 +57,7 @@ class ToNotDependsOnFunctionTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'not depends on function <promote>strtoupper, mb_.+</promote>',
+            'to not depend on function <promote>strtoupper, mb_.+</promote>',
         );
     }
 
@@ -79,13 +79,13 @@ class ToNotDependsOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'array_merge',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'strtolower',
@@ -129,13 +129,13 @@ class ToNotDependsOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'array_merge',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtolower, array_.+',
                     'strtolower',
@@ -197,7 +197,7 @@ class ToNotDependsOnFunctionTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Anonymous</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                'Resource <promote>Anonymous</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                 'strtolower',
                 'strtolower',
             ),
@@ -227,7 +227,7 @@ class ToNotDependsOnFunctionTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Anonymous</promote> must not depends on functions <promote>%s, %s</promote> but depends on <fire>%s</fire>',
+                'Resource <promote>Anonymous</promote> must not depend on functions <promote>%s, %s</promote> but depends on <fire>%s</fire>',
                 'strtolower',
                 'strtoupper',
                 'strtolower',

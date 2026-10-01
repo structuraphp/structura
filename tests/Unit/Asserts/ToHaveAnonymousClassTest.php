@@ -122,7 +122,7 @@ final class ToHaveAnonymousClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must have anonymous class',
+                'Resource <promote>%s</promote> must have an anonymous class',
                 $name,
             ),
         );
@@ -153,7 +153,7 @@ final class ToHaveAnonymousClassTest extends TestCase
 
         self::assertRulesViolation(
             $rules,
-            'Resource <promote>tmp/run_0.php</promote> must have anonymous class',
+            'Resource <promote>tmp/run_0.php</promote> must have an anonymous class',
             0,
         );
     }

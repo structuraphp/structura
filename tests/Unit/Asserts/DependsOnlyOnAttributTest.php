@@ -37,7 +37,7 @@ final class DependsOnlyOnAttributTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on attribut <promote>SensitiveParameter, Dependencies\Acme\.*</promote>',
+            'to only depend on attribute <promote>SensitiveParameter, Dependencies\Acme\.*</promote>',
         );
     }
 
@@ -73,7 +73,7 @@ final class DependsOnlyOnAttributTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
                 SensitiveParameter::class,
                 'Dependencies\Acme\.*',
                 'BadAttribute',
@@ -109,13 +109,13 @@ final class DependsOnlyOnAttributTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
                     SensitiveParameter::class,
                     'Dependencies\Acme\.*',
                     'BadAttribute1',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must use attributes on these namespaces %s, %s but use attributes <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
                     SensitiveParameter::class,
                     'Dependencies\Acme\.*',
                     'BadAttribute2',

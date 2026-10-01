@@ -59,7 +59,7 @@ final readonly class ToHaveOnlyAttribute implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must have only attribute <promote>%s</promote> but attribute <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must have only attribute <promote>%s</promote> but has attribute <fire>%s</fire>',
                     $class->getResourceName(),
                     $this->name,
                     $violation->toString(),

@@ -37,7 +37,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on implementation <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
+            'to only depend on implementation <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
         );
     }
 
@@ -73,7 +73,7 @@ final class DependsOnlyOnImplementationTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
                 ArrayAccess::class,
                 'Dependencies\Acme\.*',
                 'BadImplements',
@@ -109,13 +109,13 @@ final class DependsOnlyOnImplementationTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
                     ArrayAccess::class,
                     'Dependencies\Acme\.*',
                     'BadImplements1',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but implement <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
                     ArrayAccess::class,
                     'Dependencies\Acme\.*',
                     'BadImplements2',

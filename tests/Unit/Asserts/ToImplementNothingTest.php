@@ -58,12 +58,12 @@ final class ToImplementNothingTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not implement anything but implements <fire>%s</fire>',
                     $exceptName,
                     'BarInterface',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not implement anything but implements <fire>%s</fire>',
                     $exceptName,
                     'BazInterface',
                 ),

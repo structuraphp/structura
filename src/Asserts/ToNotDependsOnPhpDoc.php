@@ -28,7 +28,7 @@ final readonly class ToNotDependsOnPhpDoc implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'to not depends on phpDoc <promote>%s</promote>',
+            'to not depend on phpDoc <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -60,7 +60,7 @@ final readonly class ToNotDependsOnPhpDoc implements ExprScriptInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on these phpDoc namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these phpDoc namespaces %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
                     $unauthorizedDependence,
                     $violation,

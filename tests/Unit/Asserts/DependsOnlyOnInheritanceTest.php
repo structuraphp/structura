@@ -38,7 +38,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'depends only on inheritance <promote>%s, %s</promote>',
+                'to only depend on inheritance <promote>%s, %s</promote>',
                 ControllerBase::class,
                 'Dependencies\Acme\.*',
             ),
@@ -77,7 +77,7 @@ final class DependsOnlyOnInheritanceTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must only extend classes from these namespaces %s, %s but extends <fire>%s</fire>',
                 ControllerBase::class,
                 'Dependencies\Acme\.*',
                 'BadExtends',
@@ -109,13 +109,13 @@ final class DependsOnlyOnInheritanceTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only extend classes from these namespaces %s, %s but extends <fire>%s</fire>',
                     ControllerBase::class,
                     'Dependencies\Acme\.*',
                     'BadExtends2',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must inherit on these namespaces %s, %s but inherits <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only extend classes from these namespaces %s, %s but extends <fire>%s</fire>',
                     ControllerBase::class,
                     'Dependencies\Acme\.*',
                     'BadExtends1',

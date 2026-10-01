@@ -21,7 +21,7 @@ final readonly class ToBeBackedEnums implements ExprInterface
     public function __toString(): string
     {
         return sprintf(
-            'to be backed enums type of <promote>%s</promote>',
+            'to be backed enums of type <promote>%s</promote>',
             $this->scalarType?->label() ?? 'int or string',
         );
     }
@@ -48,7 +48,7 @@ final readonly class ToBeBackedEnums implements ExprInterface
         return [
             new ViolationValueObject(
                 sprintf(
-                    'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
+                    'Resource <promote>%s</promote> must be a backed enum of type <promote>%s</promote>',
                     $class->getResourceName(),
                     $this->scalarType?->label() ?? 'int or string',
                 ),

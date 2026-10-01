@@ -42,7 +42,7 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'to not depends on these namespaces <promote>%s, %s</promote>',
+                'to not depend on these namespaces <promote>%s, %s</promote>',
                 JsonSerializable::class,
                 'Depend\Baz',
             ),
@@ -66,7 +66,7 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'to not depends on these namespaces <promote>%s, %s</promote>',
+                'to not depend on these namespaces <promote>%s, %s</promote>',
                 JsonSerializable::class,
                 'Depend\Baz',
             ),
@@ -95,22 +95,22 @@ final class ToNotDependsOnTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'ArrayAccess',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Depend\Bar',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Exception',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Stringable',
                 ),
@@ -166,25 +166,25 @@ final class ToNotDependsOnTest extends TestCase
             $rules,
             [
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'ArrayAccess',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Depend\Bar',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Exception',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must not depends on these namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'ArrayAccess, Exception, Stringable, Depend\(Bar|Baz)',
                     'Stringable',
@@ -260,7 +260,7 @@ final class ToNotDependsOnTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these namespaces %s, %s but depends on <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must not depend on these namespaces %s, %s but depends on <fire>%s</fire>',
                 ArrayAccess::class,
                 Stringable::class,
                 ArrayAccess::class,

@@ -94,13 +94,13 @@ final class ToOnlyImplementTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implements <fire>%s</fire>',
                     $exceptName,
                     Stringable::class,
                     Iterator::class,
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implements <fire>%s</fire>',
                     $exceptName,
                     Stringable::class,
                     ArrayAccess::class,

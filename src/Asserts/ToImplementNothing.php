@@ -33,7 +33,7 @@ final readonly class ToImplementNothing implements ExprInterface
         foreach ($class->interfaces ?? [] as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not implement anything but implements <fire>%s</fire>',
                     $class->getResourceName(),
                     $violation,
                 ),

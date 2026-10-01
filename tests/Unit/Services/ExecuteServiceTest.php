@@ -93,7 +93,7 @@ final class ExecuteServiceTest extends TestCase
 
         self::assertInstanceOf(ViolationValueObject::class, $violation);
         self::assertSame(
-            'Resource <promote>Foo</promote> must extend by <promote>Exception</promote>',
+            'Resource <promote>Foo</promote> must extend <promote>Exception</promote>',
             $violation->messageViolation,
         );
         self::assertSame(1, $violation->line);

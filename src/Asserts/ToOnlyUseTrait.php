@@ -42,7 +42,7 @@ final readonly class ToOnlyUseTrait implements ExprInterface
             return [
                 new ViolationValueObject(
                     \sprintf(
-                        'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                        'Resource <promote>%s</promote> must only use trait <promote>%s</promote>',
                         $class->getResourceName(),
                         $this->name,
                     ),
@@ -58,7 +58,7 @@ final readonly class ToOnlyUseTrait implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
                     $class->getResourceName(),
                     $this->name,
                     $violation,

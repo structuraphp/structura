@@ -48,7 +48,7 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'depends only on these namespaces <promote>%s, %s, %s, [2+]</promote>',
+                'to only depend on these namespaces <promote>%s, %s, %s, [2+]</promote>',
                 ArrayAccess::class,
                 Exception::class,
                 Stringable::class,
@@ -80,7 +80,7 @@ final class DependsOnlyOnTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'depends only on these namespaces <promote>%s, %s, %s, [2+]</promote>',
+                'to only depend on these namespaces <promote>%s, %s, %s, [2+]</promote>',
                 ArrayAccess::class,
                 Exception::class,
                 Stringable::class,
@@ -103,22 +103,22 @@ final class DependsOnlyOnTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     'Depend\Bap',
                     'ArrayAccess',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     'Depend\Bap',
                     'Depend\Bar',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     'Depend\Bap',
                     'Exception',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     'Depend\Bap',
                     'Stringable',
                 ),
@@ -167,25 +167,25 @@ final class DependsOnlyOnTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'Depend\Bap',
                     'ArrayAccess',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'Depend\Bap',
                     'Depend\Bar',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'Depend\Bap',
                     'Exception',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on these namespaces %s but depends <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on these namespaces %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'Depend\Bap',
                     'Stringable',

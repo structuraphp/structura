@@ -60,7 +60,7 @@ final readonly class ToOnlyImplement implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implements <fire>%s</fire>',
                     $class->getResourceName(),
                     $this->name,
                     $violation,

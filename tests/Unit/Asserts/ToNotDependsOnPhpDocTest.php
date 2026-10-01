@@ -38,7 +38,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'to not depends on phpDoc <promote>ArrayAccess, Forbidden\.*</promote>',
+            'to not depend on phpDoc <promote>ArrayAccess, Forbidden\.*</promote>',
         );
     }
 
@@ -70,7 +70,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                 ArrayAccess::class,
                 'Forbidden\.*',
                 $violation,
@@ -115,7 +115,7 @@ final class ToNotDependsOnPhpDocTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                 ArrayAccess::class,
                 Stringable::class,
                 ArrayAccess::class,
@@ -153,12 +153,12 @@ final class ToNotDependsOnPhpDocTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s but depends on <fire>%s</fire>',
                     'Forbidden\.*',
                     'Forbidden\Aaa',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s but depends on <fire>%s</fire>',
                     'Forbidden\.*',
                     'Forbidden\Zzz',
                 ),
@@ -198,13 +198,13 @@ final class ToNotDependsOnPhpDocTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                     ArrayAccess::class,
                     'Forbidden\.*',
                     ArrayAccess::class,
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must not depends on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must not depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                     ArrayAccess::class,
                     'Forbidden\.*',
                     'Forbidden\Bar',

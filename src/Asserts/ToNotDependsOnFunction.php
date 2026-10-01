@@ -27,7 +27,7 @@ final readonly class ToNotDependsOnFunction implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'not depends on function <promote>%s</promote>',
+            'to not depend on function <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -65,7 +65,7 @@ final readonly class ToNotDependsOnFunction implements ExprScriptInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not depends on functions <promote>%s</promote> but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not depend on functions <promote>%s</promote> but depends on <fire>%s</fire>',
                     $description->getResourceName(),
                     $authorisedDependence,
                     $violation,

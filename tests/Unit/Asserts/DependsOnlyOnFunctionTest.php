@@ -37,7 +37,7 @@ class DependsOnlyOnFunctionTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
+            'to only depend on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
         );
     }
 
@@ -57,7 +57,7 @@ class DependsOnlyOnFunctionTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
+            'to only depend on function <promote>strtolower, mb_strlen, array_.+, [1+]</promote>',
         );
     }
 
@@ -79,13 +79,13 @@ class DependsOnlyOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtoupper, date_create, mb_.+',
                     'array_merge',
                 ),
                 sprintf(
-                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtoupper, date_create, mb_.+',
                     'strtolower',
@@ -131,13 +131,13 @@ class DependsOnlyOnFunctionTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtoupper, date_create, mb_.+',
                     'array_merge',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $exceptName,
                     'strtoupper, date_create, mb_.+',
                     'strtolower',

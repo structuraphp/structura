@@ -52,7 +52,7 @@ final class AnalyseOrchestratorTest extends TestCase
          - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
         Should
          <green>✔</green> to be classes
-         <fire>✘</fire> to not depends on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>38 error(s)</fire>
+         <fire>✘</fire> to not depend on these namespaces <promote>StructuraPhp\Structura\ValueObjects\ClassDescription</promote> <fire>38 error(s)</fire>
          <green>✔</green> to have method <promote>__toString</promote>
          <green>✔</green> to use declare <promote>strict_types=1</promote>
          <yellow>❗</yellow> to have prefix <promote>To</promote> <yellow>1 warning(s)</yellow>
@@ -76,9 +76,9 @@ final class AnalyseOrchestratorTest extends TestCase
          <green>✔</green> to have suffix <promote>Controller</promote>
          <green>✔</green> to extend <promote>StructuraPhp\Structura\Tests\Fixture\Http\ControllerBase</promote>
          <fire>✘</fire> to have method <promote>__construct</promote> <fire>3 error(s)</fire>
-         <fire>✘</fire> depends only on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Models\User</promote> <fire>1 error(s)</fire>
-         <green>✔</green> depends only on trait <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
-         <green>✔</green> depends only on implementation <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
+         <fire>✘</fire> to only depend on these namespaces <promote>StructuraPhp\Structura\Tests\Fixture\Http\Controller\RoleController, StructuraPhp\Structura\Tests\Fixture\Models\User</promote> <fire>1 error(s)</fire>
+         <green>✔</green> to only depend on trait <promote>StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory</promote>
+         <green>✔</green> to only depend on implementation <promote>StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface</promote>
 
         <notice> NOTICE </notice> Void architecture rules in StructuraPhp\Structura\Tests\Feature\TestEmpty
         Should

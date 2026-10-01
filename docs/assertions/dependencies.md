@@ -147,7 +147,7 @@ $this
 
 **Violation message:**
 ```
-Resource <class> must depends only on these phpDoc namespaces <authorised> but depends <forbidden>
+Resource <class> must only depend on these phpDoc namespaces <authorised> but depends on <forbidden>
 ```
 
 ## toNotDependsOnPhpDoc()
@@ -169,7 +169,7 @@ $this
 
 **Violation message:**
 ```
-Resource <class> must not depends on these phpDoc namespaces <forbidden> but depends on <found>
+Resource <class> must not depend on these phpDoc namespaces <forbidden> but depends on <found>
 ```
 
 

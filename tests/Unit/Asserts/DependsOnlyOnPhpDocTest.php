@@ -37,7 +37,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
+            'to only depend on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
         );
     }
 
@@ -77,7 +77,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                 ArrayAccess::class,
                 'Acme\.*',
                 $violation,
@@ -128,13 +128,13 @@ final class DependsOnlyOnPhpDocTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                     ArrayAccess::class,
                     'Acme\.*',
                     'Forbidden\Bar',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must depends only on these phpDoc namespaces %s, %s but depends <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces %s, %s but depends on <fire>%s</fire>',
                     ArrayAccess::class,
                     'Acme\.*',
                     'Forbidden\Baz',
@@ -161,7 +161,7 @@ final class DependsOnlyOnPhpDocTest extends TestCase
 
         self::assertRulesPass(
             $rules,
-            'depends only on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
+            'to only depend on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
         );
     }
 }

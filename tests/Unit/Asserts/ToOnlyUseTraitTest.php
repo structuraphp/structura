@@ -74,7 +74,7 @@ final class ToOnlyUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                'Resource <promote>%s</promote> must only use trait <promote>%s</promote>',
                 $exceptName,
                 HasFactory::class,
             ),
@@ -106,7 +106,7 @@ final class ToOnlyUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                'Resource <promote>%s</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
                 $exceptName,
                 HasFactory::class,
                 'OtherTrait',
@@ -150,12 +150,12 @@ final class ToOnlyUseTraitTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
                     HasFactory::class,
                     'BadTraitOne',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
                     HasFactory::class,
                     'BadTraitTwo',
                 ),

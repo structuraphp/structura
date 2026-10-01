@@ -38,7 +38,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'depends only on trait <promote>%s, %s</promote>',
+                'to only depend on trait <promote>%s, %s</promote>',
                 HasFactory::class,
                 'Dependencies\Acme\.*',
             ),
@@ -75,7 +75,7 @@ final class DependsOnlyOnUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
                 HasFactory::class,
                 'Dependencies\Acme\.*',
                 'BadTrait',
@@ -109,13 +109,13 @@ final class DependsOnlyOnUseTraitTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
                     HasFactory::class,
                     'Dependencies\Acme\.*',
                     'BadTrait1',
                 ),
                 \sprintf(
-                    'Resource <promote>Foo</promote> must use traits on these namespaces %s, %s but uses these traits <fire>%s</fire>',
+                    'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
                     HasFactory::class,
                     'Dependencies\Acme\.*',
                     'BadTrait2',

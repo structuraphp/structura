@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
     public function __toString(): string
     {
         return \sprintf(
-            'depends only on function <promote>%s</promote>',
+            'to only depend on function <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -59,7 +59,7 @@ final readonly class DependsOnlyOnFunction implements ExprScriptInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must depends only on functions %s but depends on <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only depend on functions %s but depends on <fire>%s</fire>',
                     $description->getResourceName(),
                     $authorisedDependence,
                     $violation,

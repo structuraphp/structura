@@ -27,7 +27,7 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
     public function __toString(): string
     {
         return \sprintf(
-            'depends only on implementation <promote>%s</promote>',
+            'to only depend on implementation <promote>%s</promote>',
             $this->implodeMore(array_merge($this->names, $this->patterns)),
         );
     }
@@ -58,7 +58,7 @@ final readonly class DependsOnlyOnImplementation implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must inherit on these namespaces %s but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement interfaces from these namespaces %s but implements <fire>%s</fire>',
                     $class->getResourceName(),
                     $authorisedDependence,
                     $violation,
