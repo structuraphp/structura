@@ -16,6 +16,11 @@ interface RelationAssertInterface
     /**
      * @param array<int,class-string>|class-string $names
      */
+    public function toNotExtend(array|string $names, string $message = ''): self;
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     */
     public function toImplement(array|string $names, string $message = ''): self;
 
     public function toImplementNothing(string $message = ''): self;

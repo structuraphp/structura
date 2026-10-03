@@ -48,6 +48,7 @@ use StructuraPhp\Structura\Asserts\ToNotBeInNamespaces;
 use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
 use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToNotExtend;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
@@ -229,6 +230,7 @@ final class AssertBench
                 [],
                 ['Illuminate\.+'],
             ),
+            'toNotExtend' => new ToNotExtend(Model::class),
             'toNotHaveAnonymousClass' => new ToNotHaveAnonymousClass(),
             'toNotHaveConstant' => new ToNotHaveConstant(VisibilityType::Public),
             'toNotHaveCorrespondingFile' => new ToNotHaveCorrespondingFile(

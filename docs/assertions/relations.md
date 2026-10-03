@@ -9,6 +9,25 @@ $this
   ->should(fn(Expr $expr) => $expr->toExtend(Exception::class));
 ```
 
+## toNotExtend()
+
+Opposite of [toExtend()](#toextend). Fails if the resource extends one of the given classes; one
+violation is reported per forbidden parent. To forbid any parent, use
+[toExtendNothing()](#toextendnothing).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(fn(Expr $expr) => $expr->toNotExtend(Model::class));
+```
+
+::: details Violation message
+```
+Resource Foo must not extend Model
+```
+:::
+
 ## toExtendNothing()
 
 ```php
