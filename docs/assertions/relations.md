@@ -46,6 +46,25 @@ $this
   ->should(fn(Expr $expr) => $expr->toImplement(ArrayAccess::class));
 ```
 
+## toNotImplement()
+
+Opposite of [toImplement()](#toimplement). Fails if the resource implements one of the given
+interfaces; one violation is reported per forbidden interface. To forbid any interface, use
+[toImplementNothing()](#toimplementnothing).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(fn(Expr $expr) => $expr->toNotImplement(Serializable::class));
+```
+
+::: details Violation message
+```
+Resource Foo must not implement Serializable
+```
+:::
+
 ## toImplementNothing()
 
 ```php

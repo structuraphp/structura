@@ -13,6 +13,7 @@ use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
 use StructuraPhp\Structura\Asserts\ToNotExtend;
+use StructuraPhp\Structura\Asserts\ToNotImplement;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
@@ -51,6 +52,11 @@ trait RelationAssert
     public function toImplementNothing(string $message = ''): self
     {
         return $this->addExpr(new ToImplementNothing($message));
+    }
+
+    public function toNotImplement(array|string $names, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotImplement($names, $message));
     }
 
     public function toOnlyImplement(string $name, string $message = ''): self

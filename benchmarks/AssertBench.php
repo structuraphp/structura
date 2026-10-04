@@ -52,6 +52,7 @@ use StructuraPhp\Structura\Asserts\ToNotExtend;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
+use StructuraPhp\Structura\Asserts\ToNotImplement;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
@@ -237,6 +238,7 @@ final class AssertBench
                 static fn (ClassDescription $classDescription): string => $classDescription
                     ->getFileBasename() . '.bak',
             ),
+            'toNotImplement' => new ToNotImplement(ControllerInterface::class),
             'toNotUseInclude' => new ToNotUseInclude(),
             'toNotUseTrait' => new ToNotUseTrait(),
             'toOnlyDependOn' => new ToOnlyDependOn(

@@ -26,6 +26,11 @@ interface RelationAssertInterface
     public function toImplementNothing(string $message = ''): self;
 
     /**
+     * @param array<int,class-string>|class-string $names
+     */
+    public function toNotImplement(array|string $names, string $message = ''): self;
+
+    /**
      * @param class-string $name
      */
     public function toOnlyImplement(string $name, string $message = ''): self;
