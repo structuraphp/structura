@@ -8,6 +8,8 @@ interface MethodAssertInterface
 {
     public function toHaveMethod(string $name, string $message = ''): self;
 
+    public function toNotHaveMethod(string $name, string $message = ''): self;
+
     public function toHaveConstructor(string $message = ''): self;
 
     public function toHaveDestructor(string $message = ''): self;

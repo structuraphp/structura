@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Concerns\Expr;
 
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
 
 /**
  * @mixin AbstractExpr
@@ -15,6 +16,11 @@ trait MethodAssert
     public function toHaveMethod(string $name, string $message = ''): self
     {
         return $this->addExpr(new ToHaveMethod($name, $message));
+    }
+
+    public function toNotHaveMethod(string $name, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotHaveMethod($name, $message));
     }
 
     public function toHaveConstructor(string $message = ''): self
