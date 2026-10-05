@@ -53,6 +53,7 @@ use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
 use StructuraPhp\Structura\Asserts\ToNotHaveAttribute;
 use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
+use StructuraPhp\Structura\Asserts\ToNotHaveFilePermission;
 use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
 use StructuraPhp\Structura\Asserts\ToNotHavePrefix;
 use StructuraPhp\Structura\Asserts\ToNotHaveSuffix;
@@ -243,6 +244,7 @@ final class AssertBench
                 static fn (ClassDescription $classDescription): string => $classDescription
                     ->getFileBasename() . '.bak',
             ),
+            'toNotHaveFilePermission' => new ToNotHaveFilePermission('0777'),
             'toNotHaveMethod' => new ToNotHaveMethod('__invoke'),
             'toNotHavePrefix' => new ToNotHavePrefix('Order'),
             'toNotHaveSuffix' => new ToNotHaveSuffix('Controller'),

@@ -190,6 +190,20 @@ $this
     ->should(fn(ExprScript $expr) => $expr->toHaveFilePermission('0644'));
 ```
 
+## toNotHaveFilePermission()
+
+Opposite of [toHaveFilePermission()](#tohavefilepermission). Fails if the file has the given Unix
+permissions, for instance to forbid world-writable files. A file that cannot be read passes.
+
+### Example with allScripts()
+
+```php
+$this
+    ->allScripts()
+    ->fromDir('src')
+    ->should(fn(ExprScript $expr) => $expr->toNotHaveFilePermission('0777'));
+```
+
 ## toReturnArray()
 
 Assert that a PHP script returns an array at the root level using a `return` statement.

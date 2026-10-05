@@ -46,7 +46,7 @@ final class AnalyseOrchestratorTest extends TestCase
 
         $expected = <<<'EOF'
         <violation> ERROR </violation> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestAssert
-        60 classe(s) from
+        61 classe(s) from
          - dirs
         That
          - to implement <promote>StructuraPhp\Structura\Contracts\ExprInterface</promote>
@@ -101,7 +101,7 @@ final class AnalyseOrchestratorTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        166 classe(s) from
+        167 classe(s) from
          - dirs
         That
         Should

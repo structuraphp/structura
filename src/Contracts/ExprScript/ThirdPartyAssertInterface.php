@@ -30,5 +30,7 @@ interface ThirdPartyAssertInterface
 
     public function toHaveFilePermission(string $expectedPermission, string $message = ''): self;
 
+    public function toNotHaveFilePermission(string $forbiddenPermission, string $message = ''): self;
+
     public function toReturnArray(string $message = ''): self;
 }
