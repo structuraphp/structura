@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Measures the console formatters on a frozen analysis result.
  *
- * The layout mirrors AnalyzeCommand: one output for the whole run, a fresh
+ * The layout mirrors AnalyseCommand: one output for the whole run, a fresh
  * formatter for each revolution. Formatters accumulate their lines in an
  * internal buffer that is never reset, so reusing an instance would measure a
  * quadratic growth instead of the formatter itself.

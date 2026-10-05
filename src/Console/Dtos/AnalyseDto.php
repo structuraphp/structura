@@ -9,7 +9,7 @@ use InvalidArgumentException;
 use StructuraPhp\Structura\Console\Enums\AnalyseOption;
 use StructuraPhp\Structura\Console\Enums\CommonOption;
 
-final readonly class AnalyzeDto
+final readonly class AnalyseDto
 {
     public function __construct(
         public string $configPath,

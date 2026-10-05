@@ -8,7 +8,7 @@ use Closure;
 use InvalidArgumentException;
 use StructuraPhp\Structura\Concerns\Console\Version;
 use StructuraPhp\Structura\Configs\StructuraConfig;
-use StructuraPhp\Structura\Console\Dtos\AnalyzeDto;
+use StructuraPhp\Structura\Console\Dtos\AnalyseDto;
 use StructuraPhp\Structura\Console\Enums\AnalyseOption;
 use StructuraPhp\Structura\Contracts\ErrorFormatterInterface;
 use StructuraPhp\Structura\Contracts\ProgressFormatterInterface;
@@ -37,26 +37,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: AnalyzeCommand::NAME,
+    name: AnalyseCommand::NAME,
     description: 'Test archi',
 )]
-final class AnalyzeCommand extends Command
+final class AnalyseCommand extends Command
 {
     use Version;
 
     /** @var string */
     public const NAME = 'analyze';
 
-    private AnalyzeDto $analyzeDto;
+    private AnalyseDto $analyseDto;
 
     private ConfigValueObject $configValueObject;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $this->analyzeDto = $this->getAnalyseDto($input);
+        $this->analyseDto = $this->getAnalyseDto($input);
 
-        if (!\file_exists($this->analyzeDto->configPath)) {
+        if (!\file_exists($this->analyseDto->configPath)) {
             $initInput = new ArrayInput(['command' => InitCommand::NAME]);
             $this->getApplication()?->doRun($initInput, $output);
 
@@ -65,7 +65,7 @@ final class AnalyzeCommand extends Command
             return self::SUCCESS;
         }
 
-        $io->writeln($this->getInfos($this->analyzeDto->configPath));
+        $io->writeln($this->getInfos($this->analyseDto->configPath));
         $io->newLine();
 
         $this->configValueObject = $this->getConfigValueObject();
@@ -76,16 +76,16 @@ final class AnalyzeCommand extends Command
 
         $finder = new FinderService(
             config: $this->configValueObject,
-            testSuite: $this->analyzeDto->testSuite,
+            testSuite: $this->analyseDto->testSuite,
         );
 
         $progressFormatter->progressStart($io, count($finder->getClassTests()));
 
         $orchestrator = new AnalyseOrchestrator(
-            stopOnError: $this->analyzeDto->stopOnError,
-            stopOnWarning: $this->analyzeDto->stopOnWarning,
-            stopOnNotice: $this->analyzeDto->stopOnNotice,
-            filter: $this->analyzeDto->filter,
+            stopOnError: $this->analyseDto->stopOnError,
+            stopOnWarning: $this->analyseDto->stopOnWarning,
+            stopOnNotice: $this->analyseDto->stopOnNotice,
+            filter: $this->analyseDto->filter,
             pathResolvers: $this->configValueObject->pathResolvers,
         );
 
@@ -123,11 +123,11 @@ final class AnalyzeCommand extends Command
 
     private function getErrorFormatter(): ErrorFormatterInterface
     {
-        if ($this->analyzeDto->noError) {
+        if ($this->analyseDto->noError) {
             return new ErrorNoneFormatter();
         }
 
-        $format = $this->analyzeDto->errorFormat;
+        $format = $this->analyseDto->errorFormat;
 
         return match ($format) {
             ErrorFormatterType::Text->value => new ErrorTextFormatter(),
@@ -144,11 +144,11 @@ final class AnalyzeCommand extends Command
 
     private function getProgressFormatter(): ProgressFormatterInterface
     {
-        if ($this->analyzeDto->noProgress) {
+        if ($this->analyseDto->noProgress) {
             return new ProgressNoneFormatter();
         }
 
-        $format = $this->analyzeDto->progressFormat;
+        $format = $this->analyseDto->progressFormat;
 
         return match ($format) {
             ProgressFormatterType::Text->value => new ProgressTextFormatter(),
@@ -169,7 +169,7 @@ final class AnalyzeCommand extends Command
         (new AutoloadService())->load($this->configValueObject->autoload, $output);
     }
 
-    private function getAnalyseDto(InputInterface $input): AnalyzeDto
+    private function getAnalyseDto(InputInterface $input): AnalyseDto
     {
         /** @var array<string,null|scalar> $data */
         $data = array_filter(
@@ -179,13 +179,13 @@ final class AnalyzeCommand extends Command
             mode: ARRAY_FILTER_USE_BOTH,
         );
 
-        return AnalyzeDto::fromArray($data);
+        return AnalyseDto::fromArray($data);
     }
 
     private function getConfigValueObject(): ConfigValueObject
     {
         /** @var Closure(StructuraConfig): void|StructuraConfig $closure */
-        $closure = require $this->analyzeDto->configPath;
+        $closure = require $this->analyseDto->configPath;
         if (!$closure instanceof Closure) {
             throw new InvalidArgumentException();
         }
