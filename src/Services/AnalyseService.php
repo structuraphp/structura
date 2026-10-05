@@ -6,7 +6,6 @@ namespace StructuraPhp\Structura\Services;
 
 use ReflectionClass;
 use ReflectionMethod;
-use RuntimeException;
 use StructuraPhp\Structura\Attributes\TestDox;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Exception\Console\EventException;
@@ -61,9 +60,7 @@ final class AnalyseService
         float $timeStart,
         string $ruleClassname,
     ): AnalyseValueObject {
-        try {
-            $this->executeTests($ruleClassname);
-        } catch (RuntimeException) {
+        if ($this->executeTests($ruleClassname)) {
             throw new StopOnException(
                 $this->getAnalyseValueObject($timeStart),
             );
@@ -74,8 +71,10 @@ final class AnalyseService
 
     /**
      * @param class-string<TestBuilder> $classname
+     *
+     * @return bool true when a stop-on option interrupted the analysis
      */
-    private function executeTests(string $classname): void
+    private function executeTests(string $classname): bool
     {
         $matchClassname = $this->match($classname);
 
@@ -135,8 +134,12 @@ final class AnalyseService
                 assertValueObject: $assertBuilder->getAssertValueObject(),
             );
 
-            $this->isStopOn($assertBuilder);
+            if ($this->isStopOn($assertBuilder)) {
+                return true;
+            }
         }
+
+        return false;
     }
 
     /**
@@ -192,20 +195,12 @@ final class AnalyseService
             );
     }
 
-    private function isStopOn(AssertBuilder $assertBuilder): void
+    private function isStopOn(AssertBuilder $assertBuilder): bool
     {
         $assert = $assertBuilder->getAssertValueObject();
 
-        if ($this->stopOnError && $assert->countAssertsFailure() >= 1) {
-            throw new RuntimeException();
-        }
-
-        if ($this->stopOnWarning && $assert->countAssertsWarning() >= 1) {
-            throw new RuntimeException();
-        }
-
-        if ($this->stopOnNotice && $assert->countAssertsNotices() >= 1) {
-            throw new RuntimeException();
-        }
+        return ($this->stopOnError && $assert->countAssertsFailure() >= 1)
+            || ($this->stopOnWarning && $assert->countAssertsWarning() >= 1)
+            || ($this->stopOnNotice && $assert->countAssertsNotices() >= 1);
     }
 }

@@ -13,6 +13,11 @@ use StructuraPhp\Structura\Services\AnalysisDispatcher;
 use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Tests\Feature\TestAssert;
 use StructuraPhp\Structura\Tests\Feature\TestConfig;
+use StructuraPhp\Structura\Tests\Feature\TestController;
+use StructuraPhp\Structura\Tests\Feature\TestEmpty;
+use StructuraPhp\Structura\Tests\Helper\OneViolationTestBuilder;
+use StructuraPhp\Structura\Tests\Helper\ThrowingTestBuilder;
+use UnexpectedValueException;
 
 #[CoversClass(AnalyseService::class)]
 final class AnalyseServiceTest extends TestCase
@@ -52,6 +57,61 @@ final class AnalyseServiceTest extends TestCase
 
         $this->expectException(StopOnException::class);
         $service->analyse(microtime(true), TestAssert::class);
+    }
+
+    public function testStopOnErrorAtFirstViolation(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher(), stopOnError: true);
+
+        $this->expectException(StopOnException::class);
+        $service->analyse(microtime(true), OneViolationTestBuilder::class);
+    }
+
+    public function testStopOnWarning(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher(), stopOnWarning: true);
+
+        $this->expectException(StopOnException::class);
+        $service->analyse(microtime(true), TestAssert::class);
+    }
+
+    public function testStopOnNotice(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher(), stopOnNotice: true);
+
+        $this->expectException(StopOnException::class);
+        $service->analyse(microtime(true), TestEmpty::class);
+    }
+
+    public function testNoStopWithoutStopOnOption(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher());
+        $result = $service->analyse(microtime(true), TestAssert::class);
+
+        self::assertSame(2, $result->countViolation);
+        self::assertSame(1, $result->countWarning);
+    }
+
+    public function testStopOnWarningAndNoticeIgnoreErrors(): void
+    {
+        $service = new AnalyseService(
+            new AnalysisDispatcher(),
+            stopOnWarning: true,
+            stopOnNotice: true,
+        );
+        $result = $service->analyse(microtime(true), TestController::class);
+
+        self::assertSame(3, $result->countViolation);
+    }
+
+    public function testRuntimeExceptionFromTestIsNotTakenForStopOn(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher());
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('Rule definition crashed');
+
+        $service->analyse(microtime(true), ThrowingTestBuilder::class);
     }
 
     public function testCreateFactory(): void
