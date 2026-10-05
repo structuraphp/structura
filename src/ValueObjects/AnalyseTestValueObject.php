@@ -7,7 +7,7 @@ namespace StructuraPhp\Structura\ValueObjects;
 final class AnalyseTestValueObject
 {
     /**
-     * @param array<int, RuleValuesObject> $ruleValueObjects
+     * @param array<int, RuleValueObject> $ruleValueObjects
      */
     public function __construct(
         public SourceTestValueObject $source,

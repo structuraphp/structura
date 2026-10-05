@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use Symfony\Component\Finder\Finder;
 
-final readonly class RuleValuesObject
+final readonly class RuleValueObject
 {
     /**
      * @param array<string, string> $raws

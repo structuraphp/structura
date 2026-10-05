@@ -10,7 +10,7 @@ use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -38,7 +38,7 @@ class FormatterDataProvider
                             pathname: '',
                         ),
                         ruleValueObjects: [
-                            new RuleValuesObject(
+                            new RuleValueObject(
                                 raws: ['example.php' => 'Foo'],
                                 finder: null,
                                 that: (new AbstractExpr())

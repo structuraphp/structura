@@ -14,7 +14,7 @@ use StructuraPhp\Structura\Builder\AllClasses;
 use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Services\ExecuteService;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -27,9 +27,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 #[Iterations(5)]
 final class ExecuteServiceBench
 {
-    private RuleValuesObject $simpleRule;
+    private RuleValueObject $simpleRule;
 
-    private RuleValuesObject $filteredRule;
+    private RuleValueObject $filteredRule;
 
     public function setUp(): void
     {

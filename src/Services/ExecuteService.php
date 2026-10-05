@@ -20,7 +20,7 @@ use StructuraPhp\Structura\Events\WarningEvent;
 use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
@@ -32,18 +32,18 @@ final class ExecuteService
 
     public function __construct(
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly RuleValuesObject $ruleValuesObject,
+        private readonly RuleValueObject $ruleValueObject,
         private readonly ?SourceTestValueObject $sourceTest = null,
     ) {
         $this->parseService = new ParseService(
-            $this->ruleValuesObject->getDescriptorType(),
+            $this->ruleValueObject->getDescriptorType(),
         );
     }
 
     public function assert(): void
     {
-        $description = $this->ruleValuesObject->finder instanceof Finder
-            ? $this->parseService->parse($this->ruleValuesObject->finder)
+        $description = $this->ruleValueObject->finder instanceof Finder
+            ? $this->parseService->parse($this->ruleValueObject->finder)
             : $this->parseRawFiles();
 
         if ($this->isEmptySource()) {
@@ -58,13 +58,13 @@ final class ExecuteService
             ));
         }
 
-        $this->execute($description, $this->ruleValuesObject->should);
+        $this->execute($description, $this->ruleValueObject->should);
     }
 
     private function isEmptySource(): bool
     {
-        return $this->ruleValuesObject->finder instanceof Finder
-            && $this->ruleValuesObject->finder->count() === 0;
+        return $this->ruleValueObject->finder instanceof Finder
+            && $this->ruleValueObject->finder->count() === 0;
     }
 
     /**
@@ -72,7 +72,7 @@ final class ExecuteService
      */
     private function parseRawFiles(): Generator
     {
-        foreach ($this->ruleValuesObject->raws as $path => $raw) {
+        foreach ($this->ruleValueObject->raws as $path => $raw) {
             yield from $this->parseService->parseRaw($raw, $path);
         }
     }
@@ -105,12 +105,12 @@ final class ExecuteService
 
     private function executeThat(ClassDescription|ScriptDescription $description): bool
     {
-        if (!$this->ruleValuesObject->that instanceof Expr) {
+        if (!$this->ruleValueObject->that instanceof Expr) {
             return false;
         }
 
         /** @var AbstractExpr|ExprInterface $assert */
-        foreach ($this->ruleValuesObject->that as $assert) {
+        foreach ($this->ruleValueObject->that as $assert) {
             $predicate = $this->predicate($assert, $description);
 
             if (!$predicate) {
@@ -130,7 +130,7 @@ final class ExecuteService
             $predicate = $this->predicate($assert, $description);
 
             $isExcept = $this
-                ->ruleValuesObject
+                ->ruleValueObject
                 ->except
                 ?->isExcept($description, $assert::class);
 
@@ -175,7 +175,7 @@ final class ExecuteService
             $predicate = $this->predicate($assert, $description);
 
             $isExcept = $this
-                ->ruleValuesObject
+                ->ruleValueObject
                 ->except
                 ?->isExcept($description, $assert::class);
 
@@ -266,14 +266,14 @@ final class ExecuteService
      */
     private function injectPathResolvers(AbstractExpr $assertions): void
     {
-        if ($this->ruleValuesObject->pathResolvers === []) {
+        if ($this->ruleValueObject->pathResolvers === []) {
             return;
         }
 
         /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             if ($assert instanceof PathResolverAwareInterface) {
-                $assert->setPathResolvers($this->ruleValuesObject->pathResolvers);
+                $assert->setPathResolvers($this->ruleValueObject->pathResolvers);
             }
 
             if ($assert instanceof AbstractExpr) {

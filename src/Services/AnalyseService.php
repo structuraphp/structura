@@ -14,7 +14,7 @@ use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 
 final class AnalyseService
@@ -140,7 +140,7 @@ final class AnalyseService
     }
 
     /**
-     * @return array<int, RuleValuesObject>
+     * @return array<int, RuleValueObject>
      */
     private function executeAssertions(
         TestBuilder $instance,
