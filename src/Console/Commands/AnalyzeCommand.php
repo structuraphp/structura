@@ -25,6 +25,7 @@ use StructuraPhp\Structura\Formatter\Progress\ProgressBarFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseOrchestrator;
+use StructuraPhp\Structura\Services\AutoloadService;
 use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
@@ -165,25 +166,7 @@ final class AnalyzeCommand extends Command
             return;
         }
 
-        if (!is_string($this->configValueObject->autoload)) {
-            $output->warning(
-                'This command is not running inside a PHAR archive, '
-                . 'so the autoload configuration is not required in this environment.',
-            );
-
-            return;
-        }
-
-        if (is_file($this->configValueObject->autoload)) {
-            require $this->configValueObject->autoload;
-        }
-
-        $output->error(
-            sprintf(
-                'The autoload file "%s" could not be found. For example: __DIR__ . "/vendor/autoload.php".',
-                $this->configValueObject->autoload,
-            ),
-        );
+        (new AutoloadService())->load($this->configValueObject->autoload, $output);
     }
 
     private function getAnalyseDto(InputInterface $input): AnalyzeDto
