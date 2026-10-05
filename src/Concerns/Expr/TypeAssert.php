@@ -75,6 +75,11 @@ trait TypeAssert
         return $this->toHaveMethod('__invoke', $message);
     }
 
+    public function toNotBeInvokable(string $message = ''): self
+    {
+        return $this->toNotHaveMethod('__invoke', $message);
+    }
+
     public function toBeReadonly(string $message = ''): self
     {
         return $this->addExpr(new ToBeReadonly($message));

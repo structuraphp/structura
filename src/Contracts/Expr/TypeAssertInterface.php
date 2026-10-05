@@ -29,6 +29,8 @@ interface TypeAssertInterface
 
     public function toBeInvokable(string $message = ''): self;
 
+    public function toNotBeInvokable(string $message = ''): self;
+
     public function toBeReadonly(string $message = ''): self;
 
     public function toBeTraits(string $message = ''): self;

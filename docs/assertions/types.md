@@ -129,6 +129,20 @@ $this
   );
 ```
 
+## toNotBeInvokable()
+
+Opposite of [toBeInvokable()](#tobeinvokable). Shortcut for `toNotHaveMethod('__invoke')`:
+fails if the resource declares an `__invoke()` method.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeInvokable(),
+  );
+```
+
 ## toBeReadonly()
 
 ```php
