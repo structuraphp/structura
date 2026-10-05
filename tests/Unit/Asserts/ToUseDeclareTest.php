@@ -16,10 +16,43 @@ use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToUseDeclare::class)]
+#[CoversMethod(ThirdPartyAssert::class, 'toUseDeclare')]
 #[CoversMethod(ThirdPartyAssert::class, 'toUseStrictTypes')]
-final class ToUseStrictTypesTest extends TestCase
+final class ToUseDeclareTest extends TestCase
 {
     use ArchitectureAsserts;
+
+    public function testToUseDeclare(): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw('<?php declare(ticks=1); $foo = 1;')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseDeclare('ticks', '1'),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'to use declare <promote>ticks=1</promote>',
+        );
+    }
+
+    public function testShouldFailToUseDeclare(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php declare(strict_types=1); class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toUseDeclare('ticks', '1'),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must use declaration <promote>ticks=1</promote>',
+        );
+    }
 
     public function testToUserStrictType(): void
     {

@@ -26,7 +26,6 @@ class ToHaveCorrespondingClassTest extends TestCase
         ToBeInvokableTest::class => 'StructuraPhp\Structura\Asserts\ToBeInvokable',
         ToNotBeInvokableTest::class => 'StructuraPhp\Structura\Asserts\ToNotBeInvokable',
         ToNotHaveConstructorTest::class => 'StructuraPhp\Structura\Asserts\ToNotHaveConstructor',
-        ToUseStrictTypesTest::class => 'StructuraPhp\Structura\Asserts\ToUseStrictTypes',
     ];
 
     public function testToHaveCorrespondingClass(): void
@@ -91,7 +90,7 @@ class ToHaveCorrespondingClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             $output,
-            [15, 19, 17, 15, 15, 18],
+            [15, 19, 17, 15, 15],
         );
     }
 }
