@@ -85,7 +85,7 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
         $this->prints[] = \sprintf(
             '%s %s in %s',
             $label,
-            $data->source->textDox,
+            $data->source->testDox,
             $data->source->testClassname,
         );
     }

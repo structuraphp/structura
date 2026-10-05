@@ -118,7 +118,7 @@ final readonly class AnalyseValueObjectFactory
         return new AnalyseTestValueObject(
             source: new SourceTestValueObject(
                 testClassname: 'StructuraPhp\Structura\Benchmarks\Suite\\' . $classname,
-                textDox: $testDox,
+                testDox: $testDox,
                 methodName: 'testArchitecture',
                 line: 21,
                 pathname: 'benchmarks/Suite/' . $classname . '.php',

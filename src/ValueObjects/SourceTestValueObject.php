@@ -8,7 +8,7 @@ final readonly class SourceTestValueObject
 {
     public function __construct(
         public string $testClassname,
-        public string $textDox,
+        public string $testDox,
         public string $methodName,
         public int $line,
         public string $pathname,

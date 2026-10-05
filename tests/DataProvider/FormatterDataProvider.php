@@ -32,7 +32,7 @@ class FormatterDataProvider
                     new AnalyseTestValueObject(
                         source: new SourceTestValueObject(
                             testClassname: 'TestAssert',
-                            textDox: 'Asserts architecture rules',
+                            testDox: 'Asserts architecture rules',
                             methodName: '',
                             line: 0,
                             pathname: '',

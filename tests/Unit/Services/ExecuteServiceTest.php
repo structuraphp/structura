@@ -202,7 +202,7 @@ final class ExecuteServiceTest extends TestCase
 
         $sourceTest = new SourceTestValueObject(
             testClassname: 'Exemple',
-            textDox: 'my empty directory test',
+            testDox: 'my empty directory test',
             methodName: 'exemple',
             line: 0,
             pathname: __FILE__,

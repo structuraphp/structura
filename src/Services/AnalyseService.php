@@ -101,7 +101,7 @@ final class AnalyseService
 
             $sourceTest = new SourceTestValueObject(
                 testClassname: $classname,
-                textDox: $testDox,
+                testDox: $testDox,
                 methodName: $method->getName(),
                 line: (int) $method->getStartLine(),
                 pathname: $fileName,
