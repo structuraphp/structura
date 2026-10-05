@@ -38,7 +38,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: AnalyseCommand::NAME,
-    description: 'Test archi',
+    description: 'Run the architecture tests',
 )]
 final class AnalyseCommand extends Command
 {
