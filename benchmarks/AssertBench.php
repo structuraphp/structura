@@ -50,6 +50,7 @@ use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
 use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
 use StructuraPhp\Structura\Asserts\ToNotExtend;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
+use StructuraPhp\Structura\Asserts\ToNotHaveAttribute;
 use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
 use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
@@ -236,6 +237,7 @@ final class AssertBench
             ),
             'toNotExtend' => new ToNotExtend(Model::class),
             'toNotHaveAnonymousClass' => new ToNotHaveAnonymousClass(),
+            'toNotHaveAttribute' => new ToNotHaveAttribute(Cached::class),
             'toNotHaveConstant' => new ToNotHaveConstant(VisibilityType::Public),
             'toNotHaveCorrespondingFile' => new ToNotHaveCorrespondingFile(
                 static fn (ClassDescription $classDescription): string => $classDescription

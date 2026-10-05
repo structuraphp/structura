@@ -57,5 +57,10 @@ interface RelationAssertInterface
     /**
      * @param class-string $name
      */
+    public function toNotHaveAttribute(string $name, string $message = ''): self;
+
+    /**
+     * @param class-string $name
+     */
     public function toHaveOnlyAttribute(string $name, string $message = ''): self;
 }

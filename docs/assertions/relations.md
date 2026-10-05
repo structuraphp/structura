@@ -128,6 +128,19 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveNoAttribute());
 ```
 
+## toNotHaveAttribute()
+
+Opposite of [toHaveAttribute()](#tohaveattribute). Fails if the resource carries the given
+attribute; one violation is reported per occurrence. To forbid any attribute, use
+[toHaveNoAttribute()](#tohavenoattribute).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src')
+  ->should(fn(Expr $expr) => $expr->toNotHaveAttribute(Deprecated::class));
+```
+
 ## toHaveOnlyAttribute()
 
 ```php
