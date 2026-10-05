@@ -11,4 +11,6 @@ interface NameAssertInterface
     public function toNotHavePrefix(string $prefix, string $message = ''): self;
 
     public function toHaveSuffix(string $suffix, string $message = ''): self;
+
+    public function toNotHaveSuffix(string $suffix, string $message = ''): self;
 }

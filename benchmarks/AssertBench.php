@@ -54,6 +54,7 @@ use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
 use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
 use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
 use StructuraPhp\Structura\Asserts\ToNotHavePrefix;
+use StructuraPhp\Structura\Asserts\ToNotHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToNotImplement;
 use StructuraPhp\Structura\Asserts\ToNotUseInclude;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
@@ -242,6 +243,7 @@ final class AssertBench
             ),
             'toNotHaveMethod' => new ToNotHaveMethod('__invoke'),
             'toNotHavePrefix' => new ToNotHavePrefix('Order'),
+            'toNotHaveSuffix' => new ToNotHaveSuffix('Controller'),
             'toNotImplement' => new ToNotImplement(ControllerInterface::class),
             'toNotUseInclude' => new ToNotUseInclude(),
             'toNotUseTrait' => new ToNotUseTrait(),

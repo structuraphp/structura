@@ -14,23 +14,12 @@ $this
 Opposite of [toHavePrefix()](#tohaveprefix). Fails if the short class name starts with the given
 prefix; anonymous classes always pass.
 
-::: warning
-The check is a plain string comparison: `toNotHavePrefix('I')` also rejects `Invoice` or `Image`.
-Prefer a distinctive prefix.
-:::
-
 ```php
 $this
   ->allClasses()
   ->fromDir('src')
   ->should(fn(Expr $expr) => $expr->toNotHavePrefix('Abstract'));
 ```
-
-::: details Violation message
-```
-Resource name AbstractFoo must not start with Abstract
-```
-:::
 
 ## toHaveSuffix()
 
@@ -39,5 +28,17 @@ $this
   ->allClasses()
   ->fromRaw('<?php class FooExemple {}')
   ->should(fn(Expr $expr) => $expr->toHaveSuffix('Exemple'));
+```
+
+## toNotHaveSuffix()
+
+Opposite of [toHaveSuffix()](#tohavesuffix). Fails if the short class name ends with the given
+suffix; anonymous classes always pass.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Contracts')
+  ->should(fn(Expr $expr) => $expr->toNotHaveSuffix('Interface'));
 ```
 
