@@ -12,5 +12,7 @@ interface MethodAssertInterface
 
     public function toHaveConstructor(string $message = ''): self;
 
+    public function toNotHaveConstructor(string $message = ''): self;
+
     public function toHaveDestructor(string $message = ''): self;
 }

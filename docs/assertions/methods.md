@@ -31,6 +31,18 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveConstructor());
 ```
 
+## toNotHaveConstructor()
+
+Opposite of [toHaveConstructor()](#tohaveconstructor). Shortcut for
+[toNotHaveMethod('__construct')](#tonothavemethod).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Enum')
+  ->should(fn(Expr $expr) => $expr->toNotHaveConstructor());
+```
+
 ## toHaveDestructor()
 
 ```php

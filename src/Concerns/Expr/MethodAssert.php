@@ -28,6 +28,11 @@ trait MethodAssert
         return $this->toHaveMethod('__construct', $message);
     }
 
+    public function toNotHaveConstructor(string $message = ''): self
+    {
+        return $this->toNotHaveMethod('__construct', $message);
+    }
+
     public function toHaveDestructor(string $message = ''): self
     {
         return $this->toHaveMethod('__destruct', $message);
