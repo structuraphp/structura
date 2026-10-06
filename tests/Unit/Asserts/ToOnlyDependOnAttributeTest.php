@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
+
+use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use SensitiveParameter;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnAttribute;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+
+#[CoversClass(ToOnlyDependOnAttribute::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnAttribute')]
+final class ToOnlyDependOnAttributeTest extends TestCase
+{
+    use ArchitectureAsserts;
+
+    #[DataProvider('getClassLikeWithInheritance')]
+    public function testToExtend(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnAttribute(
+                        names: SensitiveParameter::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'to only depend on attribute <promote>SensitiveParameter, Dependencies\Acme\.*</promote>',
+        );
+    }
+
+    public static function getClassLikeWithInheritance(): Generator
+    {
+        yield 'without attribute' => ['<?php class Foo {}'];
+
+        yield 'without attribute and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php #[\SensitiveParameter] class Foo {}'];
+
+        yield 'with pattern' => ['<?php #[\Dependencies\Acme\Foo] class Foo {}'];
+
+        yield 'with name and pattern' => [
+            '<?php #[\Dependencies\Acme\Foo] #[\SensitiveParameter] class Foo {}',
+        ];
+    }
+
+    #[DataProvider('getClassLikeWithoutInheritance')]
+    public function testShouldFailToExtendsWithInterface(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnAttribute(
+                        names: SensitiveParameter::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
+                SensitiveParameter::class,
+                'Dependencies\Acme\.*',
+                'BadAttribute',
+            ),
+        );
+    }
+
+    public static function getClassLikeWithoutInheritance(): Generator
+    {
+        yield 'with bad attribut' => ['<?php #[\BadAttribute] class Foo {}'];
+
+        yield 'with bad attribut and good pattern' => ['<?php #[\BadAttribute] #[\Dependencies\Acme\Foo] class Foo {}'];
+
+        yield 'with bad name and good name' => [
+            '<?php #[\BadAttribute] #[\SensitiveParameter] class Foo {}',
+        ];
+    }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php #[\BadAttribute1] #[\BadAttribute2] class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnAttribute(
+                        names: SensitiveParameter::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
+                    SensitiveParameter::class,
+                    'Dependencies\Acme\.*',
+                    'BadAttribute1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use attributes from these namespaces %s, %s but uses attributes <fire>%s</fire>',
+                    SensitiveParameter::class,
+                    'Dependencies\Acme\.*',
+                    'BadAttribute2',
+                ),
+            ],
+        );
+    }
+}

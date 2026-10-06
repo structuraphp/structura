@@ -6,10 +6,12 @@ namespace StructuraPhp\Structura\Tests\Helper;
 
 use PHPUnit\Framework\Assert;
 use StructuraPhp\Structura\Builder\AllClasses;
+use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Builder\RuleBuilder;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Services\ExecuteService;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 trait ArchitectureAsserts
 {
@@ -36,8 +38,15 @@ trait ArchitectureAsserts
         RuleBuilder $ruleBuilder,
         string $message,
     ): void {
-        $executeService = new ExecuteService($ruleBuilder->getRuleObject());
-        $assert = $executeService->assert()->getAssertValueObject();
+        $dispatcher = new EventDispatcher();
+
+        $builder = new AssertBuilder();
+        $dispatcher->addSubscriber($builder);
+
+        $executeService = new ExecuteService($dispatcher, $ruleBuilder->getRuleObject());
+        $executeService->assert();
+
+        $assert = $builder->getAssertValueObject();
 
         foreach ($assert->pass as $key => $value) {
             Assert::assertTrue(
@@ -57,8 +66,15 @@ trait ArchitectureAsserts
         array|string $message,
         array|int $line = 1,
     ): void {
-        $executeService = new ExecuteService($ruleBuilder->getRuleObject());
-        $assert = $executeService->assert()->getAssertValueObject();
+        $dispatcher = new EventDispatcher();
+
+        $builder = new AssertBuilder();
+        $dispatcher->addSubscriber($builder);
+
+        $executeService = new ExecuteService($dispatcher, $ruleBuilder->getRuleObject());
+        $executeService->assert();
+
+        $assert = $builder->getAssertValueObject();
 
         foreach ($assert->pass as $key => $value) {
             Assert::assertFalse((bool) $value);

@@ -11,6 +11,20 @@ $this
   );
 ```
 
+## toNotBeAbstract()
+
+Opposite of [toBeAbstract()](#tobeabstract). Interfaces, traits, enums and anonymous classes always pass:
+only an `abstract class` is a violation.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Controller')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeAbstract(),
+  );
+```
+
 ## toBeAnonymousClasses()
 
 A PHP script is considered an anonymous class **only** if it explicitly returns the anonymous class using a `return`
@@ -79,6 +93,20 @@ $this
   );
 ```
 
+## toNotBeFinal()
+
+Opposite of [toBeFinal()](#tobefinal). Interfaces, traits, enums and anonymous classes always pass:
+only a `final class` is a violation. Useful for base classes meant to be extended.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Base')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeFinal(),
+  );
+```
+
 ## toBeInterfaces()
 
 ```php
@@ -98,6 +126,20 @@ $this
   ->fromRaw('<?php class Foo { public function __invoke() {} }')
   ->should(
     static fn (Expr $assert): Expr => $assert->toBeInvokable(),
+  );
+```
+
+## toNotBeInvokable()
+
+Opposite of [toBeInvokable()](#tobeinvokable). Shortcut for `toNotHaveMethod('__invoke')`:
+fails if the resource declares an `__invoke()` method.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(
+    static fn (Expr $assert): Expr => $assert->toNotBeInvokable(),
   );
 ```
 
@@ -123,7 +165,7 @@ $this
   );
 ```
 
-## toBeAttribute()
+## toBeAttributes()
 
 Must be:
 
@@ -136,6 +178,6 @@ $this
   ->allClasses()
   ->fromRaw('<?php #[\Attribute(\Attribute::TARGET_CLASS_CONSTANT)] class Foo {}')
   ->should(
-    static fn (Expr $assert): Expr => $assert->toBeAttribute(\Attribute::TARGET_CLASS_CONSTANT),
+    static fn (Expr $assert): Expr => $assert->toBeAttributes(\Attribute::TARGET_CLASS_CONSTANT),
   );
 ```

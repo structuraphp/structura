@@ -17,7 +17,7 @@ trait Pipe
      */
     private function pipe(callable ...$stages): callable
     {
-        return fn ($input) => array_reduce(
+        return fn ($input): mixed => array_reduce(
             $stages,
             static fn ($input, callable $next): mixed => $next($input),
             $input,

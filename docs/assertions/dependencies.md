@@ -1,6 +1,6 @@
 # 🔗 Dependency Assertions
 
-## dependsOnlyOn()
+## toOnlyDependOn()
 
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
 
@@ -8,14 +8,14 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOn(
+    ->toOnlyDependOn(
         names: [ArrayAccess::class, /* ... */],
         patterns: ['App\Dto.+', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnAttribut()
+## toOnlyDependOnAttribute()
 
 If you use the rule [toHaveAttribute()](/assertions/relations#tohaveattribute), they are included by default in the
 permitted dependencies.
@@ -24,14 +24,14 @@ permitted dependencies.
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnAttribut(
+    ->toOnlyDependOnAttribute(
         names: [\Attribute::class, /* ... */],
         patterns: ['Attributes\Custom.+', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnImplementation()
+## toOnlyDependOnImplementation()
 
 If you use the rules [toImplement()](/assertions/relations#toimplement)
 and [toOnlyImplement()](/assertions/relations#toonlyimplement), they are included by default in the permitted
@@ -41,14 +41,14 @@ dependencies.
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnImplementation(
+    ->toOnlyDependOnImplementation(
         names: [\ArrayAccess::class, /* ... */],
         patterns: ['Contracts\Dto.+', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnInheritance()
+## toOnlyDependOnInheritance()
 
 If you use the rule [toExtend()](/assertions/relations#toextend), they are included by default in the permitted
 dependencies.
@@ -57,14 +57,14 @@ dependencies.
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnInheritance(
+    ->toOnlyDependOnInheritance(
         names: [Controller::class, /* ... */],
         patterns: ['Controllers\Admin.+', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnUseTrait()
+## toOnlyDependOnUseTrait()
 
 If you use the rules [toUseTrait()](/assertions/relations#tousetrait)
 and [toOnlyUseTrait()](/assertions/relations#toonlyusetrait), they are included by default in the permitted
@@ -74,14 +74,14 @@ dependencies.
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnUseTrait(
+    ->toOnlyDependOnUseTrait(
         names: [\HasFactor::class, /* ... */],
         patterns: ['Concerns\Models.+', /* ... */],
     )
   );
 ```
 
-## toNotDependsOn()
+## toNotDependOn()
 
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
 
@@ -89,14 +89,14 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->toNotDependsOn(
+    ->toNotDependOn(
         names: [ArrayAccess::class, /* ... */],
         patterns: ['App\Dto.+', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnFunction()
+## toOnlyDependOnFunction()
 
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
 
@@ -104,14 +104,14 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnFunction(
+    ->toOnlyDependOnFunction(
         names: ['strtolower', /* ... */],
         patterns: ['array_.+', /* ... */],
     )
   );
 ```
 
-## toNotDependsOnFunction()
+## toNotDependOnFunction()
 
 Prohibit the use of specific functions.
 You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.syntax.php) to select dependencies.
@@ -120,14 +120,14 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->toNotDependsOnFunction(
+    ->toNotDependOnFunction(
         names: ['goto', /* ... */],
         patterns: ['.+exec', /* ... */],
     )
   );
 ```
 
-## dependsOnlyOnPhpDoc()
+## toOnlyDependOnPhpDoc()
 
 Verifies that all class references appearing in phpDoc annotations (`@param`, `@return`, `@var`, `@throws`, etc.)
 belong only to the authorised namespaces.
@@ -138,7 +138,7 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->dependsOnlyOnPhpDoc(
+    ->toOnlyDependOnPhpDoc(
         names: [\ArrayAccess::class, /* ... */],
         patterns: ['App\Dto.+', /* ... */],
     )
@@ -147,10 +147,10 @@ $this
 
 **Violation message:**
 ```
-Resource <class> must depends only on these phpDoc namespaces <authorised> but depends <forbidden>
+Resource <class> must only depend on these phpDoc namespaces <authorised> but depends on <forbidden>
 ```
 
-## toNotDependsOnPhpDoc()
+## toNotDependOnPhpDoc()
 
 Prohibit the use of specific class references inside phpDoc annotations.
 
@@ -160,7 +160,7 @@ You can use [regexes](https://www.php.net/manual/en/reference.pcre.pattern.synta
 $this
   ->allClasses()
   ->should(fn(Expr $expr) => $expr
-    ->toNotDependsOnPhpDoc(
+    ->toNotDependOnPhpDoc(
         names: [LegacyClass::class, /* ... */],
         patterns: ['Legacy\\.+', /* ... */],
     )
@@ -169,7 +169,7 @@ $this
 
 **Violation message:**
 ```
-Resource <class> must not depends on these phpDoc namespaces <forbidden> but depends on <found>
+Resource <class> must not depend on these phpDoc namespaces <forbidden> but depends on <found>
 ```
 
 

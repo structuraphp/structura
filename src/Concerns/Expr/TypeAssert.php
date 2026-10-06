@@ -8,7 +8,7 @@ use Attribute;
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToBeAbstract;
 use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
-use StructuraPhp\Structura\Asserts\ToBeAttribute;
+use StructuraPhp\Structura\Asserts\ToBeAttributes;
 use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
 use StructuraPhp\Structura\Asserts\ToBeClasses;
 use StructuraPhp\Structura\Asserts\ToBeEnums;
@@ -16,6 +16,8 @@ use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
 use StructuraPhp\Structura\Asserts\ToBeReadonly;
 use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Asserts\ToNotBeAbstract;
+use StructuraPhp\Structura\Asserts\ToNotBeFinal;
 use StructuraPhp\Structura\Enums\ScalarType;
 
 /**
@@ -26,6 +28,11 @@ trait TypeAssert
     public function toBeAbstract(string $message = ''): self
     {
         return $this->addExpr(new ToBeAbstract($message));
+    }
+
+    public function toNotBeAbstract(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotBeAbstract($message));
     }
 
     public function toBeAnonymousClasses(string $message = ''): self
@@ -53,6 +60,11 @@ trait TypeAssert
         return $this->addExpr(new ToBeFinal($message));
     }
 
+    public function toNotBeFinal(string $message = ''): self
+    {
+        return $this->addExpr(new ToNotBeFinal($message));
+    }
+
     public function toBeInterfaces(string $message = ''): self
     {
         return $this->addExpr(new ToBeInterfaces($message));
@@ -61,6 +73,11 @@ trait TypeAssert
     public function toBeInvokable(string $message = ''): self
     {
         return $this->toHaveMethod('__invoke', $message);
+    }
+
+    public function toNotBeInvokable(string $message = ''): self
+    {
+        return $this->toNotHaveMethod('__invoke', $message);
     }
 
     public function toBeReadonly(string $message = ''): self
@@ -73,8 +90,8 @@ trait TypeAssert
         return $this->addExpr(new ToBeTraits($message));
     }
 
-    public function toBeAttribute(int $flag = Attribute::TARGET_ALL, string $message = ''): self
+    public function toBeAttributes(int $flag = Attribute::TARGET_ALL, string $message = ''): self
     {
-        return $this->addExpr(new ToBeAttribute($flag, $message));
+        return $this->addExpr(new ToBeAttributes($flag, $message));
     }
 }

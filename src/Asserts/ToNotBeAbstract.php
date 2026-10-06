@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Asserts;
+
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\FlagType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
+
+final readonly class ToNotBeAbstract implements ExprInterface
+{
+    public function __construct(
+        private string $message = '',
+    ) {}
+
+    public function __toString(): string
+    {
+        return 'to not be abstract';
+    }
+
+    public function assert(ClassDescription $class): bool
+    {
+        return $class->classType !== ClassType::Class_
+            || ($class->flags & FlagType::ModifierAbstract->value) === 0;
+    }
+
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
+    {
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not be an abstract class',
+                    $class->getResourceName(),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            ),
+        ];
+    }
+}

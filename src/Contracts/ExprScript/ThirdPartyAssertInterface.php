@@ -10,7 +10,11 @@ interface ThirdPartyAssertInterface
 {
     public function toUseStrictTypes(string $message = ''): self;
 
-    public function toUseDeclare(string $key, string $value, string $message = ''): self;
+    public function toUseDeclare(
+        string $key,
+        string $value,
+        string $message = '',
+    ): self;
 
     public function toUseInclude(
         IncludeType $includeType,
@@ -25,6 +29,8 @@ interface ThirdPartyAssertInterface
     public function toNotHaveAnonymousClass(string $message = ''): self;
 
     public function toHaveFilePermission(string $expectedPermission, string $message = ''): self;
+
+    public function toNotHaveFilePermission(string $forbiddenPermission, string $message = ''): self;
 
     public function toReturnArray(string $message = ''): self;
 }

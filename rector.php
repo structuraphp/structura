@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\CodeQuality\Rector\Concat\DirnameDirConcatStringToDirectStringPathRector;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\SetList;
@@ -9,9 +10,16 @@ use Rector\ValueObject\PhpVersion;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
+        __DIR__ . '/benchmarks',
         __DIR__ . '/bin',
         __DIR__ . '/src',
         __DIR__ . '/tests',
+    ]);
+
+    // frozen benchmark corpus: never refactored, it would invalidate the baselines
+    $rectorConfig->skip([
+        __DIR__ . '/benchmarks/Fixture',
+        DirnameDirConcatStringToDirectStringPathRector::class,
     ]);
 
     $rectorConfig->phpVersion(PhpVersion::PHP_82);
@@ -24,7 +32,7 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::EARLY_RETURN,
         SetList::TYPE_DECLARATION,
         SetList::INSTANCEOF,
-        PHPUnitSetList::PHPUNIT_120,
+        PHPUnitSetList::COMPOSER_BASED,
     ]);
 
     $rectorConfig->phpstanConfig(__DIR__ . '/phpstan.neon.dist');

@@ -12,6 +12,9 @@ use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Asserts\ToNotExtend;
+use StructuraPhp\Structura\Asserts\ToNotHaveAttribute;
+use StructuraPhp\Structura\Asserts\ToNotImplement;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
@@ -30,9 +33,14 @@ trait RelationAssert
         return $this->addExpr(new ToExtend($names, $message));
     }
 
-    public function toExtendsNothing(string $message = ''): self
+    public function toExtendNothing(string $message = ''): self
     {
         return $this->addExpr(new ToExtendNothing($message));
+    }
+
+    public function toNotExtend(array|string $names, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotExtend($names, $message));
     }
 
     public function toImplement(array|string $names, string $message = ''): self
@@ -45,6 +53,11 @@ trait RelationAssert
     public function toImplementNothing(string $message = ''): self
     {
         return $this->addExpr(new ToImplementNothing($message));
+    }
+
+    public function toNotImplement(array|string $names, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotImplement($names, $message));
     }
 
     public function toOnlyImplement(string $name, string $message = ''): self
@@ -83,6 +96,11 @@ trait RelationAssert
     public function toHaveNoAttribute(string $message = ''): self
     {
         return $this->addExpr(new ToHaveNoAttribute($message));
+    }
+
+    public function toNotHaveAttribute(string $name, string $message = ''): self
+    {
+        return $this->addExpr(new ToNotHaveAttribute($name, $message));
     }
 
     public function toHaveOnlyAttribute(string $name, string $message = ''): self

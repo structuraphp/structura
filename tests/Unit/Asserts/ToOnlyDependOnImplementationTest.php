@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
+
+use ArrayAccess;
+use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnImplementation;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+
+#[CoversClass(ToOnlyDependOnImplementation::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnImplementation')]
+final class ToOnlyDependOnImplementationTest extends TestCase
+{
+    use ArchitectureAsserts;
+
+    #[DataProvider('getClassLikeWithInheritance')]
+    public function testToExtend(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnImplementation(
+                        names: ArrayAccess::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            'to only depend on implementation <promote>ArrayAccess, Dependencies\Acme\.*</promote>',
+        );
+    }
+
+    public static function getClassLikeWithInheritance(): Generator
+    {
+        yield 'without implements' => ['<?php class Foo {}'];
+
+        yield 'without implements and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php class Foo implements \ArrayAccess {}'];
+
+        yield 'with pattern' => ['<?php class Foo implements \Dependencies\Acme\Foo {}'];
+
+        yield 'with name and pattern' => [
+            '<?php class Foo implements \ArrayAccess, \Dependencies\Acme\Foo {}',
+        ];
+    }
+
+    #[DataProvider('getClassLikeWithoutInheritance')]
+    public function testShouldFailToExtendsWithInterface(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnImplementation(
+                        names: ArrayAccess::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
+                ArrayAccess::class,
+                'Dependencies\Acme\.*',
+                'BadImplements',
+            ),
+        );
+    }
+
+    public static function getClassLikeWithoutInheritance(): Generator
+    {
+        yield 'with bad implements' => ['<?php class Foo implements \BadImplements {}'];
+
+        yield 'with bad implements and good pattern' => ['<?php class Foo implements \BadImplements, \Dependencies\Acme\Foo {}'];
+
+        yield 'with bad name and good name' => [
+            '<?php class Foo implements \BadImplements, \ArrayAccess {}',
+        ];
+    }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo implements \BadImplements1, \BadImplements2 {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnImplementation(
+                        names: ArrayAccess::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Dependencies\Acme\.*',
+                    'BadImplements1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only implement interfaces from these namespaces %s, %s but implements <fire>%s</fire>',
+                    ArrayAccess::class,
+                    'Dependencies\Acme\.*',
+                    'BadImplements2',
+                ),
+            ],
+        );
+    }
+}

@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToOnlyUseTrait::class)]
-#[CoversMethod(Expr::class, 'toOnlyUseTrait')]
+#[CoversMethod(RelationAssert::class, 'toOnlyUseTrait')]
 final class ToOnlyUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -73,7 +74,7 @@ final class ToOnlyUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote>',
+                'Resource <promote>%s</promote> must only use trait <promote>%s</promote>',
                 $exceptName,
                 HasFactory::class,
             ),
@@ -105,7 +106,7 @@ final class ToOnlyUseTraitTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> should only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                'Resource <promote>%s</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
                 $exceptName,
                 HasFactory::class,
                 'OtherTrait',
@@ -131,5 +132,35 @@ final class ToOnlyUseTraitTest extends TestCase
                 OtherTrait;
             }',
         ];
+    }
+
+    public function testShouldFailToOnlyUseWithTwoForbiddenTraits(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php class Foo { use \BadTraitOne; use \BadTraitTwo; }',
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyUseTrait(HasFactory::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'BadTraitOne',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use trait <promote>%s</promote> but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'BadTraitTwo',
+                ),
+            ],
+            [1, 1],
+        );
     }
 }

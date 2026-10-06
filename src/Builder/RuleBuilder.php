@@ -6,7 +6,7 @@ namespace StructuraPhp\Structura\Builder;
 
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Except;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use Symfony\Component\Finder\Finder;
 
 class RuleBuilder
@@ -75,9 +75,9 @@ class RuleBuilder
         return $this;
     }
 
-    public function getRuleObject(): RuleValuesObject
+    public function getRuleObject(): RuleValueObject
     {
-        return new RuleValuesObject(
+        return new RuleValueObject(
             raws: $this->raws,
             finder: $this->finder,
             that: $this->that,

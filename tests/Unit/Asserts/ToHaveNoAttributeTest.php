@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveNoAttribute::class)]
-#[CoversMethod(Expr::class, 'toHaveNoAttribute')]
+#[CoversMethod(RelationAssert::class, 'toHaveNoAttribute')]
 final class ToHaveNoAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -58,7 +59,7 @@ final class ToHaveNoAttributeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                'Resource <promote>%s</promote> must not have any attribute but has <fire>%s</fire>',
                 $exceptName,
                 'Attribute',
             ),
@@ -91,12 +92,12 @@ final class ToHaveNoAttributeTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not have any attribute but has <fire>%s</fire>',
                     $exceptName,
                     'Attribute',
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must not have attribute but has attribute <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not have any attribute but has <fire>%s</fire>',
                     $exceptName,
                     'Route',
                 ),

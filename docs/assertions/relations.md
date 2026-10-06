@@ -9,13 +9,32 @@ $this
   ->should(fn(Expr $expr) => $expr->toExtend(Exception::class));
 ```
 
-## toExtendsNothing()
+## toNotExtend()
+
+Opposite of [toExtend()](#toextend). Fails if the resource extends one of the given classes; one
+violation is reported per forbidden parent. To forbid any parent, use
+[toExtendNothing()](#toextendnothing).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(fn(Expr $expr) => $expr->toNotExtend(Model::class));
+```
+
+::: details Violation message
+```
+Resource Foo must not extend Model
+```
+:::
+
+## toExtendNothing()
 
 ```php
 $this
   ->allClasses()
   ->fromRaw('<?php class Foo {}')
-  ->should(fn(Expr $expr) => $expr->toExtendsNothing());
+  ->should(fn(Expr $expr) => $expr->toExtendNothing());
 ```
 
 ## toImplement()
@@ -26,6 +45,25 @@ $this
   ->fromRaw('<?php class Foo implements \ArrayAccess, \JsonSerializable {}')
   ->should(fn(Expr $expr) => $expr->toImplement(ArrayAccess::class));
 ```
+
+## toNotImplement()
+
+Opposite of [toImplement()](#toimplement). Fails if the resource implements one of the given
+interfaces; one violation is reported per forbidden interface. To forbid any interface, use
+[toImplementNothing()](#toimplementnothing).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain')
+  ->should(fn(Expr $expr) => $expr->toNotImplement(Serializable::class));
+```
+
+::: details Violation message
+```
+Resource Foo must not implement Serializable
+```
+:::
 
 ## toImplementNothing()
 
@@ -88,6 +126,19 @@ $this
   ->allClasses()
   ->fromRaw('<?php class Foo {}')
   ->should(fn(Expr $expr) => $expr->toHaveNoAttribute());
+```
+
+## toNotHaveAttribute()
+
+Opposite of [toHaveAttribute()](#tohaveattribute). Fails if the resource carries the given
+attribute; one violation is reported per occurrence. To forbid any attribute, use
+[toHaveNoAttribute()](#tohavenoattribute).
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src')
+  ->should(fn(Expr $expr) => $expr->toNotHaveAttribute(Deprecated::class));
 ```
 
 ## toHaveOnlyAttribute()

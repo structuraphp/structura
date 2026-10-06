@@ -57,13 +57,13 @@ class ErrorPrettyJsonFormatterTest extends TestCase
         self::assertIsArray($decoded['warnings']);
         self::assertCount(1, $decoded['warnings']);
         self::assertIsArray($decoded['warnings'][0]);
-        self::assertSame('Foo', $decoded['warnings'][0]['rule']);
+        self::assertSame('to be readonly', $decoded['warnings'][0]['rule']);
 
         self::assertArrayHasKey('notices', $decoded);
         self::assertIsArray($decoded['notices']);
         self::assertCount(1, $decoded['notices']);
         self::assertIsArray($decoded['notices'][0]);
-        self::assertSame('to be final', $decoded['notices'][0]['rule']);
+        self::assertSame('error notice', $decoded['notices'][0]['rule']);
         self::assertSame('error notice', $decoded['notices'][0]['message']);
     }
 
@@ -79,9 +79,6 @@ class ErrorPrettyJsonFormatterTest extends TestCase
             countViolation: 0,
             countWarning: 0,
             countNotice: 0,
-            violationsByTests: [],
-            warningsByTests: [],
-            noticeByTests: [],
             analyseTestValueObjects: [],
         );
 

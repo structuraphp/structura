@@ -34,7 +34,7 @@ final readonly class ToNotHaveAnonymousClass implements ExprScriptInterface
         foreach ($description->anonymousClasses as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not have anonymous class',
+                    'Resource <promote>%s</promote> must not have an anonymous class',
                     $description->getResourceName(),
                 ),
                 $this::class,

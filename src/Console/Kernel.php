@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Console;
 
-use StructuraPhp\Structura\Console\Commands\AnalyzeCommand;
+use StructuraPhp\Structura\Console\Commands\AnalyseCommand;
 use StructuraPhp\Structura\Console\Commands\InitCommand;
 use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
 use StructuraPhp\Structura\Console\Enums\CommonOption;
@@ -19,12 +19,12 @@ class Kernel extends Application
         parent::__construct('Structura');
 
         $this->addCommands([
-            new AnalyzeCommand(),
+            new AnalyseCommand(),
             new InitCommand(),
             new MakeTestCommand(),
         ]);
 
-        $this->setDefaultCommand(AnalyzeCommand::NAME);
+        $this->setDefaultCommand(AnalyseCommand::NAME);
     }
 
     protected function getDefaultInputDefinition(): InputDefinition

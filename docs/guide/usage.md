@@ -56,7 +56,7 @@ final class TestDto extends TestBuilder
             ->toBeFinal()
             ->toBeReadonly()
             ->toHaveSuffix('Dto')
-            ->toExtendsNothing()
+            ->toExtendNothing()
             ->toHaveMethod('fromArray')
             ->toImplement(\JsonSerializable::class);
     }
@@ -202,7 +202,7 @@ List of architecture rules (required):
     ->toBeFinal()
     ->toBeReadonly()
     ->toHaveSuffix('Dto')
-    ->toExtendsNothing()
+    ->toExtendNothing()
     ->toHaveMethod('fromArray')
     ->toImplement(\JsonSerializable::class)
 )

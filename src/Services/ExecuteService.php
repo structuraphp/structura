@@ -6,42 +6,65 @@ namespace StructuraPhp\Structura\Services;
 
 use Generator;
 use InvalidArgumentException;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use StructuraPhp\Structura\AbstractExpr;
-use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Contracts\PathResolverAwareInterface;
 use StructuraPhp\Structura\Enums\ExprType;
-use StructuraPhp\Structura\Exception\Console\NoticeException;
+use StructuraPhp\Structura\Events\ExceptEvent;
+use StructuraPhp\Structura\Events\NoticeEvent;
+use StructuraPhp\Structura\Events\PassEvent;
+use StructuraPhp\Structura\Events\ViolationEvent;
+use StructuraPhp\Structura\Events\WarningEvent;
+use StructuraPhp\Structura\Exception\Console\EventException;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
-use StructuraPhp\Structura\ValueObjects\RuleValuesObject;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
+use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Symfony\Component\Finder\Finder;
 
 final class ExecuteService
 {
-    private AssertBuilder $builder;
-
     private ParseService $parseService;
 
-    public function __construct(private readonly RuleValuesObject $ruleValuesObject)
-    {
+    public function __construct(
+        private readonly EventDispatcherInterface $dispatcher,
+        private readonly RuleValueObject $ruleValueObject,
+        private readonly ?SourceTestValueObject $sourceTest = null,
+    ) {
         $this->parseService = new ParseService(
-            $this->ruleValuesObject->getDescriptorType(),
+            $this->ruleValueObject->getDescriptorType(),
         );
-        $this->builder = new AssertBuilder();
     }
 
-    public function assert(): AssertBuilder
+    public function assert(): void
     {
-        $description = $this->ruleValuesObject->finder instanceof Finder
-            ? $this->parseService->parse($this->ruleValuesObject->finder)
+        $description = $this->ruleValueObject->finder instanceof Finder
+            ? $this->parseService->parse($this->ruleValueObject->finder)
             : $this->parseRawFiles();
 
-        $this->execute($description, $this->ruleValuesObject->should);
+        if ($this->isEmptySource()) {
+            $message = sprintf(
+                'No PHP files found for test "<promote>%s</promote>". Assertions were skipped.',
+                $this->sourceTest->testClassname ?? '',
+            );
 
-        return $this->builder;
+            $this->dispatcher->dispatch(new NoticeEvent(
+                key: $message,
+                message: $message,
+            ));
+        }
+
+        $this->execute($description, $this->ruleValueObject->should);
+    }
+
+    private function isEmptySource(): bool
+    {
+        return $this->ruleValueObject->finder instanceof Finder
+            && $this->ruleValueObject->finder->count() === 0;
     }
 
     /**
@@ -49,7 +72,7 @@ final class ExecuteService
      */
     private function parseRawFiles(): Generator
     {
-        foreach ($this->ruleValuesObject->raws as $path => $raw) {
+        foreach ($this->ruleValueObject->raws as $path => $raw) {
             yield from $this->parseService->parseRaw($raw, $path);
         }
     }
@@ -61,7 +84,7 @@ final class ExecuteService
     {
         /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
-            $this->builder->addPass((string) $assert);
+            $this->dispatcher->dispatch(new PassEvent((string) $assert));
         }
 
         $this->injectPathResolvers($assertions);
@@ -75,19 +98,19 @@ final class ExecuteService
 
                 $this->executeShould($assertions, $description);
             }
-        } catch (NoticeException $noticeException) {
-            $this->builder->addNotice($noticeException->getMessage(), $noticeException->getMessage());
+        } catch (EventException $eventException) {
+            $this->dispatcher->dispatch($eventException->event);
         }
     }
 
     private function executeThat(ClassDescription|ScriptDescription $description): bool
     {
-        if (!$this->ruleValuesObject->that instanceof Expr) {
+        if (!$this->ruleValueObject->that instanceof Expr) {
             return false;
         }
 
         /** @var AbstractExpr|ExprInterface $assert */
-        foreach ($this->ruleValuesObject->that as $assert) {
+        foreach ($this->ruleValueObject->that as $assert) {
             $predicate = $this->predicate($assert, $description);
 
             if (!$predicate) {
@@ -107,22 +130,36 @@ final class ExecuteService
             $predicate = $this->predicate($assert, $description);
 
             $isExcept = $this
-                ->ruleValuesObject
+                ->ruleValueObject
                 ->except
                 ?->isExcept($description, $assert::class);
 
             if ($isExcept === true) {
                 if (!$predicate) {
-                    $this->builder->addExcept($description->namespace, (string) $assert);
+                    $this->dispatcher->dispatch(new ExceptEvent(
+                        key: $description->getResourceName(),
+                        message: (string) $assert,
+                    ));
 
                     continue;
                 }
 
-                $this->builder->addWarning((string) $assert, $assert, $description);
+                $this->dispatcher->dispatch(new WarningEvent(
+                    key: (string) $assert,
+                    message: sprintf(
+                        '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
+                        $assert::class,
+                        $description->getResourceName(),
+                    ),
+                    isAssertionWarning: true,
+                ));
             }
 
             if (!$predicate) {
-                $this->builder->addViolation((string) $assert, $assert, $description);
+                $this->dispatcher->dispatch(new ViolationEvent(
+                    key: (string) $assert,
+                    violations: $this->computeViolations($assert, $description),
+                ));
             }
         }
     }
@@ -138,18 +175,29 @@ final class ExecuteService
             $predicate = $this->predicate($assert, $description);
 
             $isExcept = $this
-                ->ruleValuesObject
+                ->ruleValueObject
                 ->except
                 ?->isExcept($description, $assert::class);
 
             if ($isExcept === true) {
                 if (!$predicate) {
-                    $this->builder->addExcept($description->namespace, (string) $assert);
+                    $this->dispatcher->dispatch(new ExceptEvent(
+                        key: $description->getResourceName(),
+                        message: (string) $assert,
+                    ));
 
                     continue;
                 }
 
-                $this->builder->addWarning((string) $assert, $assert, $description);
+                $this->dispatcher->dispatch(new WarningEvent(
+                    key: (string) $assert,
+                    message: sprintf(
+                        '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
+                        $assert::class,
+                        $description->getResourceName(),
+                    ),
+                    isAssertionWarning: true,
+                ));
             }
 
             if ($key === 0) {
@@ -191,19 +239,41 @@ final class ExecuteService
     }
 
     /**
+     * @return array<int, ViolationValueObject>
+     */
+    private function computeViolations(
+        AbstractExpr|ExprInterface $assert,
+        ClassDescription|ScriptDescription $description,
+    ): array {
+        if ($assert instanceof ExprScriptInterface) {
+            return $assert->getViolation($description);
+        }
+
+        if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
+            return $assert->getViolation($description);
+        }
+
+        if ($assert instanceof AbstractExpr) {
+            return $assert->getViolations($description);
+        }
+
+        throw new InvalidArgumentException();
+    }
+
+    /**
      * Injects path resolvers into all PathResolverAwareInterface assertions,
      * recursively descending into nested AbstractExpr groups (or/and).
      */
     private function injectPathResolvers(AbstractExpr $assertions): void
     {
-        if ($this->ruleValuesObject->pathResolvers === []) {
+        if ($this->ruleValueObject->pathResolvers === []) {
             return;
         }
 
         /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             if ($assert instanceof PathResolverAwareInterface) {
-                $assert->setPathResolvers($this->ruleValuesObject->pathResolvers);
+                $assert->setPathResolvers($this->ruleValueObject->pathResolvers);
             }
 
             if ($assert instanceof AbstractExpr) {

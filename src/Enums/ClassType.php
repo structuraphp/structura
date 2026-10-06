@@ -16,7 +16,7 @@ enum ClassType
     {
         return match ($this) {
             self::AnonymousClass_ => 'an anonymous class',
-            self::Class_ => 'an class',
+            self::Class_ => 'a class',
             self::Enum_ => 'an enum',
             self::Interface_ => 'an interface',
             self::Trait_ => 'a trait',

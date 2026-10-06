@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Tests\Unit\Asserts;
+
+use Generator;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\DependencyAssert;
+use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
+use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+
+#[CoversClass(ToOnlyDependOnUseTrait::class)]
+#[CoversMethod(DependencyAssert::class, 'toOnlyDependOnUseTrait')]
+final class ToOnlyDependOnUseTraitTest extends TestCase
+{
+    use ArchitectureAsserts;
+
+    #[DataProvider('getClassLikeWithTrait')]
+    public function testToExtend(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesPass(
+            $rules,
+            sprintf(
+                'to only depend on trait <promote>%s, %s</promote>',
+                HasFactory::class,
+                'Dependencies\Acme\.*',
+            ),
+        );
+    }
+
+    public static function getClassLikeWithTrait(): Generator
+    {
+        yield 'without trait' => ['<?php class Foo {}'];
+
+        yield 'without trait and another dependency' => ['<?php use \ArrayAccess; class Foo {}'];
+
+        yield 'with name' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
+
+        yield 'with pattern' => ['<?php class Foo { use \Dependencies\Acme\Foo; }'];
+
+        yield 'with name and pattern' => ['<?php class Foo { use \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory, \Dependencies\Acme\Foo; }'];
+    }
+
+    #[DataProvider('getClassLikeWithoutTrait')]
+    public function testShouldFailToExtendsWithInterface(string $raw): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
+                HasFactory::class,
+                'Dependencies\Acme\.*',
+                'BadTrait',
+            ),
+        );
+    }
+
+    public static function getClassLikeWithoutTrait(): Generator
+    {
+        yield 'with bad trait' => ['<?php class Foo { use \BadTrait; }'];
+
+        yield 'with bad trait and good pattern' => ['<?php class Foo { use \BadTrait, \Dependencies\Acme\Foo; }'];
+
+        yield 'with bad name and good name' => ['<?php class Foo { use \BadTrait, \StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory; }'];
+    }
+
+    public function testShouldFailWithMultipleViolations(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { use \BadTrait1, \BadTrait2; }')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toOnlyDependOnUseTrait(
+                        names: HasFactory::class,
+                        patterns: 'Dependencies\Acme\.*',
+                    ),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait1',
+                ),
+                \sprintf(
+                    'Resource <promote>Foo</promote> must only use traits from these namespaces %s, %s but uses <fire>%s</fire>',
+                    HasFactory::class,
+                    'Dependencies\Acme\.*',
+                    'BadTrait2',
+                ),
+            ],
+        );
+    }
+}

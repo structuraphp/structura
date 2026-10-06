@@ -1,0 +1,27 @@
+name: PHP Tests
+
+on: [push]
+
+jobs:
+  mutation:
+    name: Mutation tests
+    runs-on: ubuntu-latest
+    env:
+      php-version: '8.5'
+
+    steps:
+      - name: Pull repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+          coverage: pcov
+
+      - name: Install dependencies with Composer
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Mutation tests
+        run: vendor/bin/infection --threads=$(nproc) --max-timeouts=0

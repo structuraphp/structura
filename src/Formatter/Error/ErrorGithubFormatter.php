@@ -17,17 +17,12 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
 {
     public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
     {
-        /** @var ViolationsByTest $violationsByTests */
-        $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);
-
-        /** @var WarningByTest $warningsByTests */
-        $warningsByTests = array_merge(...$analyseValueObject->warningsByTests);
-
-        /** @var array<string, string> $noticesByTests */
-        $noticesByTests = array_merge(...$analyseValueObject->noticeByTests);
+        $violations = $analyseValueObject->getViolations();
+        $warnings = $analyseValueObject->getWarnings();
+        $notices = $analyseValueObject->getNotices();
 
         /** @var array<int, ViolationValueObject> $violationsByTest */
-        foreach ($violationsByTests as $violationsByTest) {
+        foreach ($violations as $violationsByTest) {
             foreach ($violationsByTest as $violation) {
                 $metas = [
                     'file' => $violation->pathname,
@@ -47,7 +42,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
         }
 
         /** @var array<int, string> $warningsByTest */
-        foreach ($warningsByTests as $warningsByTest) {
+        foreach ($warnings as $warningsByTest) {
             foreach ($warningsByTest as $warning) {
                 $message = $this->formatMessage($warning);
 
@@ -57,7 +52,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
             }
         }
 
-        foreach ($noticesByTests as $notice) {
+        foreach ($notices as $notice) {
             $message = $this->formatMessage($notice);
 
             $line = sprintf('::notice ::%s', $message);
@@ -65,7 +60,7 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
             $output->writeln($line, OutputInterface::OUTPUT_RAW);
         }
 
-        return $violationsByTests === []
+        return $violations === []
             ? self::SUCCESS
             : self::ERROR;
     }

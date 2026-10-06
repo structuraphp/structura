@@ -1,0 +1,56 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Asserts;
+
+use StructuraPhp\Structura\Concerns\Arr;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
+
+final readonly class ToNotBeInNamespaces implements ExprInterface
+{
+    use Arr;
+
+    /**
+     * @param array<int,string> $patterns
+     */
+    public function __construct(
+        private array $patterns,
+        private string $message = '',
+    ) {}
+
+    public function __toString(): string
+    {
+        return sprintf(
+            'to not be in one of the namespaces <promote>%s</promote>',
+            $this->implodeMore($this->patterns),
+        );
+    }
+
+    public function assert(ClassDescription $class): bool
+    {
+        return !$class->hasNamespaceByPatterns($this->patterns);
+    }
+
+    /**
+     * @return array<int, ViolationValueObject>
+     */
+    public function getViolation(ClassDescription $class): array
+    {
+        return [
+            new ViolationValueObject(
+                \sprintf(
+                    'Resource <promote>%s</promote> must not be in one of the namespaces <promote>%s</promote>',
+                    $class->getResourceName(),
+                    implode(', ', $this->patterns),
+                ),
+                $this::class,
+                $class->lines,
+                $class->getFileBasename(),
+                $this->message,
+            ),
+        ];
+    }
+}

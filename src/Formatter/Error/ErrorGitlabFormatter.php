@@ -12,8 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @see https://docs.gitlab.com/ci/testing/code_quality#code-quality-report-format
  *
- * @phpstan-import-type ViolationsByTest from AnalyseValueObject
- *
  * @phpstan-type GitlabIssue array{
  *     description: string,
  *     fingerprint: string,
@@ -28,8 +26,7 @@ class ErrorGitlabFormatter implements ErrorFormatterInterface
 {
     public function formatErrors(AnalyseValueObject $analyseValueObject, OutputInterface $output): int
     {
-        /** @var ViolationsByTest $violationsByTests */
-        $violationsByTests = array_merge(...$analyseValueObject->violationsByTests);
+        $violationsByTests = $analyseValueObject->getViolations();
 
         /** @var list<GitlabIssue> $issues */
         $issues = [];

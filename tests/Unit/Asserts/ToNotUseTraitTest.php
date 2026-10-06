@@ -10,11 +10,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotUseTrait::class)]
-#[CoversMethod(Expr::class, 'toNotUseTrait')]
+#[CoversMethod(RelationAssert::class, 'toNotUseTrait')]
 final class ToNotUseTraitTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -95,5 +96,30 @@ final class ToNotUseTraitTest extends TestCase
              }',
             'Foo',
         ];
+    }
+
+    public function testShouldFailWithMultipleTraits(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php class Foo {
+                    use \TraitOne;
+                    use \TraitTwo;
+                }',
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotUseTrait(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                'Resource <promote>Foo</promote> must not use a trait but uses <fire>TraitOne</fire>',
+                'Resource <promote>Foo</promote> must not use a trait but uses <fire>TraitTwo</fire>',
+            ],
+            [2, 3],
+        );
     }
 }

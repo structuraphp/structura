@@ -27,9 +27,6 @@ class ErrorNoneFormatterTest extends TestCase
             countViolation: 0,
             countWarning: 0,
             countNotice: 0,
-            violationsByTests: [],
-            warningsByTests: [],
-            noticeByTests: [],
             analyseTestValueObjects: [],
         );
 
@@ -52,9 +49,6 @@ class ErrorNoneFormatterTest extends TestCase
             countViolation: 3,
             countWarning: 1,
             countNotice: 1,
-            violationsByTests: [],
-            warningsByTests: [],
-            noticeByTests: [],
             analyseTestValueObjects: [],
         );
 

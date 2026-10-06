@@ -29,14 +29,14 @@ final class TestController extends TestBuilder
                     ->toHaveSuffix('Controller')
                     ->toExtend(ControllerBase::class)
                     ->toHaveConstructor()
-                    ->dependsOnlyOn([
+                    ->toOnlyDependOn([
                         RoleController::class,
                         User::class,
                     ])
-                    ->dependsOnlyOnUseTrait([
+                    ->toOnlyDependOnUseTrait([
                         HasFactory::class,
                     ])
-                    ->dependsOnlyOnImplementation([
+                    ->toOnlyDependOnImplementation([
                         ShouldQueueInterface::class,
                     ]),
             );

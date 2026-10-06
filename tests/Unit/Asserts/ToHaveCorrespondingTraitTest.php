@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
+use StructuraPhp\Structura\Concerns\Expr\CorrespondingAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\Tests\Unit\Concerns\ArrTest;
@@ -16,7 +17,7 @@ use StructuraPhp\Structura\Tests\Unit\Concerns\Console\VersionTest;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorrespondingTrait::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingTrait')]
+#[CoversMethod(CorrespondingAssert::class, 'toHaveCorrespondingTrait')]
 class ToHaveCorrespondingTraitTest extends TestCase
 {
     use ArchitectureAsserts;

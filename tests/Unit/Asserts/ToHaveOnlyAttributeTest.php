@@ -11,11 +11,12 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveOnlyAttribute::class)]
-#[CoversMethod(Expr::class, 'toHaveNoAttribute')]
+#[CoversMethod(RelationAssert::class, 'toHaveNoAttribute')]
 final class ToHaveOnlyAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -80,6 +81,26 @@ final class ToHaveOnlyAttributeTest extends TestCase
         yield 'trait' => ['<?php trait Foo {}'];
     }
 
+    public function testShouldFailWhenOneWrongAttribute(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php #[SomeOtherAttr] class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveOnlyAttribute(Attribute::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            \sprintf(
+                'Resource <promote>Foo</promote> must have only attribute <promote>%s</promote> but has attribute <fire>%s</fire>',
+                Attribute::class,
+                'SomeOtherAttr',
+            ),
+        );
+    }
+
     public function testShouldFailToHaveMultipleAttributes(): void
     {
         $rules = $this
@@ -101,8 +122,8 @@ final class ToHaveOnlyAttributeTest extends TestCase
         self::assertRulesViolation(
             $rules,
             [
-                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error1</fire>',
-                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but attribute <fire>Error2</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but has attribute <fire>Error1</fire>',
+                'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but has attribute <fire>Error2</fire>',
             ],
             [3, 4],
         );

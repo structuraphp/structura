@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeInterfaces;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeInterfaces::class)]
-#[CoversMethod(Expr::class, 'toBeInterfaces')]
+#[CoversMethod(TypeAssert::class, 'toBeInterfaces')]
 final class ToBeInterfacesTest extends TestCase
 {
     use ArchitectureAsserts;

@@ -1,0 +1,298 @@
+<?php
+
+declare(strict_types=1);
+
+namespace StructuraPhp\Structura\Benchmarks;
+
+use Attribute;
+use DateTimeImmutable;
+use Generator;
+use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Iterations;
+use PhpBench\Attributes\ParamProviders;
+use PhpBench\Attributes\Revs;
+use PhpBench\Attributes\Warmup;
+use StructuraPhp\Structura\Asserts\ToBeAbstract;
+use StructuraPhp\Structura\Asserts\ToBeAnonymousClasses;
+use StructuraPhp\Structura\Asserts\ToBeAttributes;
+use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
+use StructuraPhp\Structura\Asserts\ToBeClasses;
+use StructuraPhp\Structura\Asserts\ToBeEnums;
+use StructuraPhp\Structura\Asserts\ToBeFinal;
+use StructuraPhp\Structura\Asserts\ToBeInNamespaces;
+use StructuraPhp\Structura\Asserts\ToBeInterfaces;
+use StructuraPhp\Structura\Asserts\ToBeReadonly;
+use StructuraPhp\Structura\Asserts\ToBeTraits;
+use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Asserts\ToExtendNothing;
+use StructuraPhp\Structura\Asserts\ToHaveAnonymousClass;
+use StructuraPhp\Structura\Asserts\ToHaveAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveConstant;
+use StructuraPhp\Structura\Asserts\ToHaveCorresponding;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingClass;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingEnum;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingFile;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
+use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
+use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
+use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveNoStaticMethod;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPrivateProperties;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicMethods;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicProperties;
+use StructuraPhp\Structura\Asserts\ToHavePrefix;
+use StructuraPhp\Structura\Asserts\ToHaveSuffix;
+use StructuraPhp\Structura\Asserts\ToImplement;
+use StructuraPhp\Structura\Asserts\ToImplementNothing;
+use StructuraPhp\Structura\Asserts\ToNotBeAbstract;
+use StructuraPhp\Structura\Asserts\ToNotBeFinal;
+use StructuraPhp\Structura\Asserts\ToNotBeInNamespaces;
+use StructuraPhp\Structura\Asserts\ToNotDependOn;
+use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToNotExtend;
+use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
+use StructuraPhp\Structura\Asserts\ToNotHaveAttribute;
+use StructuraPhp\Structura\Asserts\ToNotHaveConstant;
+use StructuraPhp\Structura\Asserts\ToNotHaveCorrespondingFile;
+use StructuraPhp\Structura\Asserts\ToNotHaveFilePermission;
+use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
+use StructuraPhp\Structura\Asserts\ToNotHavePrefix;
+use StructuraPhp\Structura\Asserts\ToNotHaveSuffix;
+use StructuraPhp\Structura\Asserts\ToNotImplement;
+use StructuraPhp\Structura\Asserts\ToNotUseInclude;
+use StructuraPhp\Structura\Asserts\ToNotUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnAttribute;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnImplementation;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnInheritance;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnUseTrait;
+use StructuraPhp\Structura\Asserts\ToOnlyImplement;
+use StructuraPhp\Structura\Asserts\ToOnlyUseTrait;
+use StructuraPhp\Structura\Asserts\ToReturnArray;
+use StructuraPhp\Structura\Asserts\ToUseDeclare;
+use StructuraPhp\Structura\Asserts\ToUseInclude;
+use StructuraPhp\Structura\Asserts\ToUseTrait;
+use StructuraPhp\Structura\Benchmarks\Fixture\Attributes\Cached;
+use StructuraPhp\Structura\Benchmarks\Fixture\Attributes\Route;
+use StructuraPhp\Structura\Benchmarks\Fixture\Concerns\HasTimestamps;
+use StructuraPhp\Structura\Benchmarks\Fixture\Concerns\HasUuid;
+use StructuraPhp\Structura\Benchmarks\Fixture\Contracts\ControllerInterface;
+use StructuraPhp\Structura\Benchmarks\Fixture\Contracts\JobInterface;
+use StructuraPhp\Structura\Benchmarks\Fixture\Models\Model;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Contracts\PathResolverAwareInterface;
+use StructuraPhp\Structura\Enums\IncludeType;
+use StructuraPhp\Structura\Enums\ScalarType;
+use StructuraPhp\Structura\Enums\VisibilityType;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+
+/**
+ * Measures the cost of a single assertion over the whole corpus.
+ *
+ * The corpus is parsed once per iteration in the before method, so only
+ * ExprInterface::assert() is timed, never the parser.
+ */
+#[BeforeMethods('setUp')]
+#[Warmup(1)]
+#[Revs(20)]
+#[Iterations(5)]
+final class AssertBench
+{
+    private const FIXTURE_NAMESPACE = 'StructuraPhp\Structura\Benchmarks\Fixture\\';
+
+    /** @var array<int, ClassDescription> */
+    private array $descriptions = [];
+
+    private ExprInterface|ExprScriptInterface $assert;
+
+    /**
+     * @param array{assert: string} $params
+     */
+    public function setUp(array $params): void
+    {
+        $this->descriptions = Corpus::classDescriptions();
+        $this->assert = self::asserts()[$params['assert']];
+
+        if ($this->assert instanceof PathResolverAwareInterface) {
+            $this->assert->setPathResolvers(['base_path' => Corpus::dir()]);
+        }
+    }
+
+    #[ParamProviders('provideAsserts')]
+    public function benchAssert(): void
+    {
+        foreach ($this->descriptions as $description) {
+            $this->assert->assert($description);
+        }
+    }
+
+    #[ParamProviders('provideAsserts')]
+    public function benchViolation(): void
+    {
+        foreach ($this->descriptions as $description) {
+            if ($this->assert->assert($description)) {
+                continue;
+            }
+
+            $this->assert->getViolation($description);
+        }
+    }
+
+    /**
+     * @return Generator<string, array{assert: string}>
+     */
+    public static function provideAsserts(): Generator
+    {
+        foreach (array_keys(self::asserts()) as $name) {
+            yield $name => ['assert' => $name];
+        }
+    }
+
+    /**
+     * Every assertion of src/Asserts, built with realistic arguments.
+     *
+     * @return array<string, ExprInterface|ExprScriptInterface>
+     */
+    private static function asserts(): array
+    {
+        return [
+            'toBeAbstract' => new ToBeAbstract(),
+            'toBeAnonymousClasses' => new ToBeAnonymousClasses(),
+            'toBeAttributes' => new ToBeAttributes(
+                Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE,
+            ),
+            'toBeBackedEnums' => new ToBeBackedEnums(ScalarType::String),
+            'toBeClasses' => new ToBeClasses(),
+            'toBeEnums' => new ToBeEnums(),
+            'toBeFinal' => new ToBeFinal(),
+            'toBeInNamespaces' => new ToBeInNamespaces(
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toBeInterfaces' => new ToBeInterfaces(),
+            'toBeReadonly' => new ToBeReadonly(),
+            'toBeTraits' => new ToBeTraits(),
+            'toExtend' => new ToExtend(Model::class),
+            'toExtendNothing' => new ToExtendNothing(),
+            'toHaveAnonymousClass' => new ToHaveAnonymousClass(),
+            'toHaveAttribute' => new ToHaveAttribute(Cached::class),
+            'toHaveConstant' => new ToHaveConstant(VisibilityType::Private),
+            'toHaveCorresponding' => new ToHaveCorresponding(
+                static fn (ClassDescription $classDescription): string => $classDescription
+                    ->getResourceName(),
+            ),
+            'toHaveCorrespondingClass' => new ToHaveCorrespondingClass(
+                static fn (ClassDescription $classDescription): string => str_replace(
+                    'Dto',
+                    'Models',
+                    $classDescription->getResourceName(),
+                ),
+            ),
+            'toHaveCorrespondingEnum' => new ToHaveCorrespondingEnum(
+                static fn (ClassDescription $classDescription): string => str_replace(
+                    'Models',
+                    'Enums',
+                    $classDescription->getResourceName(),
+                ),
+            ),
+            'toHaveCorrespondingFile' => new ToHaveCorrespondingFile(
+                static fn (ClassDescription $classDescription): string => $classDescription
+                    ->getFileBasename(),
+            ),
+            'toHaveCorrespondingInterface' => new ToHaveCorrespondingInterface(
+                static fn (ClassDescription $classDescription): string => $classDescription
+                    ->getResourceName() . 'Interface',
+            ),
+            'toHaveCorrespondingTrait' => new ToHaveCorrespondingTrait(
+                static fn (ClassDescription $classDescription): string => str_replace(
+                    'Models',
+                    'Concerns',
+                    $classDescription->getResourceName(),
+                ),
+            ),
+            'toHaveFilePermission' => new ToHaveFilePermission('0644'),
+            'toHaveMethod' => new ToHaveMethod('__invoke'),
+            'toHaveNoAttribute' => new ToHaveNoAttribute(),
+            'toHaveNoStaticMethod' => new ToHaveNoStaticMethod(),
+            'toHaveOnlyAttribute' => new ToHaveOnlyAttribute(Cached::class),
+            'toHaveOnlyPrivateProperties' => new ToHaveOnlyPrivateProperties(),
+            'toHaveOnlyPublicMethods' => new ToHaveOnlyPublicMethods(['__construct', '__invoke']),
+            'toHaveOnlyPublicProperties' => new ToHaveOnlyPublicProperties(),
+            'toHavePrefix' => new ToHavePrefix('Order'),
+            'toHaveSuffix' => new ToHaveSuffix('Controller'),
+            'toImplement' => new ToImplement(ControllerInterface::class),
+            'toImplementNothing' => new ToImplementNothing(''),
+            'toNotBeAbstract' => new ToNotBeAbstract(),
+            'toNotBeFinal' => new ToNotBeFinal(),
+            'toNotBeInNamespaces' => new ToNotBeInNamespaces(
+                ['App\.+', 'Illuminate\.+'],
+            ),
+            'toNotDependOn' => new ToNotDependOn(
+                [DateTimeImmutable::class],
+                ['Symfony\.+'],
+            ),
+            'toNotDependOnFunction' => new ToNotDependOnFunction(
+                ['dd', 'dump', 'var_dump'],
+                ['eval.*'],
+            ),
+            'toNotDependOnPhpDoc' => new ToNotDependOnPhpDoc(
+                [],
+                ['Illuminate\.+'],
+            ),
+            'toNotExtend' => new ToNotExtend(Model::class),
+            'toNotHaveAnonymousClass' => new ToNotHaveAnonymousClass(),
+            'toNotHaveAttribute' => new ToNotHaveAttribute(Cached::class),
+            'toNotHaveConstant' => new ToNotHaveConstant(VisibilityType::Public),
+            'toNotHaveCorrespondingFile' => new ToNotHaveCorrespondingFile(
+                static fn (ClassDescription $classDescription): string => $classDescription
+                    ->getFileBasename() . '.bak',
+            ),
+            'toNotHaveFilePermission' => new ToNotHaveFilePermission('0777'),
+            'toNotHaveMethod' => new ToNotHaveMethod('__invoke'),
+            'toNotHavePrefix' => new ToNotHavePrefix('Order'),
+            'toNotHaveSuffix' => new ToNotHaveSuffix('Controller'),
+            'toNotImplement' => new ToNotImplement(ControllerInterface::class),
+            'toNotUseInclude' => new ToNotUseInclude(),
+            'toNotUseTrait' => new ToNotUseTrait(),
+            'toOnlyDependOn' => new ToOnlyDependOn(
+                [DateTimeImmutable::class],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnAttribute' => new ToOnlyDependOnAttribute(
+                [Cached::class, Route::class],
+                ['Attribute'],
+            ),
+            'toOnlyDependOnFunction' => new ToOnlyDependOnFunction(
+                ['sprintf', 'count'],
+                ['array_.+', 'str.+'],
+            ),
+            'toOnlyDependOnImplementation' => new ToOnlyDependOnImplementation(
+                [],
+                [self::FIXTURE_NAMESPACE . 'Contracts\.+'],
+            ),
+            'toOnlyDependOnInheritance' => new ToOnlyDependOnInheritance(
+                ['RuntimeException', 'DomainException', 'InvalidArgumentException'],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnPhpDoc' => new ToOnlyDependOnPhpDoc(
+                [],
+                [self::FIXTURE_NAMESPACE . '.+'],
+            ),
+            'toOnlyDependOnUseTrait' => new ToOnlyDependOnUseTrait(
+                [],
+                [self::FIXTURE_NAMESPACE . 'Concerns\.+'],
+            ),
+            'toOnlyImplement' => new ToOnlyImplement(JobInterface::class),
+            'toOnlyUseTrait' => new ToOnlyUseTrait(HasUuid::class),
+            'toReturnArray' => new ToReturnArray(),
+            'toUseDeclare' => new ToUseDeclare('strict_types', '1'),
+            'toUseInclude' => new ToUseInclude(IncludeType::RequireOnce),
+            'toUseTrait' => new ToUseTrait(HasTimestamps::class),
+        ];
+    }
+}

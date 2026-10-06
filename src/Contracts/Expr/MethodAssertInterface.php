@@ -8,7 +8,22 @@ interface MethodAssertInterface
 {
     public function toHaveMethod(string $name, string $message = ''): self;
 
+    public function toNotHaveMethod(string $name, string $message = ''): self;
+
+    public function toHaveNoStaticMethod(string $message = ''): self;
+
+    public function toHaveOnlyPrivateProperties(string $message = ''): self;
+
+    /**
+     * @param array<int, string> $names
+     */
+    public function toHaveOnlyPublicMethods(array $names, string $message = ''): self;
+
+    public function toHaveOnlyPublicProperties(string $message = ''): self;
+
     public function toHaveConstructor(string $message = ''): self;
+
+    public function toNotHaveConstructor(string $message = ''): self;
 
     public function toHaveDestructor(string $message = ''): self;
 }

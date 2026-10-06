@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Builder;
 
-use InvalidArgumentException;
-use StructuraPhp\Structura\AbstractExpr;
-use StructuraPhp\Structura\Contracts\ExprInterface;
-use StructuraPhp\Structura\Contracts\ExprScriptInterface;
+use StructuraPhp\Structura\Contracts\AnalysisListenerInterface;
+use StructuraPhp\Structura\Events\ExceptEvent;
+use StructuraPhp\Structura\Events\NoticeEvent;
+use StructuraPhp\Structura\Events\PassEvent;
+use StructuraPhp\Structura\Events\ViolationEvent;
+use StructuraPhp\Structura\Events\WarningEvent;
 use StructuraPhp\Structura\ValueObjects\AssertValueObject;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
-use StructuraPhp\Structura\ValueObjects\ScriptDescription;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * @phpstan-import-type ViolationsByTest from \StructuraPhp\Structura\ValueObjects\AnalyseValueObject
  */
-class AssertBuilder
+class AssertBuilder implements AnalysisListenerInterface, EventSubscriberInterface
 {
     /** @var array<string,int> */
     private array $pass = [];
@@ -24,93 +25,59 @@ class AssertBuilder
     private array $violations = [];
 
     /** @var array<string, array<int, string>> */
-    private array $exceptions = [];
-
-    /** @var array<string, array<int, string>> */
     private array $warnings = [];
 
     /** @var array<string, string> */
     private array $notices = [];
 
-    public function addExcept(?string $classname, string $expr): self
+    /** @var array<string, array<int, string>> */
+    private array $exceptions = [];
+
+    public static function getSubscribedEvents(): array
     {
-        if (\is_string($classname)) {
-            $this->exceptions[$classname][] = $expr;
-        }
-
-        return $this;
+        return [
+            PassEvent::class => 'onPass',
+            ViolationEvent::class => 'onViolation',
+            WarningEvent::class => 'onWarning',
+            NoticeEvent::class => 'onNotice',
+            ExceptEvent::class => 'onExcept',
+        ];
     }
 
-    public function addPass(string $key): self
+    public function onPass(PassEvent $event): void
     {
-        $this->pass[$key] = 1;
-
-        return $this;
+        $this->pass[$event->key] = 1;
     }
 
-    public function addViolation(
-        string $key,
-        AbstractExpr|ExprInterface $assert,
-        ClassDescription|ScriptDescription $description,
-    ): self {
-        $this->pass[$key] = 0;
-        if ($assert instanceof ExprScriptInterface) {
-            $this->violations[$key] = array_merge(
-                $this->violations[$key] ?? [],
-                $assert->getViolation($description),
-            );
-
-            return $this;
-        }
-
-        if ($assert instanceof ExprInterface && $description instanceof ClassDescription) {
-            $this->violations[$key] = array_merge(
-                $this->violations[$key] ?? [],
-                $assert->getViolation($description),
-            );
-
-            return $this;
-        }
-
-        if ($assert instanceof AbstractExpr) {
-            $this->violations[$key] = array_merge(
-                $this->violations[$key] ?? [],
-                $assert->getViolations($description),
-            );
-
-            return $this;
-        }
-
-        throw new InvalidArgumentException();
+    public function onViolation(ViolationEvent $event): void
+    {
+        $this->pass[$event->key] = 0;
+        $this->violations[$event->key] = array_merge(
+            $this->violations[$event->key] ?? [],
+            $event->violations,
+        );
     }
 
-    public function addWarning(
-        string $key,
-        AbstractExpr|ExprInterface $assert,
-        ClassDescription|ScriptDescription $description,
-    ): self {
-        $this->pass[$key] = 2;
-        $classname = $description->namespace;
-
-        if (\is_string($classname)) {
-            $this->warnings[$key][] = sprintf(
-                '<promote>%s</promote> exception for <promote>%s</promote> is no longer applicable',
-                $assert::class,
-                $classname,
-            );
+    public function onWarning(WarningEvent $event): void
+    {
+        if ($event->isAssertionWarning) {
+            $this->pass[$event->key] = 2;
         }
 
-        return $this;
+        $this->warnings[$event->key][] = $event->message;
     }
 
-    public function addNotice(
-        string $key,
-        string $message,
-    ): self {
-        $this->pass[$key] = 3;
-        $this->notices[$key] = $message;
+    public function onNotice(NoticeEvent $event): void
+    {
+        $this->pass[$event->key] = 3;
+        $this->notices[$event->key] = $event->message;
+    }
 
-        return $this;
+    public function onExcept(ExceptEvent $event): void
+    {
+        if (\is_string($event->key)) {
+            $this->exceptions[$event->key][] = $event->message;
+        }
     }
 
     public function getAssertValueObject(): AssertValueObject

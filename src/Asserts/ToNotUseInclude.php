@@ -9,7 +9,7 @@ use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-final class ToNotUseInclude implements ExprScriptInterface
+final readonly class ToNotUseInclude implements ExprScriptInterface
 {
     public function __construct(
         private string $message = '',
@@ -40,7 +40,7 @@ final class ToNotUseInclude implements ExprScriptInterface
         foreach ($description->includes as $include) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not use <promote>include* or require*</promote> but use <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not use <promote>include* or require*</promote> but uses <fire>%s</fire>',
                     $description->getResourceName(),
                     IncludeType::from($include->type)->label(),
                 ),

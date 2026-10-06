@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToUseInclude;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Expr;
@@ -18,7 +19,7 @@ use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToUseInclude::class)]
-#[CoversMethod(Expr::class, 'toUseInclude')]
+#[CoversMethod(ThirdPartyAssert::class, 'toUseInclude')]
 final class ToUseIncludeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -430,6 +431,15 @@ final class ToUseIncludeTest extends TestCase
             '/var/www',
             'Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>*/vendor/autoload.php</fire>',
         ];
+
+        yield 'fail second include after first matches pattern' => [
+            '<?php require "vendor/autoload.php"; require "other/path.php";',
+            IncludeType::Require,
+            'vendor/*',
+            'base_path',
+            '/var/www',
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>other/path.php</fire> which does not match pattern <promote>vendor/*</promote>',
+        ];
     }
 
     public function testAddPathResolverWithDirnameThrowsException(): void
@@ -438,5 +448,33 @@ final class ToUseIncludeTest extends TestCase
         $this->expectExceptionMessage('"dirname"');
 
         StructuraConfig::make()->addPathResolver('dirname', '/some/path');
+    }
+
+    public function testShouldFailWithMultipleWrongTypeIncludes(): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw('<?php include "foo.php"; include "bar.php";')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseInclude(IncludeType::Require),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                \sprintf(
+                    'Resource <promote>tmp/run_0.php</promote> must use <promote>%s</promote> but uses <fire>%s</fire>',
+                    IncludeType::Require->label(),
+                    IncludeType::Include->label(),
+                ),
+                \sprintf(
+                    'Resource <promote>tmp/run_0.php</promote> must use <promote>%s</promote> but uses <fire>%s</fire>',
+                    IncludeType::Require->label(),
+                    IncludeType::Include->label(),
+                ),
+            ],
+            [1, 1],
+        );
     }
 }

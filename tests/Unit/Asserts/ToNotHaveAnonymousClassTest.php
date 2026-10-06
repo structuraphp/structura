@@ -10,13 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToNotHaveAnonymousClass;
+use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToNotHaveAnonymousClass::class)]
-#[CoversMethod(Expr::class, 'toNotHaveAnonymousClass')]
-#[CoversMethod(ExprScript::class, 'toNotHaveAnonymousClass')]
+#[CoversMethod(ThirdPartyAssert::class, 'toNotHaveAnonymousClass')]
 final class ToNotHaveAnonymousClassTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -94,7 +94,7 @@ final class ToNotHaveAnonymousClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have anonymous class',
+                'Resource <promote>%s</promote> must not have an anonymous class',
                 $name,
             ),
             3,
@@ -141,11 +141,11 @@ final class ToNotHaveAnonymousClassTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must not have anonymous class',
+                    'Resource <promote>%s</promote> must not have an anonymous class',
                     $name,
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must not have anonymous class',
+                    'Resource <promote>%s</promote> must not have an anonymous class',
                     $name,
                 ),
             ],
@@ -200,8 +200,8 @@ final class ToNotHaveAnonymousClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             [
-                'Resource <promote>tmp/run_0.php</promote> must not have anonymous class',
-                'Resource <promote>tmp/run_0.php</promote> must not have anonymous class',
+                'Resource <promote>tmp/run_0.php</promote> must not have an anonymous class',
+                'Resource <promote>tmp/run_0.php</promote> must not have an anonymous class',
             ],
             $count,
         );

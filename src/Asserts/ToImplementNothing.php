@@ -11,7 +11,7 @@ use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 final readonly class ToImplementNothing implements ExprInterface
 {
     public function __construct(
-        public string $message,
+        private string $message = '',
     ) {}
 
     public function __toString(): string
@@ -33,7 +33,7 @@ final readonly class ToImplementNothing implements ExprInterface
         foreach ($class->interfaces ?? [] as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must not implement anything but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must not implement anything but implements <fire>%s</fire>',
                     $class->getResourceName(),
                     $violation,
                 ),

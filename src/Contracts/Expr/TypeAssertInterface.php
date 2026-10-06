@@ -11,6 +11,8 @@ interface TypeAssertInterface
 {
     public function toBeAbstract(string $message = ''): self;
 
+    public function toNotBeAbstract(string $message = ''): self;
+
     public function toBeAnonymousClasses(string $message = ''): self;
 
     public function toBeClasses(string $message = ''): self;
@@ -21,9 +23,13 @@ interface TypeAssertInterface
 
     public function toBeFinal(string $message = ''): self;
 
+    public function toNotBeFinal(string $message = ''): self;
+
     public function toBeInterfaces(string $message = ''): self;
 
     public function toBeInvokable(string $message = ''): self;
+
+    public function toNotBeInvokable(string $message = ''): self;
 
     public function toBeReadonly(string $message = ''): self;
 
@@ -32,5 +38,5 @@ interface TypeAssertInterface
     /**
      * @param int-mask-of<Attribute::IS_REPEATABLE|Attribute::TARGET_*> $flag
      */
-    public function toBeAttribute(int $flag = Attribute::TARGET_ALL, string $message = ''): self;
+    public function toBeAttributes(int $flag = Attribute::TARGET_ALL, string $message = ''): self;
 }

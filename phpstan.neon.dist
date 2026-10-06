@@ -8,8 +8,14 @@ parameters:
     level: max
 
     paths:
+        - benchmarks
         - bin
         - src
         - tests
+
+    excludePaths:
+        analyse:
+            # frozen benchmark corpus: never analysed, never rewritten
+            - benchmarks/Fixture
 
     tmpDir: build/phpStan

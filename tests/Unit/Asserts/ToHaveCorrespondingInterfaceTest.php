@@ -9,13 +9,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToHaveCorrespondingInterface;
+use StructuraPhp\Structura\Concerns\Expr\CorrespondingAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Enum\UserStatus;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
 #[CoversClass(ToHaveCorrespondingInterface::class)]
-#[CoversMethod(Expr::class, 'toHaveCorrespondingInterface')]
+#[CoversMethod(CorrespondingAssert::class, 'toHaveCorrespondingInterface')]
 class ToHaveCorrespondingInterfaceTest extends TestCase
 {
     use ArchitectureAsserts;

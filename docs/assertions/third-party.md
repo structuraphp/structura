@@ -67,7 +67,7 @@ $this
   ->should(fn(Expr $expr) => $expr->toUseDeclare('encoding', 'ISO-8859-1'));
 ```
 
-## toBeInOneOfTheNamespaces()
+## toBeInNamespaces()
 
 Allows you to specifically target classes contained in a namespace.
 ::: info
@@ -81,12 +81,12 @@ $this
   ->fromDir('tests')
   ->that(
     fn(Expr $expr) => $expr
-      ->toBeInOneOfTheNamespaces('Tests\Unit.+')
+      ->toBeInNamespaces('Tests\Unit.+')
   )
   ->should(fn(Expr $expr) => $expr /* our rules */);
 ```
 
-## notToBeInOneOfTheNamespaces()
+## toNotBeInNamespaces()
 
 Allows you to specifically target classes **not** contained in a namespace.
 ::: info
@@ -100,7 +100,7 @@ $this
   ->fromDir('tests')
   ->that(
     fn(Expr $expr) => $expr
-      ->notToBeInOneOfTheNamespaces('Tests\Unit.+')
+      ->toNotBeInNamespaces('Tests\Unit.+')
   )
   ->should(fn(Expr $expr) => $expr /* our rules */);
 ```
@@ -188,6 +188,20 @@ $this
     ->allScripts()
     ->fromDir('src')
     ->should(fn(ExprScript $expr) => $expr->toHaveFilePermission('0644'));
+```
+
+## toNotHaveFilePermission()
+
+Opposite of [toHaveFilePermission()](#tohavefilepermission). Fails if the file has the given Unix
+permissions, for instance to forbid world-writable files. A file that cannot be read passes.
+
+### Example with allScripts()
+
+```php
+$this
+    ->allScripts()
+    ->fromDir('src')
+    ->should(fn(ExprScript $expr) => $expr->toNotHaveFilePermission('0777'));
 ```
 
 ## toReturnArray()

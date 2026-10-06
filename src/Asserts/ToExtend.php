@@ -48,7 +48,7 @@ final readonly class ToExtend implements ExprInterface
         foreach ($violations as $violation) {
             $results[] = new ViolationValueObject(
                 \sprintf(
-                    'Resource <promote>%s</promote> must extend by <promote>%s</promote>',
+                    'Resource <promote>%s</promote> must extend <promote>%s</promote>',
                     $class->getResourceName(),
                     $violation,
                 ),

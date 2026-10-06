@@ -18,7 +18,7 @@ final readonly class ToNotHaveConstant implements ExprInterface
 
     public function __toString(): string
     {
-        return \sprintf('to not have <promote>%s</promote> constant', $this->visibility->value);
+        return \sprintf('to not have <promote>%s</promote> constant', $this->visibility->label());
     }
 
     public function assert(ClassDescription $class): bool
@@ -40,7 +40,7 @@ final readonly class ToNotHaveConstant implements ExprInterface
                 \sprintf(
                     'Resource <promote>%s</promote> must not have <promote>%s</promote> constant',
                     $class->getResourceName(),
-                    $this->visibility->value,
+                    $this->visibility->label(),
                 ),
                 $this::class,
                 $class->lines,

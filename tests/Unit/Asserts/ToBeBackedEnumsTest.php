@@ -10,12 +10,13 @@ use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Asserts\ToBeBackedEnums;
+use StructuraPhp\Structura\Concerns\Expr\TypeAssert;
 use StructuraPhp\Structura\Enums\ScalarType;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToBeBackedEnums::class)]
-#[CoversMethod(Expr::class, 'toBeBackedEnums')]
+#[CoversMethod(TypeAssert::class, 'toBeBackedEnums')]
 class ToBeBackedEnumsTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -33,7 +34,7 @@ class ToBeBackedEnumsTest extends TestCase
         self::assertRulesPass(
             $rules,
             sprintf(
-                'to be backed enums type of <promote>%s</promote>',
+                'to be backed enums of type <promote>%s</promote>',
                 $scalarType->value ?? 'int or string',
             ),
         );
@@ -76,7 +77,7 @@ class ToBeBackedEnumsTest extends TestCase
             );
 
         $messageViolation = \sprintf(
-            'Resource <promote>%s</promote> must be an enums type of <promote>%s</promote>',
+            'Resource <promote>%s</promote> must be a backed enum of type <promote>%s</promote>',
             $exceptName,
             $scalarType->value ?? 'int or string',
         );

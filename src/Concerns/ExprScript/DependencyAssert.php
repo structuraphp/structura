@@ -5,75 +5,75 @@ declare(strict_types=1);
 namespace StructuraPhp\Structura\Concerns\ExprScript;
 
 use StructuraPhp\Structura\AbstractExpr;
-use StructuraPhp\Structura\Asserts\DependsOnlyOn;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnFunction;
-use StructuraPhp\Structura\Asserts\DependsOnlyOnPhpDoc;
-use StructuraPhp\Structura\Asserts\ToNotDependsOn;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnFunction;
-use StructuraPhp\Structura\Asserts\ToNotDependsOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToNotDependOn;
+use StructuraPhp\Structura\Asserts\ToNotDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOn;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnFunction;
+use StructuraPhp\Structura\Asserts\ToOnlyDependOnPhpDoc;
 
 /**
  * @mixin AbstractExpr
  */
 trait DependencyAssert
 {
-    public function dependsOnlyOn(
+    public function toOnlyDependOn(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new DependsOnlyOn((array) $names, (array) $patterns, $message),
+            new ToOnlyDependOn((array) $names, (array) $patterns, $message),
         );
     }
 
-    public function dependsOnlyOnFunction(
+    public function toOnlyDependOnFunction(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new DependsOnlyOnFunction((array) $names, (array) $patterns, $message),
+            new ToOnlyDependOnFunction((array) $names, (array) $patterns, $message),
         );
     }
 
-    public function toNotDependsOnFunction(
+    public function toNotDependOnFunction(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new ToNotDependsOnFunction((array) $names, (array) $patterns, $message),
+            new ToNotDependOnFunction((array) $names, (array) $patterns, $message),
         );
     }
 
-    public function toNotDependsOn(
+    public function toNotDependOn(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new ToNotDependsOn((array) $names, (array) $patterns, $message),
+            new ToNotDependOn((array) $names, (array) $patterns, $message),
         );
     }
 
-    public function dependsOnlyOnPhpDoc(
+    public function toOnlyDependOnPhpDoc(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new DependsOnlyOnPhpDoc((array) $names, (array) $patterns, $message),
+            new ToOnlyDependOnPhpDoc((array) $names, (array) $patterns, $message),
         );
     }
 
-    public function toNotDependsOnPhpDoc(
+    public function toNotDependOnPhpDoc(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
     ): self {
         return $this->addExpr(
-            new ToNotDependsOnPhpDoc((array) $names, (array) $patterns, $message),
+            new ToNotDependOnPhpDoc((array) $names, (array) $patterns, $message),
         );
     }
 }

@@ -11,7 +11,12 @@ interface RelationAssertInterface
      */
     public function toExtend(array|string $names, string $message = ''): self;
 
-    public function toExtendsNothing(string $message = ''): self;
+    public function toExtendNothing(string $message = ''): self;
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     */
+    public function toNotExtend(array|string $names, string $message = ''): self;
 
     /**
      * @param array<int,class-string>|class-string $names
@@ -19,6 +24,11 @@ interface RelationAssertInterface
     public function toImplement(array|string $names, string $message = ''): self;
 
     public function toImplementNothing(string $message = ''): self;
+
+    /**
+     * @param array<int,class-string>|class-string $names
+     */
+    public function toNotImplement(array|string $names, string $message = ''): self;
 
     /**
      * @param class-string $name
@@ -43,6 +53,11 @@ interface RelationAssertInterface
     public function toHaveAttribute(string $name, string $message = ''): self;
 
     public function toHaveNoAttribute(string $message = ''): self;
+
+    /**
+     * @param class-string $name
+     */
+    public function toNotHaveAttribute(string $name, string $message = ''): self;
 
     /**
      * @param class-string $name

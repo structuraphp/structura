@@ -13,11 +13,12 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stringable;
 use StructuraPhp\Structura\Asserts\ToOnlyImplement;
+use StructuraPhp\Structura\Concerns\Expr\RelationAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToOnlyImplement::class)]
-#[CoversMethod(Expr::class, 'toOnlyImplement')]
+#[CoversMethod(RelationAssert::class, 'toOnlyImplement')]
 final class ToOnlyImplementTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -93,13 +94,13 @@ final class ToOnlyImplementTest extends TestCase
             $rules,
             [
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implements <fire>%s</fire>',
                     $exceptName,
                     Stringable::class,
                     Iterator::class,
                 ),
                 \sprintf(
-                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implement <fire>%s</fire>',
+                    'Resource <promote>%s</promote> must only implement <promote>%s</promote> but implements <fire>%s</fire>',
                     $exceptName,
                     Stringable::class,
                     ArrayAccess::class,

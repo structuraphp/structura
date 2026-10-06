@@ -10,7 +10,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function dependsOnlyOnAttribut(
+    public function toOnlyDependOnAttribute(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -20,7 +20,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function dependsOnlyOnImplementation(
+    public function toOnlyDependOnImplementation(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -30,7 +30,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function dependsOnlyOnInheritance(
+    public function toOnlyDependOnInheritance(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
@@ -40,17 +40,7 @@ interface DependencyAssertInterface
      * @param array<int,class-string>|class-string $names
      * @param array<int,string>|string $patterns regex patterns not to match class names against
      */
-    public function dependsOnlyOnUseTrait(
-        array|string $names = [],
-        array|string $patterns = [],
-        string $message = '',
-    ): self;
-
-    /**
-     * @param array<int,string>|string $names
-     * @param array<int,string>|string $patterns regex patterns to match class names against
-     */
-    public function dependsOnlyOnFunction(
+    public function toOnlyDependOnUseTrait(
         array|string $names = [],
         array|string $patterns = [],
         string $message = '',
