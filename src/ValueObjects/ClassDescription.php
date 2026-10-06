@@ -30,6 +30,7 @@ final class ClassDescription extends ScriptDescription
      * @param array<TraitUse> $traits
      * @param null|array<ClassMethod> $methods
      * @param array<ClassConst> $constants
+     * @param array<int, PropertyValueObject> $properties
      */
     public function __construct(
         ?string $namespace,
@@ -48,6 +49,7 @@ final class ClassDescription extends ScriptDescription
         public readonly ClassType $classType,
         public readonly ?array $methods,
         public readonly array $constants,
+        public readonly array $properties = [],
     ) {
         parent::__construct($namespace, $declare, $includes, $anonymousClasses, $rootReturn);
     }

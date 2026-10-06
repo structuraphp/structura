@@ -12,10 +12,14 @@ interface MethodAssertInterface
 
     public function toHaveNoStaticMethod(string $message = ''): self;
 
+    public function toHaveOnlyPrivateProperties(string $message = ''): self;
+
     /**
      * @param array<int, string> $names
      */
     public function toHaveOnlyPublicMethods(array $names, string $message = ''): self;
+
+    public function toHaveOnlyPublicProperties(string $message = ''): self;
 
     public function toHaveConstructor(string $message = ''): self;
 

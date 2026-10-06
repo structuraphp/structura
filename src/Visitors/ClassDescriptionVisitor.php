@@ -8,8 +8,10 @@ use InvalidArgumentException;
 use PhpParser\Node;
 use PhpParser\Node\AttributeGroup;
 use PhpParser\Node\Expr\Include_;
+use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
+use PhpParser\Node\Param;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassLike;
@@ -17,12 +19,15 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Declare_;
 use PhpParser\Node\Stmt\Enum_;
 use PhpParser\Node\Stmt\Interface_;
+use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeVisitorAbstract;
 use StructuraPhp\Structura\Enums\ClassType;
+use StructuraPhp\Structura\Enums\VisibilityType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\PropertyValueObject;
 
 final class ClassDescriptionVisitor extends NodeVisitorAbstract
 {
@@ -63,6 +68,9 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
     /** @var array<ClassConst> */
     private array $constants = [];
 
+    /** @var array<int, PropertyValueObject> */
+    private array $properties = [];
+
     private ?ClassDescription $class;
 
     private int $classDeep = 0;
@@ -87,6 +95,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
         $this->classDeep = 0;
         $this->classType = ClassType::Class_;
         $this->constants = [];
+        $this->properties = [];
         $this->declare = null;
         $this->extends = null;
         $this->flags = null;
@@ -145,6 +154,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 : null;
             $this->classType = $this->getClassType($node);
             $this->methods = $node->getMethods();
+            $this->properties = $this->getProperties($node);
 
             foreach ($node->stmts as $stmt) {
                 if ($stmt instanceof ClassConst) {
@@ -176,10 +186,68 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 classType: $this->classType,
                 methods: $this->methods,
                 constants: $this->constants,
+                properties: $this->properties,
             );
         }
 
         return null;
+    }
+
+    /**
+     * Declared properties, then properties promoted by the constructor.
+     *
+     * @return array<int, PropertyValueObject>
+     */
+    private function getProperties(ClassLike $node): array
+    {
+        $properties = [];
+
+        foreach ($node->getProperties() as $property) {
+            foreach ($property->props as $item) {
+                $properties[] = new PropertyValueObject(
+                    name: $item->name->toString(),
+                    visibility: $this->getVisibility($property),
+                    line: $item->getLine(),
+                    flags: $property->flags,
+                    attrGroups: $property->attrGroups,
+                );
+            }
+        }
+
+        foreach ($node->getMethods() as $method) {
+            if ($method->name->toLowerString() !== '__construct') {
+                continue;
+            }
+
+            foreach ($method->params as $param) {
+                if (
+                    !$param->isPromoted()
+                    || !$param->var instanceof Variable
+                    || !\is_string($param->var->name)
+                ) {
+                    continue;
+                }
+
+                $properties[] = new PropertyValueObject(
+                    name: $param->var->name,
+                    visibility: $this->getVisibility($param),
+                    line: $param->getLine(),
+                    flags: $param->flags,
+                    attrGroups: $param->attrGroups,
+                );
+            }
+        }
+
+        return $properties;
+    }
+
+    private function getVisibility(Param|Property $node): VisibilityType
+    {
+        return match (true) {
+            $node->isPrivate() => VisibilityType::Private,
+            $node->isProtected() => VisibilityType::Protected,
+            default => VisibilityType::Public,
+        };
     }
 
     private function getClassType(ClassLike $node): ClassType

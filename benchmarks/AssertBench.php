@@ -39,7 +39,9 @@ use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
 use StructuraPhp\Structura\Asserts\ToHaveNoStaticMethod;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPrivateProperties;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicMethods;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicProperties;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
@@ -218,7 +220,9 @@ final class AssertBench
             'toHaveNoAttribute' => new ToHaveNoAttribute(),
             'toHaveNoStaticMethod' => new ToHaveNoStaticMethod(),
             'toHaveOnlyAttribute' => new ToHaveOnlyAttribute(Cached::class),
+            'toHaveOnlyPrivateProperties' => new ToHaveOnlyPrivateProperties(),
             'toHaveOnlyPublicMethods' => new ToHaveOnlyPublicMethods(['__construct', '__invoke']),
+            'toHaveOnlyPublicProperties' => new ToHaveOnlyPublicProperties(),
             'toHavePrefix' => new ToHavePrefix('Order'),
             'toHaveSuffix' => new ToHaveSuffix('Controller'),
             'toImplement' => new ToImplement(ControllerInterface::class),

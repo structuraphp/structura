@@ -37,6 +37,18 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveNoStaticMethod());
 ```
 
+## toHaveOnlyPrivateProperties()
+
+Fails for every property that is not `private`: declared properties (static or not) and properties
+promoted by the constructor. One violation is reported per property, at its line.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain/*/Action')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyPrivateProperties());
+```
+
 ## toHaveOnlyPublicMethods()
 
 Fails for every public method whose name is not in the given list; private and protected methods are
@@ -49,6 +61,19 @@ $this
   ->allClasses()
   ->fromDir('src/Domain/*/Action')
   ->should(fn(Expr $expr) => $expr->toHaveOnlyPublicMethods(['__construct', '__invoke']));
+```
+
+## toHaveOnlyPublicProperties()
+
+Opposite constraint of [toHaveOnlyPrivateProperties()](#tohaveonlyprivateproperties): fails for every property
+that is not `public`, declared or promoted by the constructor. A promoted `readonly` property without visibility
+is public. Useful for DTOs built on `public readonly` properties.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Dto')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyPublicProperties());
 ```
 
 ## toHaveConstructor()
