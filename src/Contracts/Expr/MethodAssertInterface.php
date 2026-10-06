@@ -10,6 +10,11 @@ interface MethodAssertInterface
 
     public function toNotHaveMethod(string $name, string $message = ''): self;
 
+    /**
+     * @param array<int, string> $names
+     */
+    public function toHaveOnlyPublicMethods(array $names, string $message = ''): self;
+
     public function toHaveConstructor(string $message = ''): self;
 
     public function toNotHaveConstructor(string $message = ''): self;

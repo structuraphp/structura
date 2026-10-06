@@ -23,6 +23,20 @@ $this
   ->should(fn(Expr $expr) => $expr->toNotHaveMethod('__get'));
 ```
 
+## toHaveOnlyPublicMethods()
+
+Fails for every public method whose name is not in the given list; private and protected methods are
+always allowed. Method names are compared case-insensitively, as in PHP.
+
+Example: keep invokable classes focused: only `__construct()` and `__invoke()` are public.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain/*/Action')
+  ->should(fn(Expr $expr) => $expr->toHaveOnlyPublicMethods(['__construct', '__invoke']));
+```
+
 ## toHaveConstructor()
 
 ```php

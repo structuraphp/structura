@@ -38,6 +38,7 @@ use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicMethods;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
 use StructuraPhp\Structura\Asserts\ToHaveSuffix;
 use StructuraPhp\Structura\Asserts\ToImplement;
@@ -215,6 +216,7 @@ final class AssertBench
             'toHaveMethod' => new ToHaveMethod('__invoke'),
             'toHaveNoAttribute' => new ToHaveNoAttribute(),
             'toHaveOnlyAttribute' => new ToHaveOnlyAttribute(Cached::class),
+            'toHaveOnlyPublicMethods' => new ToHaveOnlyPublicMethods(['__construct', '__invoke']),
             'toHavePrefix' => new ToHavePrefix('Order'),
             'toHaveSuffix' => new ToHaveSuffix('Controller'),
             'toImplement' => new ToImplement(ControllerInterface::class),
