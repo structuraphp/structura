@@ -10,6 +10,8 @@ interface MethodAssertInterface
 
     public function toNotHaveMethod(string $name, string $message = ''): self;
 
+    public function toHaveNoStaticMethod(string $message = ''): self;
+
     /**
      * @param array<int, string> $names
      */

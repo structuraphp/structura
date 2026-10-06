@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Concerns\Expr;
 
 use StructuraPhp\Structura\AbstractExpr;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
+use StructuraPhp\Structura\Asserts\ToHaveNoStaticMethod;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicMethods;
 use StructuraPhp\Structura\Asserts\ToNotHaveMethod;
 
@@ -22,6 +23,11 @@ trait MethodAssert
     public function toNotHaveMethod(string $name, string $message = ''): self
     {
         return $this->addExpr(new ToNotHaveMethod($name, $message));
+    }
+
+    public function toHaveNoStaticMethod(string $message = ''): self
+    {
+        return $this->addExpr(new ToHaveNoStaticMethod($message));
     }
 
     public function toHaveOnlyPublicMethods(array $names, string $message = ''): self

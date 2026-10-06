@@ -37,6 +37,7 @@ use StructuraPhp\Structura\Asserts\ToHaveCorrespondingTrait;
 use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
 use StructuraPhp\Structura\Asserts\ToHaveMethod;
 use StructuraPhp\Structura\Asserts\ToHaveNoAttribute;
+use StructuraPhp\Structura\Asserts\ToHaveNoStaticMethod;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyAttribute;
 use StructuraPhp\Structura\Asserts\ToHaveOnlyPublicMethods;
 use StructuraPhp\Structura\Asserts\ToHavePrefix;
@@ -215,6 +216,7 @@ final class AssertBench
             'toHaveFilePermission' => new ToHaveFilePermission('0644'),
             'toHaveMethod' => new ToHaveMethod('__invoke'),
             'toHaveNoAttribute' => new ToHaveNoAttribute(),
+            'toHaveNoStaticMethod' => new ToHaveNoStaticMethod(),
             'toHaveOnlyAttribute' => new ToHaveOnlyAttribute(Cached::class),
             'toHaveOnlyPublicMethods' => new ToHaveOnlyPublicMethods(['__construct', '__invoke']),
             'toHavePrefix' => new ToHavePrefix('Order'),

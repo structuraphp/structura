@@ -23,6 +23,20 @@ $this
   ->should(fn(Expr $expr) => $expr->toNotHaveMethod('__get'));
 ```
 
+## toHaveNoStaticMethod()
+
+Fails for every static method declared by the resource, whatever its visibility. Static properties and
+static closures are not methods and are ignored.
+
+Example: Forbid static constructors (`make()`, `fromArray()`…) on classes resolved by the container.
+
+```php
+$this
+  ->allClasses()
+  ->fromDir('src/Domain/*/Action')
+  ->should(fn(Expr $expr) => $expr->toHaveNoStaticMethod());
+```
+
 ## toHaveOnlyPublicMethods()
 
 Fails for every public method whose name is not in the given list; private and protected methods are
