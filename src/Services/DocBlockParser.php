@@ -172,7 +172,7 @@ final readonly class DocBlockParser
      */
     private function extractFromGenericType(GenericTypeNode $type, array &$classNames): void
     {
-        $this->addIfClassName($type->type->name, $classNames);
+        $this->extractFromType($type->type, $classNames);
 
         foreach ($type->genericTypes as $genericType) {
             $this->extractFromType($genericType, $classNames);
