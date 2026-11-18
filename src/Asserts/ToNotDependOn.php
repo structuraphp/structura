@@ -6,7 +6,6 @@ namespace StructuraPhp\Structura\Asserts;
 
 use StructuraPhp\Structura\Concerns\Arr;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -52,11 +51,14 @@ final readonly class ToNotDependOn implements ExprScriptInterface
             $this->names,
             $description->getDependenciesByPatterns($this->patterns),
         );
-        $violations = array_intersect($description->getClassDependencies(), $dependencies);
-        sort($violations);
+        $violations = array_intersect_key(
+            $description->getClassDependencyLines(),
+            array_flip($dependencies),
+        );
+        ksort($violations);
 
         $results = [];
-        foreach ($violations as $violation) {
+        foreach ($violations as $violation => $line) {
             $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must not depend on these namespaces %s but depends on <fire>%s</fire>',
@@ -65,9 +67,7 @@ final readonly class ToNotDependOn implements ExprScriptInterface
                     $violation,
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
+                $line,
                 $description->getFileBasename(),
                 $this->message,
             );

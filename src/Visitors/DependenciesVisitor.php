@@ -339,7 +339,7 @@ final class DependenciesVisitor extends NodeVisitorAbstract
 
         foreach ($classNames as $className) {
             $resolved = $this->resolveDocBlockName($className);
-            $this->docBlockDependencies[$resolved] = $docComment->getStartLine();
+            $this->docBlockDependencies[$resolved] ??= $docComment->getStartLine();
         }
     }
 
@@ -367,11 +367,11 @@ final class DependenciesVisitor extends NodeVisitorAbstract
 
     private function addDependency(int $line, string $dependency): void
     {
-        $this->dependencies[$dependency] = $line;
+        $this->dependencies[$dependency] ??= $line;
     }
 
     private function addNamespace(int $line, string $dependency): void
     {
-        $this->namespace[$dependency] = $line;
+        $this->namespace[$dependency] ??= $line;
     }
 }

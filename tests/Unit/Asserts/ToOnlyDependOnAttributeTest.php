@@ -96,7 +96,14 @@ final class ToOnlyDependOnAttributeTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw('<?php #[\BadAttribute1] #[\BadAttribute2] class Foo {}')
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                #[\BadAttribute1]
+                #[\BadAttribute2]
+                class Foo {}
+                PHP,
+            )
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toOnlyDependOnAttribute(
@@ -121,6 +128,7 @@ final class ToOnlyDependOnAttributeTest extends TestCase
                     'BadAttribute2',
                 ),
             ],
+            [2, 3],
         );
     }
 }

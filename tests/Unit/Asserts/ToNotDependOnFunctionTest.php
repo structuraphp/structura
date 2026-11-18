@@ -41,8 +41,11 @@ class ToNotDependOnFunctionTest extends TestCase
         );
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithFunction')]
-    public function testNotDependOnFunctionWithScript(string $raw, string $exceptName): void
+    public function testNotDependOnFunctionWithScript(string $raw, string $exceptName, array $lines): void
     {
         $rules = $this
             ->allScripts()
@@ -91,7 +94,7 @@ class ToNotDependOnFunctionTest extends TestCase
                     'strtolower',
                 ),
             ],
-            [2, 2],
+            [4, 5],
         );
     }
 
@@ -109,10 +112,14 @@ class ToNotDependOnFunctionTest extends TestCase
         ];
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithFunction')]
     public function testShouldFailNotDependOnFunctionWithScript(
         string $raw,
         string $exceptName,
+        array $lines,
     ): void {
         $rules = $this
             ->allScripts()
@@ -141,7 +148,7 @@ class ToNotDependOnFunctionTest extends TestCase
                     'strtolower',
                 ),
             ],
-            0,
+            $lines,
         );
     }
 
@@ -159,6 +166,7 @@ class ToNotDependOnFunctionTest extends TestCase
             }
             PHP,
             'Foo',
+            [6, 7],
         ];
 
         yield 'script without namespace' => [
@@ -171,6 +179,7 @@ class ToNotDependOnFunctionTest extends TestCase
             }
             PHP,
             'tmp/run_0.php',
+            [4, 5],
         ];
     }
 
@@ -201,7 +210,7 @@ class ToNotDependOnFunctionTest extends TestCase
                 'strtolower',
                 'strtolower',
             ),
-            2,
+            4,
         );
     }
 
@@ -232,7 +241,7 @@ class ToNotDependOnFunctionTest extends TestCase
                 'strtoupper',
                 'strtolower',
             ),
-            2,
+            4,
         );
     }
 
@@ -249,7 +258,7 @@ class ToNotDependOnFunctionTest extends TestCase
                 'Resource <promote>tmp/run_0.php</promote> must not depend on functions <promote>Depend\.+</promote> but depends on <fire>Depend\alpha</fire>',
                 'Resource <promote>tmp/run_0.php</promote> must not depend on functions <promote>Depend\.+</promote> but depends on <fire>Depend\zeta</fire>',
             ],
-            [0, 0],
+            [1, 1],
         );
     }
 }

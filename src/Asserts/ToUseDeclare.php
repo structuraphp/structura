@@ -41,12 +41,23 @@ final readonly class ToUseDeclare implements ExprScriptInterface
                     $this->value,
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
+                $this->getLine($description),
                 $description->getFileBasename(),
                 $this->message,
             ),
         ];
+    }
+
+    private function getLine(ScriptDescription $description): int
+    {
+        foreach ($description->declare->declares ?? [] as $declare) {
+            if ($declare->key->name === $this->key) {
+                return $declare->getLine();
+            }
+        }
+
+        return $description instanceof ClassDescription
+            ? $description->lines
+            : 0;
     }
 }

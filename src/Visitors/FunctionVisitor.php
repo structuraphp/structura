@@ -19,7 +19,7 @@ final class FunctionVisitor extends NodeVisitorAbstract
     private array $namespace = [];
 
     /**
-     * @return array<int,string>
+     * @return array<string,int>
      */
     public function getDependencies(): array
     {
@@ -67,13 +67,26 @@ final class FunctionVisitor extends NodeVisitorAbstract
             }
         }
 
-        $output = array_merge($namespaces, $dependencies);
+        // first occurrence line, use statement included
+        $lines = [];
+        foreach ($this->namespace as $use) {
+            $lines[$use['dependency']] ??= $use['line'];
+        }
+
+        foreach ($dependencies as $key => $dependency) {
+            $lines[$dependency] ??= $this->dependencies[$key]['line'];
+        }
+
+        $output = [];
+        foreach (array_merge($namespaces, $dependencies) as $dependency) {
+            $output[$dependency] = $lines[$dependency];
+        }
 
         // clean dependencies
         $this->namespace = [];
         $this->dependencies = [];
 
-        return array_values(array_unique($output));
+        return $output;
     }
 
     /**

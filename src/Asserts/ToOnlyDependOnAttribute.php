@@ -64,7 +64,7 @@ final readonly class ToOnlyDependOnAttribute implements ExprInterface
                     $violation,
                 ),
                 $this::class,
-                $class->lines,
+                $violation->getLine(),
                 $class->getFileBasename(),
                 $this->message,
             );

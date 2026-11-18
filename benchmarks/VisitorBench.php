@@ -108,8 +108,8 @@ final class VisitorBench
             'functions' => $this->functionVisitor->getDependencies(),
             default => $this->classDescriptionVisitor
                 ->getClass()
-                ?->setClassDependencies(array_keys($this->dependenciesVisitor->getDependencies()))
-                ->setDocBlockDependencies(array_keys($this->dependenciesVisitor->getDocBlockDependencies()))
+                ?->setClassDependencies($this->dependenciesVisitor->getDependencies())
+                ->setDocBlockDependencies($this->dependenciesVisitor->getDocBlockDependencies())
                 ->setFunctionDependencies($this->functionVisitor->getDependencies()),
         };
     }

@@ -52,7 +52,7 @@ final readonly class ToOnlyDependOnImplementation implements ExprInterface
             $this->names,
             $class->getDependenciesByPatterns($this->patterns, DependenciesType::Interfaces),
         );
-        $violations = array_diff($class->getInterfaceNames(), $dependencies);
+        $violations = array_diff($class->interfaces ?? [], $dependencies);
 
         $results = [];
         foreach ($violations as $violation) {
@@ -64,7 +64,7 @@ final readonly class ToOnlyDependOnImplementation implements ExprInterface
                     $violation,
                 ),
                 $this::class,
-                $class->lines,
+                $violation->getLine(),
                 $class->getFileBasename(),
                 $this->message,
             );

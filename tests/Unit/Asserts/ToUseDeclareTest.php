@@ -134,4 +134,82 @@ final class ToUseDeclareTest extends TestCase
             'tmp/run_0.php',
         ];
     }
+
+    #[DataProvider('getWrongValueProvider')]
+    public function testShouldFailOnDeclareLineWhenValueIsWrong(string $raw, int $line): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw($raw)
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toUseStrictTypes(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must use declaration <promote>strict_types=1</promote>',
+            $line,
+        );
+    }
+
+    public static function getWrongValueProvider(): Generator
+    {
+        yield 'wrong value' => [
+            <<<'PHP'
+            <?php
+            declare(strict_types=0);
+
+            class Foo {}
+            PHP,
+            2,
+        ];
+
+        yield 'wrong value among several keys' => [
+            <<<'PHP'
+            <?php
+            declare(
+                ticks=1,
+                strict_types=0
+            );
+
+            class Foo {}
+            PHP,
+            4,
+        ];
+
+        yield 'missing key falls back to the class line' => [
+            <<<'PHP'
+            <?php
+            declare(ticks=1);
+
+            class Foo {}
+            PHP,
+            4,
+        ];
+    }
+
+    public function testShouldFailOnDeclareLineWhenValueIsWrongWithScript(): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                declare(strict_types=0);
+
+                $foo = 1;
+                PHP,
+            )
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->toUseStrictTypes(),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>tmp/run_0.php</promote> must use declaration <promote>strict_types=1</promote>',
+            2,
+        );
+    }
 }

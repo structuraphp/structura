@@ -141,7 +141,7 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
                     'Forbidden\Baz',
                 ),
             ],
-            [4, 4],
+            [5, 5],
         );
     }
 
@@ -192,7 +192,7 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
         self::assertRulesViolation(
             $rules,
             'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces ArrayAccess but depends on <fire>Countable</fire>',
-            4,
+            5,
         );
     }
 
@@ -206,13 +206,13 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
         yield 'patterns only' => [[], ['ArrayAccess']];
     }
 
-    public function testScriptViolationIsOnLineZero(): void
+    public function testScriptViolationIsOnDependencyLine(): void
     {
         $description = (new ScriptDescription(null, null, [], [], null))
-            ->setDocBlockDependencies(['Countable']);
+            ->setDocBlockDependencies(['Countable' => 7]);
 
         $violations = (new ToOnlyDependOnPhpDoc([ArrayAccess::class], []))->getViolation($description);
 
-        self::assertSame(0, $violations[0]->line);
+        self::assertSame(7, $violations[0]->line);
     }
 }

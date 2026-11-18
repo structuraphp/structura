@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Asserts;
 
+use PhpParser\Node\Stmt\ClassConst;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\VisibilityType;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
@@ -35,18 +36,37 @@ final readonly class ToNotHaveConstant implements ExprInterface
      */
     public function getViolation(ClassDescription $class): array
     {
-        return [
-            new ViolationValueObject(
-                \sprintf(
-                    'Resource <promote>%s</promote> must not have <promote>%s</promote> constant',
-                    $class->getResourceName(),
-                    $this->visibility->label(),
-                ),
-                $this::class,
-                $class->lines,
-                $class->getFileBasename(),
-                $this->message,
-            ),
-        ];
+        $results = [];
+        foreach ($class->constants as $classConst) {
+            if (!$this->hasVisibility($classConst)) {
+                continue;
+            }
+
+            foreach ($classConst->consts as $const) {
+                $results[] = new ViolationValueObject(
+                    \sprintf(
+                        'Resource <promote>%s</promote> must not have <promote>%s</promote> constant <fire>%s</fire>',
+                        $class->getResourceName(),
+                        $this->visibility->label(),
+                        $const->name->toString(),
+                    ),
+                    $this::class,
+                    $const->getLine(),
+                    $class->getFileBasename(),
+                    $this->message,
+                );
+            }
+        }
+
+        return $results;
+    }
+
+    private function hasVisibility(ClassConst $classConst): bool
+    {
+        return match ($this->visibility) {
+            VisibilityType::Public => $classConst->isPublic(),
+            VisibilityType::Protected => $classConst->isProtected(),
+            VisibilityType::Private => $classConst->isPrivate(),
+        };
     }
 }

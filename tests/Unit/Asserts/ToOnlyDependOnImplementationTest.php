@@ -96,7 +96,15 @@ final class ToOnlyDependOnImplementationTest extends TestCase
     {
         $rules = $this
             ->allClasses()
-            ->fromRaw('<?php class Foo implements \BadImplements1, \BadImplements2 {}')
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                class Foo implements
+                    \BadImplements1,
+                    \BadImplements2
+                {}
+                PHP,
+            )
             ->should(
                 static fn (Expr $assert): Expr => $assert
                     ->toOnlyDependOnImplementation(
@@ -121,6 +129,7 @@ final class ToOnlyDependOnImplementationTest extends TestCase
                     'BadImplements2',
                 ),
             ],
+            [3, 4],
         );
     }
 }

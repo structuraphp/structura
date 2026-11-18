@@ -41,8 +41,11 @@ class ToOnlyDependOnFunctionTest extends TestCase
         );
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithFunction')]
-    public function testToOnlyDependOnFunctionWithScript(string $raw, string $exceptName): void
+    public function testToOnlyDependOnFunctionWithScript(string $raw, string $exceptName, array $lines): void
     {
         $rules = $this
             ->allScripts()
@@ -91,7 +94,7 @@ class ToOnlyDependOnFunctionTest extends TestCase
                     'strtolower',
                 ),
             ],
-            [2, 2],
+            [6, 5],
         );
     }
 
@@ -111,10 +114,14 @@ class ToOnlyDependOnFunctionTest extends TestCase
         ];
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithFunction')]
     public function testShouldFailToOnlyDependOnFunctionWithScript(
         string $raw,
         string $exceptName,
+        array $lines,
     ): void {
         $rules = $this
             ->allScripts()
@@ -143,7 +150,7 @@ class ToOnlyDependOnFunctionTest extends TestCase
                     'strtolower',
                 ),
             ],
-            0,
+            $lines,
         );
     }
 
@@ -163,6 +170,7 @@ class ToOnlyDependOnFunctionTest extends TestCase
             }
             PHP,
             'Foo',
+            [8, 7],
         ];
 
         yield 'script without namespace' => [
@@ -177,6 +185,7 @@ class ToOnlyDependOnFunctionTest extends TestCase
             }
             PHP,
             'tmp/run_0.php',
+            [6, 5],
         ];
     }
 }

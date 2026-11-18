@@ -188,7 +188,7 @@ final class ToNotHaveConstantTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have <promote>public</promote> constant',
+                'Resource <promote>%s</promote> must not have <promote>public</promote> constant <fire>BAR</fire>',
                 $exceptName,
             ),
         );
@@ -196,7 +196,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithPublicConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php return new class { public const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { public const BAR = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { public const BAR = 1; }'];
 
@@ -221,7 +221,7 @@ final class ToNotHaveConstantTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have <promote>protected</promote> constant',
+                'Resource <promote>%s</promote> must not have <promote>protected</promote> constant <fire>BAR</fire>',
                 $exceptName,
             ),
         );
@@ -229,7 +229,7 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithProtectedConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php return new class { protected const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { protected const BAR = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { protected const BAR = 1; }'];
 
@@ -252,7 +252,7 @@ final class ToNotHaveConstantTest extends TestCase
         self::assertRulesViolation(
             $rules,
             \sprintf(
-                'Resource <promote>%s</promote> must not have <promote>private</promote> constant',
+                'Resource <promote>%s</promote> must not have <promote>private</promote> constant <fire>BAR</fire>',
                 $exceptName,
             ),
         );
@@ -260,12 +260,42 @@ final class ToNotHaveConstantTest extends TestCase
 
     public static function getClassLikeWithPrivateConstant(): Generator
     {
-        yield 'anonymous class' => ['<?php return new class { private const FOO = 1; };', 'Anonymous'];
+        yield 'anonymous class' => ['<?php return new class { private const BAR = 1; };', 'Anonymous'];
 
         yield 'class' => ['<?php class Foo { private const BAR = 1; }'];
 
         yield 'enum' => ['<?php enum Foo { private const BAR = 1; }'];
 
         yield 'trait' => ['<?php trait Foo { private const BAR = 1; }'];
+    }
+
+    public function testShouldFailOnEachConstantLine(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                class Foo {
+                    public const A = 1;
+                    private const B = 2;
+                    public const C = 3, D = 4;
+                }
+                PHP,
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toNotHaveConstant(VisibilityType::Public),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                'Resource <promote>Foo</promote> must not have <promote>public</promote> constant <fire>A</fire>',
+                'Resource <promote>Foo</promote> must not have <promote>public</promote> constant <fire>C</fire>',
+                'Resource <promote>Foo</promote> must not have <promote>public</promote> constant <fire>D</fire>',
+            ],
+            [3, 5, 5],
+        );
     }
 }
