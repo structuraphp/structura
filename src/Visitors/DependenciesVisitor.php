@@ -337,9 +337,9 @@ final class DependenciesVisitor extends NodeVisitorAbstract
 
         $classNames = $this->docBlockParser->parse($docComment->getText());
 
-        foreach ($classNames as $className) {
+        foreach ($classNames as $className => $line) {
             $resolved = $this->resolveDocBlockName($className);
-            $this->docBlockDependencies[$resolved] ??= $docComment->getStartLine();
+            $this->docBlockDependencies[$resolved] ??= $docComment->getStartLine() + $line - 1;
         }
     }
 

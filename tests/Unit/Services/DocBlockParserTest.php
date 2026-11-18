@@ -27,7 +27,7 @@ final class DocBlockParserTest extends TestCase
     {
         $result = $this->parser->parse($docBlock);
 
-        self::assertSame($expected, $result);
+        self::assertSame($expected, array_keys($result));
     }
 
     /**
@@ -161,5 +161,31 @@ final class DocBlockParserTest extends TestCase
             '/** @property Logger $logger */',
             ['Logger'],
         ];
+    }
+
+    public function testParseReturnsLineOfTagInDocBlock(): void
+    {
+        $docBlock = <<<'PHP'
+        /**
+         * Description.
+         *
+         * @param Foo $a
+         * @return Bar
+         */
+        PHP;
+
+        self::assertSame(['Foo' => 4, 'Bar' => 5], $this->parser->parse($docBlock));
+    }
+
+    public function testParseKeepsLineOfFirstTag(): void
+    {
+        $docBlock = <<<'PHP'
+        /**
+         * @param Foo $a
+         * @return Foo
+         */
+        PHP;
+
+        self::assertSame(['Foo' => 2], $this->parser->parse($docBlock));
     }
 }
