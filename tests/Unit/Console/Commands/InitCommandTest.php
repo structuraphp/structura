@@ -36,6 +36,7 @@ final class InitCommandTest extends TestCase
 
         $display = $commandTester->getDisplay();
 
+        self::assertStringContainsString('Version:', $display);
         self::assertStringContainsString(
             \sprintf(
                 'No "%s" config found. Should we generate it for you? [yes]:',
@@ -53,5 +54,6 @@ final class InitCommandTest extends TestCase
         $commandTester->execute(['--config' => self::CONFIG_PATH]);
 
         self::assertSame(Command::INVALID, $commandTester->getStatusCode());
+        self::assertStringContainsString('already exists', $commandTester->getDisplay());
     }
 }

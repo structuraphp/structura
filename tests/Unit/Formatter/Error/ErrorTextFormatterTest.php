@@ -53,4 +53,27 @@ class ErrorTextFormatterTest extends TestCase
             self::assertSame($line, $fetch[$key], sprintf('Error line %d', $key));
         }
     }
+
+    public function testOutputSkipsZeroCountsAndPrintsDurationAndMemory(): void
+    {
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
+
+        (new ErrorTextFormatter())->formatErrors(
+            FormatterDataProvider::makeOneViolation(timeStart: microtime(true) - 65.4),
+            $buffer,
+        );
+
+        $memory = sprintf('%s', memory_get_peak_usage(true) / 1024 / 1024);
+        $fetch = $buffer->fetch();
+
+        self::assertStringContainsString(
+            'Tests:    <fire>1 failed</fire> (1 assertion)' . PHP_EOL,
+            $fetch,
+        );
+        self::assertMatchesRegularExpression(
+            sprintf('/^Duration: 01:05\.4\d{2}, Memory: %s MB$/m', preg_quote($memory, '/')),
+            $fetch,
+        );
+    }
 }

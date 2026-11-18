@@ -34,26 +34,6 @@ final class AnalyseService
     ) {}
 
     /**
-     * @param array<string, string> $pathResolvers
-     */
-    public static function create(
-        bool $stopOnError = false,
-        bool $stopOnWarning = false,
-        bool $stopOnNotice = false,
-        ?string $filter = null,
-        array $pathResolvers = [],
-    ): self {
-        return new self(
-            new AnalysisDispatcher(),
-            $stopOnError,
-            $stopOnWarning,
-            $stopOnNotice,
-            $filter,
-            $pathResolvers,
-        );
-    }
-
-    /**
      * @param class-string<TestBuilder> $ruleClassname
      */
     public function analyse(
@@ -190,7 +170,7 @@ final class AnalyseService
     {
         return $this->filter === null
             || str_contains(
-                strtolower(trim($str)),
+                strtolower($str),
                 strtolower(trim($this->filter)),
             );
     }

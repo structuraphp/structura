@@ -14,6 +14,7 @@ use StructuraPhp\Structura\Asserts\ToOnlyDependOnPhpDoc;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 
 #[CoversClass(ToOnlyDependOnPhpDoc::class)]
 #[CoversMethod(DependencyAssert::class, 'toOnlyDependOnPhpDoc')]
@@ -163,5 +164,55 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
             $rules,
             'to only depend on phpDoc <promote>ArrayAccess, Acme\.*</promote>',
         );
+    }
+
+    /**
+     * @param array<int, class-string> $names
+     * @param array<int, string> $patterns
+     */
+    #[DataProvider('getNamesOrPatternsOnlyProvider')]
+    public function testShouldFailToOnlyDependOnPhpDocNamesOrPatternsOnly(array $names, array $patterns): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(<<<'PHP'
+            <?php
+            use ArrayAccess;
+            use Countable;
+            class Foo {
+                /**
+                 * @param ArrayAccess $bar
+                 * @param Countable $baz
+                 */
+                public function test($bar, $baz) {}
+            }
+            PHP)
+            ->should(static fn (Expr $assert): Expr => $assert->toOnlyDependOnPhpDoc($names, $patterns));
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces ArrayAccess but depends on <fire>Countable</fire>',
+            4,
+        );
+    }
+
+    /**
+     * @return Generator<string, array{array<int, class-string>, array<int, string>}>
+     */
+    public static function getNamesOrPatternsOnlyProvider(): Generator
+    {
+        yield 'names only' => [[ArrayAccess::class], []];
+
+        yield 'patterns only' => [[], ['ArrayAccess']];
+    }
+
+    public function testScriptViolationIsOnLineZero(): void
+    {
+        $description = (new ScriptDescription(null, null, [], [], null))
+            ->setDocBlockDependencies(['Countable']);
+
+        $violations = (new ToOnlyDependOnPhpDoc([ArrayAccess::class], []))->getViolation($description);
+
+        self::assertSame(0, $violations[0]->line);
     }
 }

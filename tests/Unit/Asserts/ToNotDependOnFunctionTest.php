@@ -235,4 +235,21 @@ class ToNotDependOnFunctionTest extends TestCase
             2,
         );
     }
+
+    public function testShouldFailToNotDependOnFunctionPatternOnlySorted(): void
+    {
+        $rules = $this
+            ->allScripts()
+            ->fromRaw('<?php \Depend\zeta(); \Depend\alpha();')
+            ->should(static fn (ExprScript $assert): ExprScript => $assert->toNotDependOnFunction(patterns: 'Depend\.+'));
+
+        self::assertRulesViolation(
+            $rules,
+            [
+                'Resource <promote>tmp/run_0.php</promote> must not depend on functions <promote>Depend\.+</promote> but depends on <fire>Depend\alpha</fire>',
+                'Resource <promote>tmp/run_0.php</promote> must not depend on functions <promote>Depend\.+</promote> but depends on <fire>Depend\zeta</fire>',
+            ],
+            [0, 0],
+        );
+    }
 }

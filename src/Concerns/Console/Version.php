@@ -27,23 +27,18 @@ trait Version
         );
     }
 
-    private function getProjectVersion(): string
+    /**
+     * @param string $gitTag replaced by the git tag in phar builds (box.json "git-tag")
+     */
+    private function getProjectVersion(string $gitTag = '@git-tag@'): string
     {
-        $commitPlaceholderPossiblyEvaluated = '@git-tag@';
-        $versionCommit = $this->getCommitPlaceholder() !== $commitPlaceholderPossiblyEvaluated
-            ? substr($commitPlaceholderPossiblyEvaluated, 0, 7) // for phar builds
-            : null;
-
-        return $versionCommit ?? InstalledVersions::getVersion('structuraphp/structura') ?? 'UNKNOWN';
+        return $gitTag !== implode('', ['@', 'git-tag@'])
+            ? $gitTag
+            : InstalledVersions::getVersion('structuraphp/structura') ?? 'UNKNOWN';
     }
 
     private function getPhpVersion(): string
     {
         return PHP_VERSION;
-    }
-
-    private function getCommitPlaceholder(): string
-    {
-        return implode('', ['@', 'git-tag@']);
     }
 }

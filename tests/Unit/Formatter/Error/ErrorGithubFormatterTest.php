@@ -41,4 +41,16 @@ class ErrorGithubFormatterTest extends TestCase
             self::assertSame($line, $fetch[$key]);
         }
     }
+
+    public function testNewlinesAreEncoded(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorGithubFormatter())->formatErrors(
+            FormatterDataProvider::makeOneViolation(message: "first\nsecond"),
+            $buffer,
+        );
+
+        self::assertStringContainsString('::first%0Asecond', $buffer->fetch());
+    }
 }

@@ -7,6 +7,8 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
+use StructuraPhp\Structura\Events\NoticeEvent;
+use StructuraPhp\Structura\Events\ViolationEvent;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Services\AnalysisDispatcher;
@@ -17,6 +19,8 @@ use StructuraPhp\Structura\Tests\Feature\TestController;
 use StructuraPhp\Structura\Tests\Feature\TestEmpty;
 use StructuraPhp\Structura\Tests\Helper\OneViolationTestBuilder;
 use StructuraPhp\Structura\Tests\Helper\ThrowingTestBuilder;
+use StructuraPhp\Structura\Tests\Helper\TwoRulesTestBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use UnexpectedValueException;
 
 #[CoversClass(AnalyseService::class)]
@@ -114,13 +118,88 @@ final class AnalyseServiceTest extends TestCase
         $service->analyse(microtime(true), ThrowingTestBuilder::class);
     }
 
-    public function testCreateFactory(): void
+    public function testFilterMatchesClassnameCaseInsensitivelyAndTrimmed(): void
     {
-        $service = AnalyseService::create();
+        $service = new AnalyseService(new AnalysisDispatcher(), filter: ' feature\TESTconfig ');
         $result = $service->analyse(microtime(true), TestConfig::class);
 
-        self::assertSame(0, $result->countViolation);
         self::assertSame(1, $result->countPass);
+    }
+
+    public function testFilterMatchesMethodAfterNonMatchingOne(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher(), filter: 'emptyArchitecture');
+        $result = $service->analyse(microtime(true), TestEmpty::class);
+
+        self::assertCount(1, $result->analyseTestValueObjects);
+        self::assertSame('testEmptyArchitecture', $result->analyseTestValueObjects[0]->source->methodName);
+    }
+
+    public function testSkipsPublicMethodWithoutTestDoxAndKeepsAllRules(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher());
+        $result = $service->analyse(microtime(true), TwoRulesTestBuilder::class);
+
+        self::assertCount(1, $result->analyseTestValueObjects);
+        self::assertCount(2, $result->analyseTestValueObjects[0]->ruleValueObjects);
+    }
+
+    public function testNoticesDoNotStopByDefaultAndRulesAreResetAfterEventException(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher());
+        $result = $service->analyse(microtime(true), TestEmpty::class);
+
+        self::assertSame(2, $result->countNotice);
+        self::assertCount(0, $result->analyseTestValueObjects[0]->ruleValueObjects);
+        self::assertCount(1, $result->analyseTestValueObjects[1]->ruleValueObjects);
+    }
+
+    public function testCountsAreSummedOverAllAnalysedTests(): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher());
+        $service->analyse(microtime(true), TestAssert::class);
+
+        $result = $service->analyse(microtime(true), TestEmpty::class);
+
+        self::assertSame(5, $result->countPass);
+        self::assertSame(2, $result->countViolation);
+        self::assertSame(1, $result->countWarning);
+        self::assertSame(2, $result->countNotice);
+    }
+
+    public function testEventsCarryTheirSourceOnlyDuringTheTest(): void
+    {
+        $events = [];
+        $parent = new EventDispatcher();
+        $parent->addListener(ViolationEvent::class, static function (ViolationEvent $event) use (&$events): void {
+            $events[] = $event;
+        });
+
+        $dispatcher = new AnalysisDispatcher($parent);
+        (new AnalyseService($dispatcher))->analyse(microtime(true), OneViolationTestBuilder::class);
+
+        self::assertCount(1, $events);
+        self::assertSame(OneViolationTestBuilder::class, $events[0]->source?->testClassname);
+        self::assertFalse($dispatcher->hasListeners());
+
+        $after = $dispatcher->dispatch(new NoticeEvent(key: 'key', message: 'message'));
+        self::assertNull($after->source);
+    }
+
+    public function testDispatcherIsCleanedUpWhenTestThrows(): void
+    {
+        $dispatcher = new AnalysisDispatcher();
+
+        try {
+            (new AnalyseService($dispatcher))->analyse(microtime(true), ThrowingTestBuilder::class);
+            self::fail('Expected exception');
+        } catch (UnexpectedValueException) {
+        }
+
+        self::assertFalse($dispatcher->hasListeners());
+
+        $after = $dispatcher->dispatch(new NoticeEvent(key: 'key', message: 'message'));
+        self::assertNull($after->source);
     }
 
     public function testDispatcherInjectsSource(): void

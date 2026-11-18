@@ -68,7 +68,7 @@ final class ErrorJsonFormatter implements ErrorFormatterInterface
                 'warnings' => $analyseValueObject->countWarning,
                 'notices' => $analyseValueObject->countNotice,
             ],
-            'duration_ms' => (int) round((microtime(true) - $analyseValueObject->timeStart) * 1000),
+            'duration_ms' => (int) ((microtime(true) - $analyseValueObject->timeStart) * 1000),
         ];
 
         if ($errors !== []) {

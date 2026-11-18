@@ -266,10 +266,6 @@ final class ExecuteService
      */
     private function injectPathResolvers(AbstractExpr $assertions): void
     {
-        if ($this->ruleValueObject->pathResolvers === []) {
-            return;
-        }
-
         /** @var AbstractExpr|ExprInterface $assert */
         foreach ($assertions as $assert) {
             if ($assert instanceof PathResolverAwareInterface) {

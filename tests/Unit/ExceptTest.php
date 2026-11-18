@@ -113,4 +113,36 @@ final class ExceptTest extends TestCase
 
         self::assertTrue($except->isExcept($scriptDescription, ToBeFinal::class));
     }
+
+    public function testByNamespaceKeepsAnchorsLiteral(): void
+    {
+        $except = new Except();
+        $except->byNamespace('App\^Fo.', ToBeFinal::class);
+
+        $scriptDescription = new ScriptDescription(
+            namespace: 'App\^Foo',
+            declare: null,
+            includes: [],
+            anonymousClasses: [],
+            rootReturn: null,
+        );
+
+        self::assertTrue($except->isExcept($scriptDescription, ToBeFinal::class));
+    }
+
+    public function testByNamespaceWithOnlyClosingSlashIsNotARegex(): void
+    {
+        $except = new Except();
+        $except->byNamespace('Foo/', ToBeFinal::class);
+
+        $scriptDescription = new ScriptDescription(
+            namespace: 'Bar',
+            declare: null,
+            includes: [],
+            anonymousClasses: [],
+            rootReturn: null,
+        );
+
+        self::assertFalse($except->isExcept($scriptDescription, ToBeFinal::class));
+    }
 }

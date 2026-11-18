@@ -67,6 +67,7 @@ final class MakeTestCommandTest extends TestCase
             length: 5,
         );
 
+        self::assertCount(\count($exceptOutput), $outputs);
         foreach ($outputs as $key => $command) {
             self::assertSame($exceptOutput[$key], rtrim($command));
         }

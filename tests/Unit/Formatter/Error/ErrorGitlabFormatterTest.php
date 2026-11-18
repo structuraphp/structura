@@ -77,4 +77,19 @@ class ErrorGitlabFormatterTest extends TestCase
         self::assertIsArray($decoded);
         self::assertCount(0, $decoded);
     }
+
+    public function testOutputKeepsSlashesAndUnicodeUnescaped(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorGitlabFormatter())->formatErrors(
+            FormatterDataProvider::makeOneViolation(pathname: 'src/Foo.php', message: 'Résumé'),
+            $buffer,
+        );
+
+        $json = $buffer->fetch();
+
+        self::assertStringContainsString('"path": "src/Foo.php"', $json);
+        self::assertStringContainsString('"description": "Résumé"', $json);
+    }
 }

@@ -66,14 +66,6 @@ final class InitCommand extends Command
 
     private function getInitDto(InputInterface $input): InitDto
     {
-        /** @var array<string,scalar> $data */
-        $data = array_filter(
-            array: $input->getOptions(),
-            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
-                && \is_string($key),
-            mode: ARRAY_FILTER_USE_BOTH,
-        );
-
-        return InitDto::fromArray($data);
+        return InitDto::fromArray($input->getOptions());
     }
 }

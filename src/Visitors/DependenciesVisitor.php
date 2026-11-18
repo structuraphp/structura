@@ -98,8 +98,6 @@ final class DependenciesVisitor extends NodeVisitorAbstract
                     && !\in_array($namespace, $dependencies, true)
                 ) {
                     unset($this->namespace[$namespace]);
-
-                    break;
                 }
             }
 
@@ -109,8 +107,6 @@ final class DependenciesVisitor extends NodeVisitorAbstract
                     && !\in_array($namespace, $dependencies, true)
                 ) {
                     unset($this->namespace[$namespace]);
-
-                    break;
                 }
             }
 
@@ -129,7 +125,6 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         $this->traits = [];
         $this->attributes = [];
         $this->useAliases = [];
-        $this->classDeep = 0;
         $this->currentNamespace = '';
 
         return $output;

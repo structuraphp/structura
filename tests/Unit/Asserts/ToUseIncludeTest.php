@@ -333,6 +333,28 @@ final class ToUseIncludeTest extends TestCase
             'config/*',
             'Resource <promote>tmp/run_0.php</promote> uses path <fire>./vendor/autoload.php</fire> which does not match pattern <promote>config/*</promote>',
         ];
+
+        yield 'dirname(__FILE__) goes up one level by default' => [
+            '<?php require dirname(__FILE__) . "/config/app.php";',
+            IncludeType::Require,
+            'vendor/*',
+            'Resource <promote>tmp/run_0.php</promote> uses path <fire>tmp/config/app.php</fire> which does not match pattern <promote>vendor/*</promote>',
+        ];
+
+        yield 'other function call is a dynamic path' => [
+            '<?php require strtoupper(__DIR__) . "/a.php";',
+            IncludeType::Require,
+            'vendor/*',
+            'Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>vendor/*</fire>',
+        ];
+
+        yield 'every include is checked after a dynamic path' => [
+            '<?php require $path; require "other/path.php";',
+            IncludeType::Require,
+            'vendor/*',
+            'Resource <promote>tmp/run_0.php</promote> uses a dynamic path which cannot be verified against pattern <fire>vendor/*</fire>, '
+            . 'Resource <promote>tmp/run_0.php</promote> uses path <fire>other/path.php</fire> which does not match pattern <promote>vendor/*</promote>',
+        ];
     }
 
     #[DataProvider('getScriptWithPathResolverPassesProvider')]

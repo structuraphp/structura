@@ -15,7 +15,7 @@ final readonly class InitDto
     ) {}
 
     /**
-     * @param array<string,scalar>|ArrayAccess<string,scalar> $data
+     * @param array<mixed>|ArrayAccess<string,mixed> $data mixed: raw Symfony console options
      */
     public static function fromArray(array|ArrayAccess $data): self
     {

@@ -40,6 +40,16 @@ final class DocBlockParserTest extends TestCase
             [],
         ];
 
+        yield 'builtin types are case insensitive' => [
+            '/** @param String $a @param INT $b */',
+            [],
+        ];
+
+        yield 'duplicated class is listed once with sequential keys' => [
+            "/**\n * @param Foo \$a\n * @param Foo \$b\n * @param Bar \$c\n */",
+            ['Foo', 'Bar'],
+        ];
+
         yield 'builtin types only' => [
             '/** @param int $x @return string */',
             [],
