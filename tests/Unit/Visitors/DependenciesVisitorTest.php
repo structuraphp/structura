@@ -316,6 +316,59 @@ final class DependenciesVisitorTest extends TestCase
         self::assertSame(['Acme\Bar'], array_keys($visitor->getDocBlockDependencies()));
     }
 
+    public function testDependencyLineIsFirstOccurrence(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        new \Foo\Bar();
+        new \Foo\Bar();
+        PHP);
+
+        self::assertSame(['Foo\Bar' => 2], $visitor->getDependencies());
+    }
+
+    public function testImportedDependencyLineIsUseLine(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        use Foo\Bar;
+
+        new Bar();
+        PHP);
+
+        self::assertSame(['Foo\Bar' => 2], $visitor->getDependencies());
+    }
+
+    public function testImportedTwiceDependencyLineIsFirstUseLine(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        use Foo\Bar;
+        use Foo\Bar as Baz;
+        PHP);
+
+        self::assertSame(['Foo\Bar' => 2], $visitor->getDependencies());
+    }
+
+    public function testDocBlockDependencyLineIsFirstOccurrence(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        class Foo {
+            /** @var Bar */
+            public $a;
+            /** @var Bar */
+            public $b;
+        }
+        PHP);
+
+        self::assertSame(['Bar' => 3], $visitor->getDocBlockDependencies());
+    }
+
     private function getClassLikeProvider(): string
     {
         return <<<'PHP'

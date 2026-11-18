@@ -7,7 +7,6 @@ namespace StructuraPhp\Structura\Asserts;
 use StructuraPhp\Structura\Concerns\Arr;
 use StructuraPhp\Structura\Contracts\ExprScriptInterface;
 use StructuraPhp\Structura\Enums\DependenciesType;
-use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
@@ -53,10 +52,13 @@ final readonly class ToOnlyDependOnPhpDoc implements ExprScriptInterface
             $this->names,
             $description->getDependenciesByPatterns($this->patterns, DependenciesType::PhpDoc),
         );
-        $violations = array_diff($description->getDocBlockDependencies(), $dependencies);
+        $violations = array_diff_key(
+            $description->getDocBlockDependencyLines(),
+            array_flip($dependencies),
+        );
 
         $results = [];
-        foreach ($violations as $violation) {
+        foreach ($violations as $violation => $line) {
             $results[] = new ViolationValueObject(
                 \sprintf(
                     'Resource <promote>%s</promote> must only depend on these phpDoc namespaces %s but depends on <fire>%s</fire>',
@@ -65,9 +67,7 @@ final readonly class ToOnlyDependOnPhpDoc implements ExprScriptInterface
                     $violation,
                 ),
                 $this::class,
-                $description instanceof ClassDescription
-                    ? $description->lines
-                    : 0,
+                $line,
                 $description->getFileBasename(),
                 $this->message,
             );

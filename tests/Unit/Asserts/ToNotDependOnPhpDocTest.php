@@ -126,7 +126,7 @@ final class ToNotDependOnPhpDocTest extends TestCase
                 Stringable::class,
                 ArrayAccess::class,
             ),
-            3,
+            4,
         );
     }
 
@@ -169,7 +169,7 @@ final class ToNotDependOnPhpDocTest extends TestCase
                     'Forbidden\Zzz',
                 ),
             ],
-            [4, 4],
+            [5, 5],
         );
     }
 
@@ -216,17 +216,17 @@ final class ToNotDependOnPhpDocTest extends TestCase
                     'Forbidden\Bar',
                 ),
             ],
-            [4, 4],
+            [5, 5],
         );
     }
 
-    public function testScriptViolationIsOnLineZero(): void
+    public function testScriptViolationIsOnDependencyLine(): void
     {
         $description = (new ScriptDescription(null, null, [], [], null))
-            ->setDocBlockDependencies(['ArrayAccess']);
+            ->setDocBlockDependencies(['ArrayAccess' => 7]);
 
         $violations = (new ToNotDependOnPhpDoc([ArrayAccess::class], []))->getViolation($description);
 
-        self::assertSame(0, $violations[0]->line);
+        self::assertSame(7, $violations[0]->line);
     }
 }

@@ -49,8 +49,11 @@ final class ToNotDependOnTest extends TestCase
         );
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithNoDependsProvider')]
-    public function testToNotDependOnWithScript(string $raw, string $exceptName): void
+    public function testToNotDependOnWithScript(string $raw, string $exceptName, array $lines): void
     {
         $rules = $this
             ->allScripts()
@@ -115,7 +118,7 @@ final class ToNotDependOnTest extends TestCase
                     'Stringable',
                 ),
             ],
-            [7, 7, 7, 7],
+            [3, 5, 13, 9],
         );
     }
 
@@ -142,10 +145,14 @@ final class ToNotDependOnTest extends TestCase
         ];
     }
 
+    /**
+     * @param array<int, int> $lines
+     */
     #[DataProvider('getScriptWithNoDependsProvider')]
     public function testShouldFailToNotDependOnWithScript(
         string $raw,
         string $exceptName,
+        array $lines,
     ): void {
         $rules = $this
             ->allScripts()
@@ -190,7 +197,7 @@ final class ToNotDependOnTest extends TestCase
                     'Stringable',
                 ),
             ],
-            0,
+            $lines,
         );
     }
 
@@ -215,6 +222,7 @@ final class ToNotDependOnTest extends TestCase
             }
             PHP,
             'Foo',
+            [5, 7, 14, 10],
         ];
 
         yield 'script without namespace' => [
@@ -234,6 +242,7 @@ final class ToNotDependOnTest extends TestCase
             }
             PHP,
             'tmp/run_0.php',
+            [3, 5, 12, 8],
         ];
     }
 
@@ -265,7 +274,7 @@ final class ToNotDependOnTest extends TestCase
                 Stringable::class,
                 ArrayAccess::class,
             ),
-            3,
+            2,
         );
     }
 

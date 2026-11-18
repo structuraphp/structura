@@ -34,8 +34,51 @@ class FunctionVisitorTest extends TestCase
                 'Dependency\Shadow2\func8',
                 'Dependency\Shadow2',
             ],
+            array_keys($visitor->getDependencies()),
+        );
+    }
+
+    public function testFunctionDependencyLineIsFirstOccurrence(): void
+    {
+        $visitor = new FunctionVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        use function Dep\Shadow;
+
+        foo();
+        foo();
+        Shadow\bar();
+        PHP);
+
+        self::assertSame(
+            ['foo' => 4, 'Dep\Shadow\bar' => 6],
             $visitor->getDependencies(),
         );
+    }
+
+    public function testImportedFunctionLineIsUseLine(): void
+    {
+        $visitor = new FunctionVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        use function Dep\foo;
+
+        foo();
+        PHP);
+
+        self::assertSame(['Dep\foo' => 2], $visitor->getDependencies());
+    }
+
+    public function testImportedTwiceFunctionLineIsFirstUseLine(): void
+    {
+        $visitor = new FunctionVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        use function Dep\foo;
+        use function Dep\foo as bar;
+        PHP);
+
+        self::assertSame(['Dep\foo' => 2], $visitor->getDependencies());
     }
 
     public function getUseDependenciesFunction(): string
@@ -74,7 +117,7 @@ class FunctionVisitorTest extends TestCase
         $visitor = new FunctionVisitor();
         $this->traverse($visitor, $raw);
 
-        self::assertSame($expected, $visitor->getDependencies());
+        self::assertSame($expected, array_keys($visitor->getDependencies()));
     }
 
     /**

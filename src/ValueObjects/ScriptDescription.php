@@ -22,6 +22,15 @@ class ScriptDescription
     /** @var array<int,string> */
     protected array $docBlockDependencies = [];
 
+    /** @var array<string,int> */
+    protected array $classDependencyLines = [];
+
+    /** @var array<string,int> */
+    protected array $functionDependencyLines = [];
+
+    /** @var array<string,int> */
+    protected array $docBlockDependencyLines = [];
+
     protected string $fileBasename = '';
 
     /**
@@ -50,11 +59,27 @@ class ScriptDescription
     }
 
     /**
+     * @return array<string,int> dependency => line of its first occurrence
+     */
+    public function getClassDependencyLines(): array
+    {
+        return $this->classDependencyLines;
+    }
+
+    /**
      * @return array<int,string>
      */
     public function getFunctionDependencies(): array
     {
         return $this->functionDependencies;
+    }
+
+    /**
+     * @return array<string,int> dependency => line of its first occurrence
+     */
+    public function getFunctionDependencyLines(): array
+    {
+        return $this->functionDependencyLines;
     }
 
     /**
@@ -66,31 +91,42 @@ class ScriptDescription
     }
 
     /**
-     * @param array<int,string> $classDependencies
+     * @return array<string,int> dependency => line of its first occurrence
+     */
+    public function getDocBlockDependencyLines(): array
+    {
+        return $this->docBlockDependencyLines;
+    }
+
+    /**
+     * @param array<string,int> $classDependencies
      */
     public function setClassDependencies(array $classDependencies): self
     {
-        $this->classDependencies = $classDependencies;
+        $this->classDependencyLines = $classDependencies;
+        $this->classDependencies = array_keys($classDependencies);
 
         return $this;
     }
 
     /**
-     * @param array<int,string> $dependencies
+     * @param array<string,int> $dependencies
      */
     public function setFunctionDependencies(array $dependencies): self
     {
-        $this->functionDependencies = $dependencies;
+        $this->functionDependencyLines = $dependencies;
+        $this->functionDependencies = array_keys($dependencies);
 
         return $this;
     }
 
     /**
-     * @param array<int,string> $docBlockDependencies
+     * @param array<string,int> $docBlockDependencies
      */
     public function setDocBlockDependencies(array $docBlockDependencies): self
     {
-        $this->docBlockDependencies = $docBlockDependencies;
+        $this->docBlockDependencyLines = $docBlockDependencies;
+        $this->docBlockDependencies = array_keys($docBlockDependencies);
 
         return $this;
     }
