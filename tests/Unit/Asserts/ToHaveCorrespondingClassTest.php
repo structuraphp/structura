@@ -90,7 +90,7 @@ class ToHaveCorrespondingClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             $output,
-            [15, 19, 17, 15, 15],
+            [16, 20, 19, 17, 17],
         );
     }
 }
