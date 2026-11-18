@@ -27,7 +27,6 @@ class ErrorGithubFormatter implements ErrorFormatterInterface
                 $metas = [
                     'file' => $violation->pathname,
                     'line' => $violation->line,
-                    'col' => 0,
                 ];
                 array_walk($metas, static function (&$value, string $key): void {
                     $value = sprintf('%s=%s', $key, $value);

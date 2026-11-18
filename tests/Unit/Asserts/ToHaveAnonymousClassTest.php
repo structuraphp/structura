@@ -154,7 +154,6 @@ final class ToHaveAnonymousClassTest extends TestCase
         self::assertRulesViolation(
             $rules,
             'Resource <promote>tmp/run_0.php</promote> must have an anonymous class',
-            0,
         );
     }
 }

@@ -39,7 +39,7 @@ final readonly class ToHaveAnonymousClass implements ExprScriptInterface
                 $this::class,
                 $description instanceof ClassDescription
                     ? $description->lines
-                    : 0,
+                    : 1,
                 $description->getFileBasename(),
                 $this->message,
             ),
