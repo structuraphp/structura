@@ -8,13 +8,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Console\Commands\MakeTestCommand;
 use StructuraPhp\Structura\Console\Kernel;
+use StructuraPhp\Structura\Tests\Helper\Sandbox;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 #[CoversClass(MakeTestCommand::class)]
 final class MakeTestCommandTest extends TestCase
 {
-    private string $filename;
+    use Sandbox;
 
     private string $config;
 
@@ -22,7 +23,9 @@ final class MakeTestCommandTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->filename = \dirname(__DIR__, 3) . '/Architecture/TestModel.php';
+        $this->enterSandbox();
+        mkdir('src');
+
         $this->config = \sprintf(
             '%s/Fixture/Commands/MakeTestCommand/structura.php',
             \dirname(__DIR__, 3),
@@ -36,10 +39,7 @@ final class MakeTestCommandTest extends TestCase
 
     protected function tearDown(): void
     {
-        if (file_exists($this->filename)) {
-            unlink($this->filename);
-            rmdir(\dirname(__DIR__, 3) . '/Architecture');
-        }
+        $this->leaveSandbox();
     }
 
     public function testShouldMake(): void

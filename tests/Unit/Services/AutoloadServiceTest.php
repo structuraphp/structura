@@ -7,15 +7,15 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Services\AutoloadService;
+use StructuraPhp\Structura\Tests\Helper\Sandbox;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[CoversClass(AutoloadService::class)]
 final class AutoloadServiceTest extends TestCase
 {
-    private string $testDir;
+    use Sandbox;
 
     private BufferedOutput $buffer;
 
@@ -23,8 +23,7 @@ final class AutoloadServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->testDir = \sys_get_temp_dir() . '/structura_test_' . uniqid();
-        @mkdir($this->testDir, 0755, true);
+        $this->enterSandbox();
 
         $this->buffer = new BufferedOutput();
         $this->output = new SymfonyStyle(new ArrayInput([]), $this->buffer);
@@ -32,13 +31,13 @@ final class AutoloadServiceTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new Filesystem())->remove($this->testDir);
+        $this->leaveSandbox();
         unset($GLOBALS['structura_autoload_loaded']);
     }
 
     public function testLoadRequiresAutoloadWithoutMessage(): void
     {
-        $autoload = $this->testDir . '/autoload.php';
+        $autoload = $this->sandbox . '/autoload.php';
         file_put_contents($autoload, '<?php $GLOBALS[\'structura_autoload_loaded\'] = true;');
 
         (new AutoloadService())->load($autoload, $this->output);
@@ -49,7 +48,7 @@ final class AutoloadServiceTest extends TestCase
 
     public function testLoadWithMissingFileDisplaysError(): void
     {
-        $autoload = $this->testDir . '/missing.php';
+        $autoload = $this->sandbox . '/missing.php';
 
         (new AutoloadService())->load($autoload, $this->output);
 

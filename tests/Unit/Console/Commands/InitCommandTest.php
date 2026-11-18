@@ -8,19 +8,25 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Console\Commands\InitCommand;
 use StructuraPhp\Structura\Console\Kernel;
+use StructuraPhp\Structura\Tests\Helper\Sandbox;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 #[CoversClass(InitCommand::class)]
 final class InitCommandTest extends TestCase
 {
-    private const CONFIG_PATH = __DIR__ . '/structura.php';
+    use Sandbox;
+
+    private const CONFIG_PATH = 'structura.php';
+
+    protected function setUp(): void
+    {
+        $this->enterSandbox();
+    }
 
     protected function tearDown(): void
     {
-        if (file_exists(self::CONFIG_PATH)) {
-            unlink(self::CONFIG_PATH);
-        }
+        $this->leaveSandbox();
     }
 
     public function testShouldInitConfig(): void

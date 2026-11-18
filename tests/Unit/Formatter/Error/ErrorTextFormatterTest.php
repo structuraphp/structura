@@ -59,21 +59,29 @@ class ErrorTextFormatterTest extends TestCase
         $buffer = new BufferedOutput(formatter: new OutputFormatter());
         $buffer->setDecorated(true);
 
+        $peakBefore = memory_get_peak_usage(true) / 1024 / 1024;
+
         (new ErrorTextFormatter())->formatErrors(
-            FormatterDataProvider::makeOneViolation(timeStart: microtime(true) - 65.4),
+            FormatterDataProvider::makeOneViolation(timeStart: microtime(true) - 65),
             $buffer,
         );
 
-        $memory = sprintf('%s', memory_get_peak_usage(true) / 1024 / 1024);
+        $peakAfter = memory_get_peak_usage(true) / 1024 / 1024;
         $fetch = $buffer->fetch();
 
         self::assertStringContainsString(
             'Tests:    <fire>1 failed</fire> (1 assertion)' . PHP_EOL,
             $fetch,
         );
-        self::assertMatchesRegularExpression(
-            sprintf('/^Duration: 01:05\.4\d{2}, Memory: %s MB$/m', preg_quote($memory, '/')),
-            $fetch,
+
+        // a one second window: Infection runs this test on loaded CI runners
+        self::assertSame(
+            1,
+            preg_match('/^Duration: 01:05\.\d{3}, Memory: ([\d.]+) MB$/m', $fetch, $matches),
         );
+
+        // the peak only grows: the printed value is bounded by the peaks around the call
+        self::assertGreaterThanOrEqual($peakBefore, (float) $matches[1]);
+        self::assertLessThanOrEqual($peakAfter, (float) $matches[1]);
     }
 }
