@@ -40,7 +40,7 @@ final readonly class ToNotHaveFilePermission implements ExprScriptInterface
                     $this->forbiddenPermission,
                 ),
                 $this::class,
-                0,
+                1,
                 $filename,
                 $this->message,
             ),

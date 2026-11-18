@@ -60,7 +60,7 @@ final readonly class ToHaveFilePermission implements ExprScriptInterface
                     $actualPermission,
                 ),
                 $this::class,
-                0,
+                1,
                 $filename,
                 $this->message,
             ),

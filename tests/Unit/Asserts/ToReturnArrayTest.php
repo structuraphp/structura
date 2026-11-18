@@ -110,7 +110,6 @@ final class ToReturnArrayTest extends TestCase
         self::assertRulesViolation(
             $rules,
             'Resource <promote>tmp/run_0.php</promote> must return an array',
-            0,
         );
     }
 

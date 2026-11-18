@@ -54,7 +54,7 @@ final readonly class ToReturnArray implements ExprScriptInterface
                         $description->getResourceName(),
                     ),
                     $this::class,
-                    0,
+                    1,
                     $description->getFileBasename(),
                     $this->message,
                 ),

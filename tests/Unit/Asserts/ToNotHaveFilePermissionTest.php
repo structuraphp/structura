@@ -88,7 +88,6 @@ final class ToNotHaveFilePermissionTest extends TestCase
                 'Resource <promote>%s</promote> must not have file permission <fire>0777</fire>',
                 $filePath,
             ),
-            0,
         );
     }
 
@@ -110,7 +109,6 @@ final class ToNotHaveFilePermissionTest extends TestCase
                 'Resource <promote>%s</promote> must not have file permission <fire>0777</fire>',
                 $filePath,
             ),
-            0,
         );
     }
 

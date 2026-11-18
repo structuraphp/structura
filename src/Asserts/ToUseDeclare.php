@@ -58,6 +58,6 @@ final readonly class ToUseDeclare implements ExprScriptInterface
 
         return $description instanceof ClassDescription
             ? $description->lines
-            : 0;
+            : 1;
     }
 }
