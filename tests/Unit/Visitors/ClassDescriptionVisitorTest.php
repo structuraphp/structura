@@ -183,4 +183,31 @@ final class ClassDescriptionVisitorTest extends TestCase
 
         self::assertSame(0, $visitor->getClass()?->lines);
     }
+
+    #[DataProvider('getClassLineProvider')]
+    public function testClassLineIsDeclarationLine(string $raw, int $expected): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, $raw);
+
+        self::assertSame($expected, $visitor->getClass()?->lines);
+    }
+
+    /**
+     * @return Generator<string, array{string, int}>
+     */
+    public static function getClassLineProvider(): Generator
+    {
+        $attributes = "<?php\n\n#[A]\n#[B]\n%s Foo {}";
+
+        yield 'class with attributes' => [sprintf($attributes, 'final class'), 5];
+
+        yield 'enum with attributes' => [sprintf($attributes, 'enum'), 5];
+
+        yield 'interface with attributes' => [sprintf($attributes, 'interface'), 5];
+
+        yield 'trait with attributes' => [sprintf($attributes, 'trait'), 5];
+
+        yield 'anonymous class keeps its node line' => ["<?php\n\nreturn new class {};", 3];
+    }
 }

@@ -138,7 +138,8 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
             $this->namespace = $node->namespacedName?->toString() ?? '';
             $this->name = $node->name?->name;
             $this->attrGroups = $node->attrGroups;
-            $this->lines = $node->getLine();
+            // the node starts at its first attribute, the name is on the declaration line
+            $this->lines = $node->name?->getLine() ?? $node->getLine();
             $this->scalarType = $node instanceof Enum_
                 ? $node->scalarType
                 : null;
