@@ -308,6 +308,14 @@ final class DependenciesVisitorTest extends TestCase
         ];
     }
 
+    public function testFullyQualifiedDocBlockNameIsResolvedWithoutLeadingBackslash(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, '<?php namespace App; class Foo { /** @var \Acme\Bar */ public $bar; }');
+
+        self::assertSame(['Acme\Bar'], array_keys($visitor->getDocBlockDependencies()));
+    }
+
     private function getClassLikeProvider(): string
     {
         return <<<'PHP'

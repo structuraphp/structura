@@ -346,7 +346,7 @@ final class DependenciesVisitor extends NodeVisitorAbstract
     private function resolveDocBlockName(string $name): string
     {
         if (str_starts_with($name, '\\')) {
-            return $name;
+            return substr($name, 1);
         }
 
         $parts = explode('\\', $name);
