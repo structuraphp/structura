@@ -11,33 +11,28 @@ use StructuraPhp\Structura\Asserts\ToHaveFilePermission;
 use StructuraPhp\Structura\Concerns\ExprScript\ThirdPartyAssert;
 use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
-use Symfony\Component\Filesystem\Filesystem;
+use StructuraPhp\Structura\Tests\Helper\Sandbox;
 
 #[CoversClass(ToHaveFilePermission::class)]
 #[CoversMethod(ThirdPartyAssert::class, 'toHaveFilePermission')]
 final class ToHaveFilePermissionTest extends TestCase
 {
     use ArchitectureAsserts;
-
-    private string $testDir;
+    use Sandbox;
 
     protected function setUp(): void
     {
-        $this->testDir = \sys_get_temp_dir() . '/structura_test_' . uniqid();
-        @mkdir($this->testDir, 0755, true);
+        $this->enterSandbox();
     }
 
     protected function tearDown(): void
     {
-        $filesystem = new Filesystem();
-        if (\is_dir($this->testDir)) {
-            $filesystem->remove($this->testDir);
-        }
+        $this->leaveSandbox();
     }
 
     public function testToHaveFilePermissionWithCorrectPermission(): void
     {
-        $filePath = $this->testDir . '/test.php';
+        $filePath = $this->sandbox . '/test.php';
         file_put_contents($filePath, '<?php echo "test";');
         chmod($filePath, 0644);
 
@@ -57,7 +52,7 @@ final class ToHaveFilePermissionTest extends TestCase
 
     public function testToHaveFilePermissionWithWrongPermission(): void
     {
-        $filePath = $this->testDir . '/test.php';
+        $filePath = $this->sandbox . '/test.php';
         file_put_contents($filePath, '<?php echo "test";');
         chmod($filePath, 0644);
 
