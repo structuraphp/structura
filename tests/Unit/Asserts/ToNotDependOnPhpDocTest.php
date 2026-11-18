@@ -90,6 +90,11 @@ final class ToNotDependOnPhpDocTest extends TestCase
             '<?php use Forbidden\Bar; class Foo { /** @param Bar $bar */ public function test(): void {} }',
             'Forbidden\Bar',
         ];
+
+        yield 'phpDoc with fully qualified forbidden name' => [
+            '<?php class Foo { /** @param \ArrayAccess $bar */ public function test(): void {} }',
+            'ArrayAccess',
+        ];
     }
 
     public function testToNotDependOnPhpDocOnlyViolatesIntersection(): void
