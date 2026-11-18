@@ -15,6 +15,7 @@ use StructuraPhp\Structura\Asserts\ToNotDependOnPhpDoc;
 use StructuraPhp\Structura\Concerns\ExprScript\DependencyAssert;
 use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 
 #[CoversClass(ToNotDependOnPhpDoc::class)]
 #[CoversMethod(DependencyAssert::class, 'toNotDependOnPhpDoc')]
@@ -212,5 +213,15 @@ final class ToNotDependOnPhpDocTest extends TestCase
             ],
             [4, 4],
         );
+    }
+
+    public function testScriptViolationIsOnLineZero(): void
+    {
+        $description = (new ScriptDescription(null, null, [], [], null))
+            ->setDocBlockDependencies(['ArrayAccess']);
+
+        $violations = (new ToNotDependOnPhpDoc([ArrayAccess::class], []))->getViolation($description);
+
+        self::assertSame(0, $violations[0]->line);
     }
 }

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Visitors;
 
+use Generator;
 use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Return_;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use StructuraPhp\Structura\Enums\ClassType;
 use StructuraPhp\Structura\Enums\VisibilityType;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
@@ -111,5 +115,72 @@ final class ClassDescriptionVisitorTest extends TestCase
 
         self::assertInstanceOf(ClassDescription::class, $class);
         self::assertSame([], $class->properties);
+    }
+
+    #[DataProvider('getClassTypeProvider')]
+    public function testClassType(string $raw, ClassType $expected): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, $raw);
+
+        self::assertSame($expected, $visitor->getClass()?->classType);
+    }
+
+    public static function getClassTypeProvider(): Generator
+    {
+        yield 'named class' => ['<?php class Foo {}', ClassType::Class_];
+
+        yield 'returned anonymous class' => ['<?php return new class {};', ClassType::AnonymousClass_];
+
+        yield 'assigned anonymous class' => ['<?php $foo = new class {};', ClassType::Class_];
+    }
+
+    public function testRootReturnIsOnlyTheFileReturn(): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+
+        $this->traverse($visitor, '<?php return new class {};');
+        self::assertInstanceOf(Return_::class, $visitor->getClass()?->rootReturn);
+
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, '<?php class Foo { public function bar() { return 1; } }');
+        self::assertNull($visitor->getClass()?->rootReturn);
+    }
+
+    public function testNestedAnonymousClassesDoNotReplaceTheMainClass(): void
+    {
+        $raw = <<<'PHP'
+            <?php
+            class Foo {
+                public function bar() {
+                    new class {};
+                    new class {};
+                }
+            }
+            PHP;
+
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, $raw);
+        $class = $visitor->getClass();
+
+        self::assertSame('Foo', $class?->name);
+        self::assertSame(ClassType::Class_, $class->classType);
+        self::assertCount(2, $class->anonymousClasses);
+    }
+
+    public function testSecondNamedClassIsNotAnAnonymousClass(): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, '<?php class Foo {} class Bar {}');
+
+        self::assertSame([], $visitor->getClass()?->anonymousClasses);
+    }
+
+    public function testScriptWithoutClassHasNoLine(): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, "<?php\n\necho 1;");
+
+        self::assertSame(0, $visitor->getClass()?->lines);
     }
 }

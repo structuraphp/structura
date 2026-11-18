@@ -30,7 +30,6 @@ final readonly class ToHaveCorresponding implements ExprInterface
         $className = $callback($class);
 
         return class_exists($className)
-            || enum_exists($className)
             || interface_exists($className)
             || trait_exists($className);
     }

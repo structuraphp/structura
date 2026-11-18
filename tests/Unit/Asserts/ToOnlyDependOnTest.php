@@ -237,4 +237,17 @@ final class ToOnlyDependOnTest extends TestCase
             'tmp/run_0.php',
         ];
     }
+
+    public function testShouldFailToOnlyDependOnNameOnly(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { public function bar(\ArrayAccess $a, \Countable $c): void {} }')
+            ->should(static fn (Expr $assert): Expr => $assert->toOnlyDependOn(names: ArrayAccess::class));
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must only depend on these namespaces ArrayAccess but depends on <fire>Countable</fire>',
+        );
+    }
 }

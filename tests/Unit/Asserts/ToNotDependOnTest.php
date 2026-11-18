@@ -268,4 +268,17 @@ final class ToNotDependOnTest extends TestCase
             3,
         );
     }
+
+    public function testShouldFailToNotDependOnPatternOnly(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo { public function bar(\Depend\Bar $bar): void {} }')
+            ->should(static fn (Expr $assert): Expr => $assert->toNotDependOn(patterns: 'Depend\Bar'));
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must not depend on these namespaces Depend\Bar but depends on <fire>Depend\Bar</fire>',
+        );
+    }
 }

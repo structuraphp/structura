@@ -50,6 +50,7 @@ class ErrorPrettyJsonFormatterTest extends TestCase
         self::assertCount(1, $decoded['errors']);
         self::assertIsArray($decoded['errors'][0]);
         self::assertSame('to be final', $decoded['errors'][0]['rule']);
+        self::assertSame('Resource <promote>x</promote> must be a final class', $decoded['errors'][0]['message']);
         self::assertSame('example.php', $decoded['errors'][0]['file']);
         self::assertSame(1, $decoded['errors'][0]['line']);
 
@@ -103,5 +104,31 @@ class ErrorPrettyJsonFormatterTest extends TestCase
         self::assertArrayNotHasKey('errors', $decoded);
         self::assertArrayNotHasKey('warnings', $decoded);
         self::assertArrayNotHasKey('notices', $decoded);
+    }
+
+    public function testDurationIsInMilliseconds(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorPrettyJsonFormatter())->formatErrors(
+            FormatterDataProvider::makeOneViolation(timeStart: microtime(true) - 1000),
+            $buffer,
+        );
+
+        $decoded = json_decode($buffer->fetch(), true);
+
+        self::assertIsArray($decoded);
+        self::assertIsInt($decoded['duration_ms']);
+        self::assertGreaterThanOrEqual(1_000_000, $decoded['duration_ms']);
+        self::assertLessThan(1_001_000, $decoded['duration_ms']);
+    }
+
+    public function testOutputIsPrettyPrinted(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorPrettyJsonFormatter())->formatErrors(FormatterDataProvider::makeOneViolation(), $buffer);
+
+        self::assertStringContainsString("{\n    \"assertion_total\": ", $buffer->fetch());
     }
 }

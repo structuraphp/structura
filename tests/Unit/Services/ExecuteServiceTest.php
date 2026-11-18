@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Except;
@@ -140,6 +141,32 @@ final class ExecuteServiceTest extends TestCase
 
         $warning = $result->warnings;
         self::assertCount(0, $warning);
+    }
+
+    /**
+     * @param class-string $className
+     */
+    #[TestWith(['Foo'])]
+    public function testEveryExceptedFailureIsReported(string $className): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->except(
+                static fn (Except $e): Except => $e
+                    ->byClassname($className, ToExtend::class)
+                    ->byClassname($className, ToBeFinal::class),
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toExtend(Exception::class)
+                    ->toBeFinal(),
+            );
+
+        $service = new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject());
+        $service->assert();
+
+        self::assertCount(2, $this->builder->getAssertValueObject()->exceptions['Foo'] ?? []);
     }
 
     /**

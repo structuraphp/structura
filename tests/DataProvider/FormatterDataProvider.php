@@ -79,4 +79,43 @@ class FormatterDataProvider
             ),
         ];
     }
+
+    public static function makeOneViolation(
+        float $timeStart = 0,
+        string $pathname = 'example.php',
+        string $message = 'message',
+    ): AnalyseValueObject {
+        return new AnalyseValueObject(
+            timeStart: $timeStart,
+            countPass: 0,
+            countViolation: 1,
+            countWarning: 0,
+            countNotice: 0,
+            analyseTestValueObjects: [
+                new AnalyseTestValueObject(
+                    source: new SourceTestValueObject(
+                        testClassname: 'TestAssert',
+                        testDox: 'Asserts architecture rules',
+                        methodName: '',
+                        line: 0,
+                        pathname: '',
+                    ),
+                    ruleValueObjects: [],
+                    assertValueObject: new AssertValueObject(
+                        violations: [
+                            'to be final' => [
+                                new ViolationValueObject(
+                                    messageViolation: $message,
+                                    assertClassname: 'Foo',
+                                    line: 1,
+                                    pathname: $pathname,
+                                    messageCustom: '',
+                                ),
+                            ],
+                        ],
+                    ),
+                ),
+            ],
+        );
+    }
 }

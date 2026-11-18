@@ -41,7 +41,7 @@ final readonly class ToNotDependOnFunction implements ExprScriptInterface
 
         return array_intersect(
             $description->getFunctionDependencies(),
-            array_unique($dependencies),
+            $dependencies,
         ) === [];
     }
 
@@ -57,7 +57,7 @@ final readonly class ToNotDependOnFunction implements ExprScriptInterface
         );
         $violations = array_intersect(
             $description->getFunctionDependencies(),
-            array_unique($dependencies),
+            $dependencies,
         );
         sort($violations);
 

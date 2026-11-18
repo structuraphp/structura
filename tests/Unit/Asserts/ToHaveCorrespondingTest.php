@@ -14,6 +14,7 @@ use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Fixture\Concerns\HasFactory;
 use StructuraPhp\Structura\Tests\Fixture\Contract\ShouldQueueInterface;
 use StructuraPhp\Structura\Tests\Fixture\Enum\UserStatus;
+use StructuraPhp\Structura\Tests\Fixture\Models\User;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 
@@ -132,6 +133,21 @@ class ToHaveCorrespondingTest extends TestCase
                 static fn (Expr $assert): Expr => $assert
                     ->toHaveCorresponding(
                         static fn (ClassDescription $class): string => HasFactory::class,
+                    ),
+            );
+
+        self::assertRulesPass($rules, 'to have corresponding');
+    }
+
+    public function testToHaveCorrespondingClass(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveCorresponding(
+                        static fn (ClassDescription $class): string => User::class,
                     ),
             );
 

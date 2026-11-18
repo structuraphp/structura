@@ -141,28 +141,17 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         $this->prints[] = $print;
     }
 
-    private function durationAndTimeOutput(float $time_start): void
+    private function durationAndTimeOutput(float $timeStart): void
     {
-        $timeEnd = microtime(true);
-        $time = $timeEnd - $time_start;
-        $now = $this->tryDuration($time);
+        $duration = DateTime::createFromFormat('U.u', \sprintf('%.6F', microtime(true) - $timeStart));
+        if ($duration === false) {
+            throw new Exception();
+        }
 
         $this->prints[] = \sprintf(
             'Duration: %s, Memory: %s MB',
-            substr($now->format('i:s.u'), 0, -3),
-            (string) memory_get_peak_usage(true) / 1024 / 1024,
+            $duration->format('i:s.v'),
+            memory_get_peak_usage(true) / 1024 / 1024,
         );
-    }
-
-    private function tryDuration(float $time): DateTime
-    {
-        $now = DateTime::createFromFormat(
-            'U.u',
-            number_format($time, 3, '.', ''),
-        );
-
-        return $now === false
-            ? throw new Exception()
-            : $now;
     }
 }

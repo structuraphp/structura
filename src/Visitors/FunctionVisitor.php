@@ -41,8 +41,6 @@ final class FunctionVisitor extends NodeVisitorAbstract
                         $dependencies[$key] = strstr($namespace, '\\', true)
                             . '\\'
                             . $dependency;
-
-                        break;
                     }
                 }
             }
@@ -61,8 +59,6 @@ final class FunctionVisitor extends NodeVisitorAbstract
                     && !\in_array($namespace, $dependencies, true)
                 ) {
                     unset($namespaces[$namespaceKey]);
-
-                    break;
                 }
             }
 
@@ -102,7 +98,7 @@ final class FunctionVisitor extends NodeVisitorAbstract
         return null;
     }
 
-    public function addFuncCallDependencies(FuncCall $node): void
+    private function addFuncCallDependencies(FuncCall $node): void
     {
         if (!$node->name instanceof Name) {
             return;
@@ -111,7 +107,7 @@ final class FunctionVisitor extends NodeVisitorAbstract
         $this->addDependency($node->getLine(), $node->name->toString());
     }
 
-    public function addUseDependencies(Use_ $node): void
+    private function addUseDependencies(Use_ $node): void
     {
         if ($node->type !== Use_::TYPE_FUNCTION) {
             return;

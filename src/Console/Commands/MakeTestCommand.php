@@ -95,15 +95,7 @@ final class MakeTestCommand extends Command
 
     private function geMaketDto(InputInterface $input): MakeTestDto
     {
-        /** @var array<string,scalar> $data */
-        $data = array_filter(
-            array: $input->getOptions() + $input->getArguments(),
-            callback: static fn (mixed $value, int|string $key): bool => \is_scalar($value)
-                && \is_string($key),
-            mode: ARRAY_FILTER_USE_BOTH,
-        );
-
-        return MakeTestDto::fromArray($data);
+        return MakeTestDto::fromArray($input->getOptions());
     }
 
     private function getConfigValueObject(): ConfigValueObject

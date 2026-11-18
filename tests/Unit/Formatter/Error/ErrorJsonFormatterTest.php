@@ -112,4 +112,21 @@ class ErrorJsonFormatterTest extends TestCase
         self::assertArrayNotHasKey('warnings', $decoded);
         self::assertArrayNotHasKey('notices', $decoded);
     }
+
+    public function testDurationIsInMilliseconds(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorJsonFormatter())->formatErrors(
+            FormatterDataProvider::makeOneViolation(timeStart: microtime(true) - 1000),
+            $buffer,
+        );
+
+        $decoded = json_decode($buffer->fetch(), true);
+
+        self::assertIsArray($decoded);
+        self::assertIsInt($decoded['duration_ms']);
+        self::assertGreaterThanOrEqual(1_000_000, $decoded['duration_ms']);
+        self::assertLessThan(1_001_000, $decoded['duration_ms']);
+    }
 }

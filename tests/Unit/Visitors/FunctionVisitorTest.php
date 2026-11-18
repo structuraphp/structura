@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Visitors;
 
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\Visitors\FunctionVisitor;
@@ -61,5 +63,33 @@ class FunctionVisitorTest extends TestCase
             }
         }
         PHP;
+    }
+
+    /**
+     * @param array<int, string> $expected
+     */
+    #[DataProvider('getShadowProvider')]
+    public function testShadow(string $raw, array $expected): void
+    {
+        $visitor = new FunctionVisitor();
+        $this->traverse($visitor, $raw);
+
+        self::assertSame($expected, $visitor->getDependencies());
+    }
+
+    /**
+     * @return Generator<string, array{string, array<int, string>}>
+     */
+    public static function getShadowProvider(): Generator
+    {
+        yield 'every call through the alias is resolved' => [
+            '<?php use function Dep\Shadow; Shadow\foo(); Shadow\bar();',
+            ['Dep\Shadow\foo', 'Dep\Shadow\bar'],
+        ];
+
+        yield 'function sharing a prefix without separator' => [
+            '<?php use function Foo\bar; Foo\barbaz();',
+            ['Foo\bar', 'Foo\barbaz'],
+        ];
     }
 }

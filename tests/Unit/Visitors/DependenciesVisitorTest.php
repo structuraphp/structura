@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Visitors;
 
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Tests\Helper\ParserHelper;
 use StructuraPhp\Structura\Visitors\DependenciesVisitor;
@@ -266,6 +268,44 @@ final class DependenciesVisitorTest extends TestCase
             [],
             array_keys($visitor->getDependencies()),
         );
+    }
+
+    /**
+     * @param array<int, string> $expected
+     */
+    #[DataProvider('getShadowAndRootAttributeProvider')]
+    public function testShadowAndRootAttribute(string $raw, array $expected): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, $raw);
+
+        self::assertSame($expected, array_keys($visitor->getDependencies()));
+    }
+
+    /**
+     * @return Generator<string, array{string, array<int, string>}>
+     */
+    public static function getShadowAndRootAttributeProvider(): Generator
+    {
+        yield 'namespace shadowed by a dependency' => [
+            '<?php use Dep\Shadow; new Shadow\Foo();',
+            ['Dep\Shadow\Foo'],
+        ];
+
+        yield 'dependency sharing a prefix without separator' => [
+            '<?php use Foo\Bar; new Foo\BarBaz();',
+            ['Foo\Bar', 'Foo\BarBaz'],
+        ];
+
+        yield 'inheritance sharing a prefix without separator' => [
+            '<?php use Foo\Bar; class Qux extends Foo\BarBaz {}',
+            ['Foo\Bar'],
+        ];
+
+        yield 'attribute on a root function' => [
+            '<?php #[Foo] function bar() {}',
+            [],
+        ];
     }
 
     private function getClassLikeProvider(): string
