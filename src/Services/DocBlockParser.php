@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Services;
 
+use PHPStan\PhpDocParser\Ast\Attribute;
 use PHPStan\PhpDocParser\Ast\PhpDoc\ExtendsTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\ImplementsTagValueNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\MixinTagValueNode;
@@ -80,7 +81,7 @@ final readonly class DocBlockParser
 
     public function __construct()
     {
-        $config = new ParserConfig([]);
+        $config = new ParserConfig(['lines' => true]);
         $this->lexer = new Lexer($config);
         $constExprParser = new ConstExprParser($config);
         $typeParser = new TypeParser($config, $constExprParser);
@@ -90,7 +91,7 @@ final readonly class DocBlockParser
     /**
      * Parse a docblock and extract all class names referenced in type annotations.
      *
-     * @return array<int, string>
+     * @return array<string, int> class name => line of its first tag, relative to the docblock
      */
     public function parse(string $docBlock): array
     {
@@ -101,21 +102,27 @@ final readonly class DocBlockParser
     }
 
     /**
-     * @return array<int, string>
+     * @return array<string, int>
      */
     private function extractClassNames(PhpDocNode $phpDocNode): array
     {
         $classNames = [];
 
         foreach ($phpDocNode->getTags() as $tag) {
-            $types = $this->getTypesFromTag($tag);
+            /** @var int $line phpdoc-parser types attributes as mixed, the "lines" option makes it an int */
+            $line = $tag->getAttribute(Attribute::START_LINE);
 
-            foreach ($types as $type) {
-                $this->extractFromType($type, $classNames);
+            $tagClassNames = [];
+            foreach ($this->getTypesFromTag($tag) as $type) {
+                $this->extractFromType($type, $tagClassNames);
+            }
+
+            foreach ($tagClassNames as $className) {
+                $classNames[$className] ??= $line;
             }
         }
 
-        return array_values(array_unique($classNames));
+        return $classNames;
     }
 
     /**

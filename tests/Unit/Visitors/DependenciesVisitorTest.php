@@ -353,6 +353,24 @@ final class DependenciesVisitorTest extends TestCase
         self::assertSame(['Foo\Bar' => 2], $visitor->getDependencies());
     }
 
+    public function testDocBlockDependencyLineIsTagLine(): void
+    {
+        $visitor = new DependenciesVisitor();
+        $this->traverse($visitor, <<<'PHP'
+        <?php
+        class Foo {
+            /**
+             * Description.
+             *
+             * @param Bar $bar
+             */
+            public function baz($bar) {}
+        }
+        PHP);
+
+        self::assertSame(['Bar' => 6], $visitor->getDocBlockDependencies());
+    }
+
     public function testDocBlockDependencyLineIsFirstOccurrence(): void
     {
         $visitor = new DependenciesVisitor();

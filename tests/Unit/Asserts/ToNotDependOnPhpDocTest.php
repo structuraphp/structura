@@ -169,7 +169,7 @@ final class ToNotDependOnPhpDocTest extends TestCase
                     'Forbidden\Zzz',
                 ),
             ],
-            [5, 5],
+            [7, 6],
         );
     }
 
@@ -216,7 +216,7 @@ final class ToNotDependOnPhpDocTest extends TestCase
                     'Forbidden\Bar',
                 ),
             ],
-            [5, 5],
+            [6, 7],
         );
     }
 

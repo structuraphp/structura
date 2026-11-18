@@ -141,7 +141,7 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
                     'Forbidden\Baz',
                 ),
             ],
-            [5, 5],
+            [6, 7],
         );
     }
 
@@ -192,7 +192,7 @@ final class ToOnlyDependOnPhpDocTest extends TestCase
         self::assertRulesViolation(
             $rules,
             'Resource <promote>Foo</promote> must only depend on these phpDoc namespaces ArrayAccess but depends on <fire>Countable</fire>',
-            5,
+            7,
         );
     }
 
