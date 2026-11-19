@@ -39,9 +39,8 @@ final class ProgressTextFormatter implements ProgressFormatterInterface
             $this->shouldOutput($data->assertValueObject);
             $this->prints[] = '';
 
-            foreach ($this->prints as $print) {
-                $this->styleCustom($output)->writeln($print);
-            }
+            // styles registered once for all the lines, not once per line
+            $this->styleCustom($output)->writeln($this->prints);
 
             $this->prints = [];
         }

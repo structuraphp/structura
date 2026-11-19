@@ -17,6 +17,7 @@ and its visitors, the analysis orchestration and the console formatters.
 | `ParseServiceBench.php`          | Cost of the finder, the parser and the visitors                             |
 | `ExecuteServiceBench.php`        | Whole architecture test: finder, parser, `that`/`except`, assertions, events|
 | `AnalyseOrchestratorBench.php`   | Orchestration: discovery, reflection, events, merge, `--filter`, stop-on    |
+| `AssertBuilderBench.php`         | Violations of one rule failing on 2,000 files, collected event by event     |
 | `FormatterBench.php`             | The 6 error formatters and the 3 progress formatters                        |
 
 Each benchmark keeps the setup out of the measurement: `AssertBench` parses the corpus

@@ -58,10 +58,10 @@ readonly class AllClasses implements FinderInterface
     public function fromDir(array|string $dirs, ?Closure $closure = null): ThatInterface
     {
         try {
+            // not sorted here: ExecuteService sorts the paths, sorting the files would keep them all in memory
             $finder = Finder::create()
                 ->files()
                 ->followLinks()
-                ->sortByName()
                 ->name('*.php')
                 ->in($dirs);
         } catch (DirectoryNotFoundException $directoryNotFoundException) {

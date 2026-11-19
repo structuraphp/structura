@@ -25,6 +25,7 @@ use StructuraPhp\Structura\ValueObjects\ScriptDescription;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 final class ExecuteService
 {
@@ -43,11 +44,15 @@ final class ExecuteService
 
     public function assert(): void
     {
-        $description = $this->ruleValueObject->finder instanceof Finder
-            ? $this->parseService->parse($this->ruleValueObject->finder)
-            : $this->parseRawFiles();
+        $paths = $this->ruleValueObject->finder instanceof Finder
+            ? $this->listPaths($this->ruleValueObject->finder)
+            : null;
 
-        if ($this->isEmptySource()) {
+        $description = $paths === null
+            ? $this->parseRawFiles()
+            : $this->parseFiles($paths);
+
+        if ($paths === []) {
             $message = sprintf(
                 'No PHP files found for test "<promote>%s</promote>". Assertions were skipped.',
                 $this->sourceTest->testClassname ?? '',
@@ -62,10 +67,35 @@ final class ExecuteService
         $this->execute($description, $this->ruleValueObject->should);
     }
 
-    private function isEmptySource(): bool
+    /**
+     * The directory is walked once, keeping only the paths: Finder::count() would walk it again,
+     * and Finder::sortByName() keeps the SplFileInfo of every file in memory (about 9 KB each).
+     * The paths are sorted as sortByName() does, so the files are analysed in the same order.
+     *
+     * @return array<int, string>
+     */
+    private function listPaths(Finder $finder): array
     {
-        return $this->ruleValueObject->finder instanceof Finder
-            && $this->ruleValueObject->finder->count() === 0;
+        $paths = [];
+        foreach ($finder as $file) {
+            $paths[] = $file->getRealPath();
+        }
+
+        sort($paths, SORT_STRING);
+
+        return $paths;
+    }
+
+    /**
+     * @param array<int, string> $paths
+     *
+     * @return Generator<ClassDescription|ScriptDescription>
+     */
+    private function parseFiles(array $paths): Generator
+    {
+        foreach ($paths as $path) {
+            yield from $this->parseService->parseRaw((new SplFileInfo($path, '', ''))->getContents(), $path);
+        }
     }
 
     /**
