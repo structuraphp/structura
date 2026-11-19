@@ -7,6 +7,7 @@ namespace StructuraPhp\Structura\Services;
 use InvalidArgumentException;
 use ParseError;
 use StructuraPhp\Structura\ValueObjects\BaselineEntryValueObject;
+use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 /**
@@ -15,28 +16,33 @@ use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
  */
 final class BaselineService
 {
-    /** @var array<string, array<string, array<string, true>>> path => rule => identifier */
+    /** @var array<string, BaselineEntryValueObject> key => entry */
     private array $entries = [];
 
-    /** @var array<string, array<string, array<string, true>>> path => rule => identifier */
-    private array $used = [];
+    /** @var array<string, BaselineEntryValueObject> entries no violation has matched yet */
+    private array $unmatched;
 
     private int $countTolerated = 0;
 
     /**
-     * @param array<string, array<string, array<int, string>>> $entries path => rule => identifiers
+     * @param array<string, array<string, array<string, array<int, string>>>> $entries test => path => rule => identifiers
      */
     public function __construct(
         array $entries,
         private readonly string $baseDirectory,
     ) {
-        foreach ($entries as $path => $rules) {
-            foreach ($rules as $rule => $identifiers) {
-                foreach ($identifiers as $identifier) {
-                    $this->entries[$path][$rule][$identifier] = true;
+        foreach ($entries as $test => $paths) {
+            foreach ($paths as $path => $rules) {
+                foreach ($rules as $rule => $identifiers) {
+                    foreach ($identifiers as $identifier) {
+                        $entry = new BaselineEntryValueObject($test, $path, $rule, $identifier);
+                        $this->entries[$entry->key()] = $entry;
+                    }
                 }
             }
         }
+
+        $this->unmatched = $this->entries;
     }
 
     public static function fromFile(string $path, string $baseDirectory): self
@@ -58,24 +64,21 @@ final class BaselineService
 
         if (!self::isValid($entries)) {
             throw new InvalidArgumentException(
-                \sprintf('Baseline file "%s" must return array<string, array<class-string, list<string>>>', $path),
+                \sprintf('Baseline file "%s" must return array<string, array<string, array<string, list<string>>>>', $path),
             );
         }
 
         return new self($entries, $baseDirectory);
     }
 
-    public function isTolerated(ViolationValueObject $violation): bool
+    public function isTolerated(SourceTestValueObject $source, ViolationValueObject $violation): bool
     {
-        $entry = BaselineEntryValueObject::fromViolation($violation, $this->baseDirectory);
-        if (
-            !$entry instanceof BaselineEntryValueObject
-            || !isset($this->entries[$entry->path][$entry->rule][$entry->identifier])
-        ) {
+        $key = BaselineEntryValueObject::fromViolation($source, $violation, $this->baseDirectory)?->key();
+        if ($key === null || !isset($this->entries[$key])) {
             return false;
         }
 
-        $this->used[$entry->path][$entry->rule][$entry->identifier] = true;
+        unset($this->unmatched[$key]);
         $this->countTolerated++;
 
         return true;
@@ -91,23 +94,16 @@ final class BaselineService
      */
     public function getStaleWarnings(): array
     {
-        $warnings = [];
-        foreach ($this->entries as $path => $rules) {
-            foreach ($rules as $rule => $identifiers) {
-                foreach (array_keys($identifiers) as $identifier) {
-                    if (isset($this->used[$path][$rule][$identifier])) {
-                        continue;
-                    }
-
-                    $warnings[] = \sprintf(
-                        'Baseline entry <promote>%s</promote> for <promote>%s</promote> in <promote>%s</promote> no longer matches any violation',
-                        $identifier,
-                        $rule,
-                        $path,
-                    );
-                }
-            }
-        }
+        $warnings = array_map(
+            static fn (BaselineEntryValueObject $entry): string => \sprintf(
+                'Baseline entry <promote>%s</promote> for <promote>%s</promote> in <promote>%s</promote> from test <promote>%s</promote> no longer matches any violation',
+                $entry->identifier,
+                $entry->rule,
+                $entry->path,
+                $entry->test,
+            ),
+            $this->unmatched,
+        );
 
         sort($warnings);
 
@@ -115,7 +111,7 @@ final class BaselineService
     }
 
     /**
-     * @phpstan-assert-if-true array<string, array<string, array<int, string>>> $entries
+     * @phpstan-assert-if-true array<string, array<string, array<string, array<int, string>>>> $entries
      */
     private static function isValid(mixed $entries): bool
     {
@@ -123,7 +119,21 @@ final class BaselineService
             return false;
         }
 
-        foreach ($entries as $path => $rules) {
+        foreach ($entries as $test => $paths) {
+            if (!\is_string($test) || !\is_array($paths) || !self::isValidPaths($paths)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array<mixed> $paths
+     */
+    private static function isValidPaths(array $paths): bool
+    {
+        foreach ($paths as $path => $rules) {
             if (!\is_string($path) || !\is_array($rules)) {
                 return false;
             }

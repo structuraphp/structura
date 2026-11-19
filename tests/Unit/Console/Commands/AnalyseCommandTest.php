@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Console\Commands\AnalyseCommand;
 use StructuraPhp\Structura\Console\Kernel;
 use StructuraPhp\Structura\Services\BaselineService;
@@ -101,7 +100,7 @@ final class AnalyseCommandTest extends TestCase
 
     public function testRemovedEntryIsReportedAgain(): void
     {
-        $entry = "            'StructuraPhp\\\\Structura\\\\Tests\\\\Fixture\\\\Contract\\\\ShouldQueueInterface',\n";
+        $entry = "                'StructuraPhp\\\\Structura\\\\Tests\\\\Fixture\\\\Contract\\\\ShouldQueueInterface',\n";
         self::assertStringContainsString($entry, self::$template);
         $this->writeBaseline(str_replace($entry, '', self::$template));
 
@@ -314,7 +313,7 @@ final class AnalyseCommandTest extends TestCase
 
         $this->writeBaseline(str_replace(
             "return [\n",
-            "return [\n    'src/Nope.php' => [\\" . ToNotDependOn::class . "::class => ['Nope']],\n",
+            "return [\n    'Tests\\\\Nope::testNope' => ['src/Nope.php' => ['ToNotDependOn' => ['Nope']]],\n",
             self::$template,
         ));
     }

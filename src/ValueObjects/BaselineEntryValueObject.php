@@ -10,22 +10,36 @@ use Symfony\Component\Filesystem\Path;
 /**
  * Identifies a violation in a baseline, independently of its line,
  * its custom message and the configuration of its rule.
+ * The test is part of the key: a violation recorded for one test never tolerates
+ * the same violation reported by another test.
  */
 final readonly class BaselineEntryValueObject
 {
     public function __construct(
+        public string $test,
         public string $path,
         public string $rule,
         public string $identifier,
     ) {}
 
     /**
+     * Unique among entries: no part contains a NUL byte (anonymous rules are never baselined).
+     */
+    public function key(): string
+    {
+        return implode("\0", [$this->test, $this->path, $this->rule, $this->identifier]);
+    }
+
+    /**
      * Returns null for what can never match across runs, and is never baselined:
      * a source without a real file (fromRaw) and a rule written as an anonymous class,
      * whose name holds a NUL byte and the absolute path of its file.
      */
-    public static function fromViolation(ViolationValueObject $violation, string $baseDirectory): ?self
-    {
+    public static function fromViolation(
+        SourceTestValueObject $source,
+        ViolationValueObject $violation,
+        string $baseDirectory,
+    ): ?self {
         $pathname = $violation->pathname;
         if (
             $pathname === null
@@ -36,8 +50,10 @@ final readonly class BaselineEntryValueObject
         }
 
         return new self(
+            $source->testClassname . '::' . $source->methodName,
             Path::makeRelative($pathname, $baseDirectory),
-            $violation->assertClassname,
+            // the short name of the rule: its namespace only makes the file harder to read
+            basename(strtr($violation->assertClassname, '\\', '/')),
             self::identifier($violation->messageViolation, $baseDirectory),
         );
     }

@@ -13,7 +13,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Asserts\ToImplement;
-use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Builder\AssertBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\IncludeType;
@@ -273,9 +272,9 @@ final class ExecuteServiceTest extends TestCase
 
     public function testFullyToleratedRuleIsAPass(): void
     {
-        $baseline = $this->baseline([ToNotDependOn::class => ['Legacy\Mailer', 'Legacy\Zip']]);
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']]);
 
-        (new ExecuteService($this->dispatcher, $this->dependingRule(), null, $baseline))->assert();
+        (new ExecuteService($this->dispatcher, $this->dependingRule(), $this->baselineSource(), $baseline))->assert();
 
         $result = $this->builder->getAssertValueObject();
         self::assertSame([1], array_values($result->pass));
@@ -283,11 +282,21 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(2, $baseline->countTolerated());
     }
 
-    public function testOnlyUntoleratedViolationsAreReported(): void
+    public function testBaselineIsIgnoredWithoutTheCurrentTest(): void
     {
-        $baseline = $this->baseline([ToNotDependOn::class => ['Legacy\Mailer']]);
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']]);
 
         (new ExecuteService($this->dispatcher, $this->dependingRule(), null, $baseline))->assert();
+
+        self::assertCount(2, array_merge(...array_values($this->builder->getAssertValueObject()->violations)));
+        self::assertSame(0, $baseline->countTolerated());
+    }
+
+    public function testOnlyUntoleratedViolationsAreReported(): void
+    {
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer']]);
+
+        (new ExecuteService($this->dispatcher, $this->dependingRule(), $this->baselineSource(), $baseline))->assert();
 
         $violations = array_merge(...array_values($this->builder->getAssertValueObject()->violations));
         self::assertCount(1, $violations);
@@ -307,9 +316,9 @@ final class ExecuteServiceTest extends TestCase
                             ->toExtend(ToExtend::class),
                     ),
             );
-        $baseline = $this->baseline([ToExtend::class => ['Resource Foo must extend Exception']]);
+        $baseline = $this->baseline(['ToExtend' => ['Resource Foo must extend Exception']]);
 
-        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), null, $baseline))->assert();
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), $this->baselineSource(), $baseline))->assert();
 
         $violations = array_merge(...array_values($this->builder->getAssertValueObject()->violations));
         self::assertCount(1, $violations);
@@ -351,9 +360,9 @@ final class ExecuteServiceTest extends TestCase
             ->allScripts()
             ->fromRaw('<?php new \Legacy\Mailer();', '/project/src/Foo.php')
             ->should(static fn (ExprScript $assert): ExprScript => $assert->toNotDependOn(patterns: 'Legacy\.+'));
-        $baseline = $this->baseline([ToNotDependOn::class => ['Legacy\Mailer']]);
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer']]);
 
-        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), null, $baseline))->assert();
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), $this->baselineSource(), $baseline))->assert();
 
         $result = $this->builder->getAssertValueObject();
         self::assertSame([1], array_values($result->pass));
@@ -440,7 +449,12 @@ final class ExecuteServiceTest extends TestCase
      */
     private function baseline(array $rules): BaselineService
     {
-        return new BaselineService(['src/Foo.php' => $rules], '/project');
+        return new BaselineService(['Tests\TestBaseline::testRule' => ['src/Foo.php' => $rules]], '/project');
+    }
+
+    private function baselineSource(): SourceTestValueObject
+    {
+        return new SourceTestValueObject('Tests\TestBaseline', '', 'testRule', 0, '');
     }
 
     private function dependingRule(): RuleValueObject

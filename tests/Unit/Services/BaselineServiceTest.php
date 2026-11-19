@@ -13,6 +13,7 @@ use StructuraPhp\Structura\Asserts\ToNotDependOn;
 use StructuraPhp\Structura\Services\BaselineService;
 use StructuraPhp\Structura\Tests\Helper\Sandbox;
 use StructuraPhp\Structura\ValueObjects\BaselineEntryValueObject;
+use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
 #[CoversClass(BaselineService::class)]
@@ -22,6 +23,8 @@ final class BaselineServiceTest extends TestCase
     use Sandbox;
 
     private const BASE = '/home/a/project';
+
+    private const TEST = 'Tests\TestController::testDependencies';
 
     private const DEPEND = 'Resource <promote>Foo</promote> must not depend on these namespaces A, B but depends on <fire>Legacy\Mailer</fire>';
 
@@ -37,15 +40,17 @@ final class BaselineServiceTest extends TestCase
 
     public function testIdentifierIsFireText(): void
     {
-        $entry = BaselineEntryValueObject::fromViolation($this->violation(self::DEPEND), self::BASE);
+        $entry = BaselineEntryValueObject::fromViolation($this->source(), $this->violation(self::DEPEND), self::BASE);
 
         self::assertSame('Legacy\Mailer', $entry?->identifier);
-        self::assertSame(ToNotDependOn::class, $entry->rule);
+        self::assertSame('ToNotDependOn', $entry->rule);
+        self::assertSame(self::TEST, $entry->test);
     }
 
     public function testIdentifierJoinsSeveralFireTags(): void
     {
         $entry = BaselineEntryValueObject::fromViolation(
+            $this->source(),
             $this->violation('Resource <promote>Foo</promote> uses <fire>A</fire> and <fire>B</fire>'),
             self::BASE,
         );
@@ -56,6 +61,7 @@ final class BaselineServiceTest extends TestCase
     public function testIdentifierIsStrippedMessageWithoutFire(): void
     {
         $entry = BaselineEntryValueObject::fromViolation(
+            $this->source(),
             $this->violation('Resource <promote>Foo</promote> must have method <promote>__construct</promote>'),
             self::BASE,
         );
@@ -69,7 +75,7 @@ final class BaselineServiceTest extends TestCase
     #[DataProvider('getRelativePathProvider')]
     public function testEntryIsRelativeToTheBaseDirectory(string $pathname, string $base, string $expected): void
     {
-        $entry = BaselineEntryValueObject::fromViolation($this->violation(self::DEPEND, $pathname), $base);
+        $entry = BaselineEntryValueObject::fromViolation($this->source(), $this->violation(self::DEPEND, $pathname), $base);
 
         self::assertSame($expected, $entry?->path);
     }
@@ -93,10 +99,12 @@ final class BaselineServiceTest extends TestCase
     public function testIdentifierStripsTheBaseDirectory(string $base): void
     {
         $include = BaselineEntryValueObject::fromViolation(
+            $this->source(),
             $this->violation(\sprintf('Resource <promote>Foo</promote> uses path <fire>%s/vendor/autoload.php</fire>', $base), $base . '/src/Foo.php'),
             $base,
         );
         $corresponding = BaselineEntryValueObject::fromViolation(
+            $this->source(),
             $this->violation(\sprintf('Resource name <promote>Foo</promote> must have corresponding file <promote>%s/tests/FooTest.php</promote>', $base), $base . '/src/Foo.php'),
             $base,
         );
@@ -118,6 +126,7 @@ final class BaselineServiceTest extends TestCase
     public function testIdentifierKeepsGenericTypes(): void
     {
         $entry = BaselineEntryValueObject::fromViolation(
+            $this->source(),
             $this->violation('Resource <promote>Foo</promote> must return <promote>array<string, int></promote>'),
             self::BASE,
         );
@@ -129,7 +138,7 @@ final class BaselineServiceTest extends TestCase
     {
         $violation = $this->violation(self::DEPEND, rule: "class@anonymous\0/home/a/project/tests/Rule.php:5$0");
 
-        self::assertNull(BaselineEntryValueObject::fromViolation($violation, self::BASE));
+        self::assertNull(BaselineEntryValueObject::fromViolation($this->source(), $violation, self::BASE));
     }
 
     public function testFromFileRejectsInvalidPhp(): void
@@ -146,17 +155,17 @@ final class BaselineServiceTest extends TestCase
     {
         $violation = $this->violation(self::DEPEND, 'tmp/run_0.php');
 
-        self::assertNull(BaselineEntryValueObject::fromViolation($violation, self::BASE));
-        self::assertNull(BaselineEntryValueObject::fromViolation($this->violation(self::DEPEND, null), self::BASE));
-        self::assertFalse($this->service()->isTolerated($violation));
+        self::assertNull(BaselineEntryValueObject::fromViolation($this->source(), $violation, self::BASE));
+        self::assertNull(BaselineEntryValueObject::fromViolation($this->source(), $this->violation(self::DEPEND, null), self::BASE));
+        self::assertFalse($this->service()->isTolerated($this->source(), $violation));
     }
 
     public function testToleratesMatchingViolationWhateverLineAndCustomMessage(): void
     {
         $service = $this->service();
 
-        self::assertTrue($service->isTolerated($this->violation(self::DEPEND, line: 3)));
-        self::assertTrue($service->isTolerated($this->violation(self::DEPEND, line: 40, custom: 'x')));
+        self::assertTrue($service->isTolerated($this->source(), $this->violation(self::DEPEND, line: 3)));
+        self::assertTrue($service->isTolerated($this->source(), $this->violation(self::DEPEND, line: 40, custom: 'x')));
     }
 
     public function testToleratesWhenRuleConfigurationChanged(): void
@@ -165,25 +174,38 @@ final class BaselineServiceTest extends TestCase
             'Resource <promote>Foo</promote> must not depend on these namespaces A, B, C but depends on <fire>Legacy\Mailer</fire>',
         );
 
-        self::assertTrue($this->service()->isTolerated($violation));
+        self::assertTrue($this->service()->isTolerated($this->source(), $violation));
     }
 
     public function testDoesNotTolerateOtherPathRuleOrIdentifier(): void
     {
         $service = $this->service();
 
-        self::assertFalse($service->isTolerated($this->violation(self::DEPEND, self::BASE . '/src/Other.php')));
-        self::assertFalse($service->isTolerated($this->violation(self::DEPEND, rule: ToHaveMethod::class)));
-        self::assertFalse($service->isTolerated($this->violation('depends on <fire>Legacy\Payment</fire>')));
+        self::assertFalse($service->isTolerated($this->source(), $this->violation(self::DEPEND, self::BASE . '/src/Other.php')));
+        self::assertFalse($service->isTolerated($this->source(), $this->violation(self::DEPEND, rule: ToHaveMethod::class)));
+        self::assertFalse($service->isTolerated($this->source(), $this->violation('depends on <fire>Legacy\Payment</fire>')));
         self::assertSame(0, $service->countTolerated());
+    }
+
+    public function testDoesNotTolerateTheSameViolationFromAnotherTest(): void
+    {
+        $service = $this->service();
+
+        self::assertFalse($service->isTolerated($this->source('testLegacy'), $this->violation(self::DEPEND)));
+        self::assertFalse($service->isTolerated(
+            new SourceTestValueObject('Tests\TestLayers', '', 'testDependencies', 1, ''),
+            $this->violation(self::DEPEND),
+        ));
+        self::assertSame(0, $service->countTolerated());
+        self::assertCount(1, $service->getStaleWarnings());
     }
 
     public function testSameViolationIsToleratedTwice(): void
     {
         $service = $this->service();
 
-        self::assertTrue($service->isTolerated($this->violation(self::DEPEND)));
-        self::assertTrue($service->isTolerated($this->violation(self::DEPEND)));
+        self::assertTrue($service->isTolerated($this->source(), $this->violation(self::DEPEND)));
+        self::assertTrue($service->isTolerated($this->source(), $this->violation(self::DEPEND)));
         self::assertSame(2, $service->countTolerated());
         self::assertSame([], $service->getStaleWarnings());
     }
@@ -193,24 +215,26 @@ final class BaselineServiceTest extends TestCase
         $service = new BaselineService(
             [
                 // the used entry (Mailer) comes first, and the stale ones are inserted unsorted (Zip before Mailer)
-                'src/Foo.php' => [ToNotDependOn::class => ['Legacy\Mailer', 'Legacy\Zip']],
-                'src/Zed.php' => [ToNotDependOn::class => ['Legacy\Mailer']],
+                self::TEST => [
+                    'src/Foo.php' => ['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']],
+                    'src/Zed.php' => ['ToNotDependOn' => ['Legacy\Mailer']],
+                ],
+                'Tests\TestController::testLegacy' => [
+                    'src/Foo.php' => ['ToNotDependOn' => ['Legacy\Mailer']],
+                ],
             ],
             self::BASE,
         );
 
-        $service->isTolerated($this->violation(self::DEPEND));
+        $service->isTolerated($this->source(), $this->violation(self::DEPEND));
+
+        $stale = 'Baseline entry <promote>%s</promote> for <promote>%s</promote> in <promote>%s</promote> from test <promote>%s</promote> no longer matches any violation';
 
         self::assertSame(
             [
-                \sprintf(
-                    'Baseline entry <promote>Legacy\Mailer</promote> for <promote>%s</promote> in <promote>src/Zed.php</promote> no longer matches any violation',
-                    ToNotDependOn::class,
-                ),
-                \sprintf(
-                    'Baseline entry <promote>Legacy\Zip</promote> for <promote>%s</promote> in <promote>src/Foo.php</promote> no longer matches any violation',
-                    ToNotDependOn::class,
-                ),
+                \sprintf($stale, 'Legacy\Mailer', 'ToNotDependOn', 'src/Foo.php', 'Tests\TestController::testLegacy'),
+                \sprintf($stale, 'Legacy\Mailer', 'ToNotDependOn', 'src/Zed.php', self::TEST),
+                \sprintf($stale, 'Legacy\Zip', 'ToNotDependOn', 'src/Foo.php', self::TEST),
             ],
             $service->getStaleWarnings(),
         );
@@ -221,14 +245,14 @@ final class BaselineServiceTest extends TestCase
         file_put_contents(
             'baseline.php',
             \sprintf(
-                "<?php return ['src/Foo.php' => [%s::class => ['Legacy\\\\Mailer']]];",
-                '\\' . ToNotDependOn::class,
+                "<?php return [%s => ['src/Foo.php' => ['ToNotDependOn' => ['Legacy\\\\Mailer']]]];",
+                var_export(self::TEST, true),
             ),
         );
 
         $service = BaselineService::fromFile($this->sandbox . '/baseline.php', self::BASE);
 
-        self::assertTrue($service->isTolerated($this->violation(self::DEPEND)));
+        self::assertTrue($service->isTolerated($this->source(), $this->violation(self::DEPEND)));
     }
 
     public function testFromFileRejectsMissingFile(): void
@@ -246,7 +270,7 @@ final class BaselineServiceTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Baseline file "baseline.php" must return array<string, array<class-string, list<string>>>',
+            'Baseline file "baseline.php" must return array<string, array<string, array<string, list<string>>>>',
         );
 
         BaselineService::fromFile('baseline.php', self::BASE);
@@ -259,23 +283,34 @@ final class BaselineServiceTest extends TestCase
     {
         yield 'not an array' => ["'nope'"];
 
-        yield 'path without rules' => ["['src/Foo.php' => 'nope']"];
+        yield 'test without paths' => ["['T::m' => 'nope']"];
 
-        yield 'rule without list' => ["['src/Foo.php' => ['Rule' => 'not-a-list']]"];
+        yield 'path without rules' => ["['T::m' => ['src/Foo.php' => 'nope']]"];
 
-        yield 'identifier not a string' => ["['src/Foo.php' => ['Rule' => [1]]]"];
+        yield 'rule without list' => ["['T::m' => ['src/Foo.php' => ['Rule' => 'not-a-list']]]"];
 
-        yield 'numeric path' => ["[0 => ['Rule' => ['x']]]"];
+        yield 'identifier not a string' => ["['T::m' => ['src/Foo.php' => ['Rule' => [1]]]]"];
 
-        yield 'numeric rule' => ["['src/Foo.php' => [0 => ['x']]]"];
+        yield 'numeric test' => ["[0 => ['src/Foo.php' => ['Rule' => ['x']]]]"];
+
+        yield 'numeric path' => ["['T::m' => [0 => ['Rule' => ['x']]]]"];
+
+        yield 'numeric rule' => ["['T::m' => ['src/Foo.php' => [0 => ['x']]]]"];
+
+        yield 'previous format without tests' => ["['src/Foo.php' => ['Rule' => ['x']]]"];
     }
 
     private function service(): BaselineService
     {
         return new BaselineService(
-            ['src/Foo.php' => [ToNotDependOn::class => ['Legacy\Mailer']]],
+            [self::TEST => ['src/Foo.php' => ['ToNotDependOn' => ['Legacy\Mailer']]]],
             self::BASE,
         );
+    }
+
+    private function source(string $method = 'testDependencies'): SourceTestValueObject
+    {
+        return new SourceTestValueObject('Tests\TestController', 'Controllers', $method, 1, '');
     }
 
     private function violation(

@@ -280,7 +280,8 @@ final class ExecuteService
         return array_filter(
             $violations,
             fn (ViolationValueObject $violation): bool => !$this->baseline instanceof BaselineService
-                || !$this->baseline->isTolerated($violation),
+                || !$this->sourceTest instanceof SourceTestValueObject
+                || !$this->baseline->isTolerated($this->sourceTest, $violation),
         );
     }
 
