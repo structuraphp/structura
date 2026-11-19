@@ -32,6 +32,8 @@ class StructuraConfig implements StructuraConfigInterface
     /** @var array<string, string> */
     private array $pathResolvers = [];
 
+    private ?string $baseline = null;
+
     public static function make(): self
     {
         return new self();
@@ -102,6 +104,13 @@ class StructuraConfig implements StructuraConfigInterface
         return $this;
     }
 
+    public function baseline(string $path): self
+    {
+        $this->baseline = $path;
+
+        return $this;
+    }
+
     public function getConfig(): ConfigValueObject
     {
         return new ConfigValueObject(
@@ -112,6 +121,7 @@ class StructuraConfig implements StructuraConfigInterface
             extensions: $this->extensions,
             autoload: $this->autoload,
             pathResolvers: $this->pathResolvers,
+            baseline: $this->baseline,
         );
     }
 }

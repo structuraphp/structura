@@ -131,4 +131,26 @@ class ErrorPrettyJsonFormatterTest extends TestCase
 
         self::assertStringContainsString("{\n    \"assertion_total\": ", $buffer->fetch());
     }
+
+    public function testAssertionDetailHasToleratedWithBaseline(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorPrettyJsonFormatter())->formatErrors(FormatterDataProvider::makeOneViolation()->withBaseline(5, []), $buffer);
+
+        /** @var array{assertion_detail: array<string, int>} $decoded */
+        $decoded = json_decode($buffer->fetch(), true);
+        self::assertSame(5, $decoded['assertion_detail']['tolerated']);
+    }
+
+    public function testAssertionDetailHasNoToleratedWithoutBaseline(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorPrettyJsonFormatter())->formatErrors(FormatterDataProvider::makeOneViolation(), $buffer);
+
+        /** @var array{assertion_detail: array<string, int>} $decoded */
+        $decoded = json_decode($buffer->fetch(), true);
+        self::assertArrayNotHasKey('tolerated', $decoded['assertion_detail']);
+    }
 }

@@ -129,4 +129,26 @@ class ErrorJsonFormatterTest extends TestCase
         self::assertGreaterThanOrEqual(1_000_000, $decoded['duration_ms']);
         self::assertLessThan(1_001_000, $decoded['duration_ms']);
     }
+
+    public function testAssertionDetailHasToleratedWithBaseline(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorJsonFormatter())->formatErrors(FormatterDataProvider::makeOneViolation()->withBaseline(5, []), $buffer);
+
+        /** @var array{assertion_detail: array<string, int>} $decoded */
+        $decoded = json_decode($buffer->fetch(), true);
+        self::assertSame(5, $decoded['assertion_detail']['tolerated']);
+    }
+
+    public function testAssertionDetailHasNoToleratedWithoutBaseline(): void
+    {
+        $buffer = new BufferedOutput();
+
+        (new ErrorJsonFormatter())->formatErrors(FormatterDataProvider::makeOneViolation(), $buffer);
+
+        /** @var array{assertion_detail: array<string, int>} $decoded */
+        $decoded = json_decode($buffer->fetch(), true);
+        self::assertArrayNotHasKey('tolerated', $decoded['assertion_detail']);
+    }
 }

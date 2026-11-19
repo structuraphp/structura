@@ -34,6 +34,7 @@ final class ExecuteService
         private readonly EventDispatcherInterface $dispatcher,
         private readonly RuleValueObject $ruleValueObject,
         private readonly ?SourceTestValueObject $sourceTest = null,
+        private readonly ?BaselineService $baseline = null,
     ) {
         $this->parseService = new ParseService(
             $this->ruleValueObject->getDescriptorType(),
@@ -156,10 +157,16 @@ final class ExecuteService
             }
 
             if (!$predicate) {
-                $this->dispatcher->dispatch(new ViolationEvent(
-                    key: (string) $assert,
-                    violations: $this->computeViolations($assert, $description),
-                ));
+                $computed = $this->computeViolations($assert, $description);
+                $violations = $this->withoutTolerated($computed);
+
+                // a failing rule without violations stays a failure, a fully tolerated one keeps its pass
+                if ($computed === [] || $violations !== []) {
+                    $this->dispatcher->dispatch(new ViolationEvent(
+                        key: (string) $assert,
+                        violations: $violations,
+                    ));
+                }
             }
         }
     }
@@ -258,6 +265,21 @@ final class ExecuteService
         }
 
         throw new InvalidArgumentException();
+    }
+
+    /**
+     * @param array<int, ViolationValueObject> $violations
+     *
+     * @return array<int, ViolationValueObject>
+     */
+    private function withoutTolerated(array $violations): array
+    {
+        return array_filter(
+            $violations,
+            fn (ViolationValueObject $violation): bool => !$this->baseline instanceof BaselineService
+                || !$this->sourceTest instanceof SourceTestValueObject
+                || !$this->baseline->isTolerated($this->sourceTest, $violation),
+        );
     }
 
     /**

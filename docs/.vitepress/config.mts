@@ -27,6 +27,7 @@ export default defineConfig({
                         {text: 'Configuration', link: '/guide/configuration'},
                         {text: 'Usage', link: '/guide/usage'},
                         {text: 'First Run & CLI', link: '/guide/first-run'},
+                        {text: 'Baseline', link: '/guide/baseline'},
                         {text: 'PHPUnit Integration', link: '/guide/phpunit'},
                     ],
                 },

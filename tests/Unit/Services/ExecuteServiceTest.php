@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Services;
 
+use Countable;
 use Exception;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -11,11 +12,18 @@ use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToExtend;
+use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Contracts\ExprInterface;
+use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Except;
 use StructuraPhp\Structura\Expr;
+use StructuraPhp\Structura\ExprScript;
+use StructuraPhp\Structura\Services\BaselineService;
 use StructuraPhp\Structura\Services\ExecuteService;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\ValueObjects\ClassDescription;
+use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -260,5 +268,204 @@ final class ExecuteServiceTest extends TestCase
         );
 
         self::assertSame([], $result->violations);
+    }
+
+    public function testFullyToleratedRuleIsAPass(): void
+    {
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']]);
+
+        (new ExecuteService($this->dispatcher, $this->dependingRule(), $this->baselineSource(), $baseline))->assert();
+
+        $result = $this->builder->getAssertValueObject();
+        self::assertSame([1], array_values($result->pass));
+        self::assertSame([], $result->violations);
+        self::assertSame(2, $baseline->countTolerated());
+    }
+
+    public function testBaselineIsIgnoredWithoutTheCurrentTest(): void
+    {
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']]);
+
+        (new ExecuteService($this->dispatcher, $this->dependingRule(), null, $baseline))->assert();
+
+        self::assertCount(2, array_merge(...array_values($this->builder->getAssertValueObject()->violations)));
+        self::assertSame(0, $baseline->countTolerated());
+    }
+
+    public function testOnlyUntoleratedViolationsAreReported(): void
+    {
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer']]);
+
+        (new ExecuteService($this->dispatcher, $this->dependingRule(), $this->baselineSource(), $baseline))->assert();
+
+        $violations = array_merge(...array_values($this->builder->getAssertValueObject()->violations));
+        self::assertCount(1, $violations);
+        self::assertStringContainsString('<fire>Legacy\Zip</fire>', $violations[0]->messageViolation);
+    }
+
+    public function testOrGroupIsFilteredPerViolation(): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}', '/project/src/Foo.php')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->or(
+                        static fn (Expr $assertion): Expr => $assertion
+                            ->toExtend(Exception::class)
+                            ->toExtend(ToExtend::class),
+                    ),
+            );
+        $baseline = $this->baseline(['ToExtend' => ['Resource Foo must extend Exception']]);
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), $this->baselineSource(), $baseline))->assert();
+
+        $violations = array_merge(...array_values($this->builder->getAssertValueObject()->violations));
+        self::assertCount(1, $violations);
+        self::assertStringContainsString(ToExtend::class, $violations[0]->messageViolation);
+    }
+
+    public function testFailingRuleWithoutViolationIsStillAFailure(): void
+    {
+        $failing = new class implements ExprInterface {
+            public function __toString(): string
+            {
+                return 'to fail silently';
+            }
+
+            public function assert(ClassDescription $class): bool
+            {
+                return false;
+            }
+
+            public function getViolation(ClassDescription $class): array
+            {
+                return [];
+            }
+        };
+
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(static fn (Expr $assert): Expr => $assert->addExpr($failing));
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame(['to fail silently' => 0], $this->builder->getAssertValueObject()->pass);
+    }
+
+    public function testScriptRuleIsToleratedInScriptMode(): void
+    {
+        $rulesBuilder = $this
+            ->allScripts()
+            ->fromRaw('<?php new \Legacy\Mailer();', '/project/src/Foo.php')
+            ->should(static fn (ExprScript $assert): ExprScript => $assert->toNotDependOn(patterns: 'Legacy\.+'));
+        $baseline = $this->baseline(['ToNotDependOn' => ['Legacy\Mailer']]);
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject(), $this->baselineSource(), $baseline))->assert();
+
+        $result = $this->builder->getAssertValueObject();
+        self::assertSame([1], array_values($result->pass));
+        self::assertSame(1, $baseline->countTolerated());
+    }
+
+    public function testOrGroupPassesWhenALaterBranchPasses(): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo extends \Exception {}')
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->or(
+                        static fn (Expr $assertion): Expr => $assertion
+                            ->toExtend(ToExtend::class)
+                            ->toExtend(Exception::class),
+                    ),
+            );
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame([1], array_values($this->builder->getAssertValueObject()->pass));
+    }
+
+    /**
+     * @param class-string $className
+     */
+    #[TestWith(['Foo'])]
+    public function testOrGroupStopsAtFirstPassingBranch(string $className): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo extends \Exception {}')
+            ->except(static fn (Except $e): Except => $e->byClassname($className, ToImplement::class))
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->or(
+                        static fn (Expr $assertion): Expr => $assertion
+                            ->toExtend(Exception::class)
+                            ->toImplement(Countable::class),
+                    ),
+            );
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        // the excepted second branch is never evaluated, so no exception is recorded
+        self::assertSame([], $this->builder->getAssertValueObject()->exceptions);
+    }
+
+    public function testEmptyOrGroupPasses(): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRaw('<?php class Foo {}')
+            ->should(static fn (Expr $assert): Expr => $assert->or(static fn (Expr $assertion): Expr => $assertion));
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame([1], array_values($this->builder->getAssertValueObject()->pass));
+    }
+
+    public function testPathResolversAreInjectedInNestedGroups(): void
+    {
+        $rulesBuilder = $this
+            ->allScripts()
+            ->fromRaw('<?php require base_path() . "/vendor/autoload.php";')
+            ->should(
+                static fn (ExprScript $assert): ExprScript => $assert
+                    ->or(
+                        static fn (ExprScript $assertion): ExprScript => $assertion
+                            ->toUseInclude(IncludeType::Require, '*/vendor/autoload.php'),
+                    ),
+            );
+        $rulesBuilder->setPathResolvers(['base_path' => '/var/www']);
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame([1], array_values($this->builder->getAssertValueObject()->pass));
+    }
+
+    /**
+     * @param array<string, array<int, string>> $rules
+     */
+    private function baseline(array $rules): BaselineService
+    {
+        return new BaselineService(['Tests\TestBaseline::testRule' => ['src/Foo.php' => $rules]], '/project');
+    }
+
+    private function baselineSource(): SourceTestValueObject
+    {
+        return new SourceTestValueObject('Tests\TestBaseline', '', 'testRule', 0, '');
+    }
+
+    private function dependingRule(): RuleValueObject
+    {
+        return $this
+            ->allClasses()
+            ->fromRaw(
+                '<?php class Foo { public function a(\Legacy\Mailer $m, \Legacy\Zip $z): void {} }',
+                '/project/src/Foo.php',
+            )
+            ->should(static fn (Expr $assert): Expr => $assert->toNotDependOn(patterns: 'Legacy\.+'))
+            ->getRuleObject();
     }
 }

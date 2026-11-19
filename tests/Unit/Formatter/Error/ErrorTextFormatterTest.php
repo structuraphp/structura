@@ -84,4 +84,27 @@ class ErrorTextFormatterTest extends TestCase
         self::assertGreaterThanOrEqual($peakBefore, (float) $matches[1]);
         self::assertLessThanOrEqual($peakAfter, (float) $matches[1]);
     }
+
+    public function testSummaryShowsToleratedCount(): void
+    {
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
+
+        (new ErrorTextFormatter())->formatErrors(FormatterDataProvider::makeOneViolation()->withBaseline(5, []), $buffer);
+
+        self::assertStringContainsString(
+            'Tests:    <fire>1 failed</fire>, <yellow>5 tolerated by baseline</yellow> (1 assertion)',
+            $buffer->fetch(),
+        );
+    }
+
+    public function testSummaryHidesZeroToleratedCount(): void
+    {
+        $buffer = new BufferedOutput(formatter: new OutputFormatter());
+        $buffer->setDecorated(true);
+
+        (new ErrorTextFormatter())->formatErrors(FormatterDataProvider::makeOneViolation()->withBaseline(0, []), $buffer);
+
+        self::assertStringNotContainsString('tolerated', $buffer->fetch());
+    }
 }

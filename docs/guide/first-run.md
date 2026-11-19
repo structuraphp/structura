@@ -22,6 +22,7 @@ php vendor/bin/structura analyze
 | `--stop-on-error`                         | Stop execution upon first error.                                                     |
 | `--stop-on-warning`                       | Stop execution after the first warning.                                              |
 | `--stop-on-notice`                        | Stop execution after the first notice.                                               |
+| `--generate-baseline`                     | Record the current violations in the baseline file (see [Baseline](./baseline.md)).  |
 
 ### Error Formats
 

@@ -57,4 +57,12 @@ interface StructuraConfigInterface
      * @throws InvalidArgumentException if $functionName is "dirname"
      */
     public function addPathResolver(string $functionName, string $path): self;
+
+    /**
+     * Violations recorded in this file are tolerated, only new ones fail.
+     * Generate it with `structura analyze --generate-baseline`.
+     *
+     * @param string $path path relative to the configuration file (e.g. "structura-baseline.php")
+     */
+    public function baseline(string $path): self;
 }

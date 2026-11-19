@@ -22,6 +22,7 @@ final readonly class AnalyseOrchestrator
         private ?string $filter = null,
         private array $pathResolvers = [],
         private ?EventDispatcherInterface $bus = null,
+        private ?BaselineService $baseline = null,
     ) {}
 
     /**
@@ -42,6 +43,7 @@ final readonly class AnalyseOrchestrator
                 stopOnNotice: $this->stopOnNotice,
                 filter: $this->filter,
                 pathResolvers: $this->pathResolvers,
+                baseline: $this->baseline,
             );
 
             try {
