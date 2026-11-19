@@ -47,10 +47,12 @@ final readonly class ParseService
         $this->dependenciesVisitor = new DependenciesVisitor();
         $this->functionVisitor = new FunctionVisitor();
 
+        // only the description of the requested type is built: the other one would be thrown away
         $this->nodeTraverser = new NodeTraverser(
             new NameResolver(),
-            $this->scriptDescriptionVisitor,
-            $this->classDescriptionVisitor,
+            $this->descriptorType === DescriptorType::ClassLike
+                ? $this->classDescriptionVisitor
+                : $this->scriptDescriptionVisitor,
             $this->dependenciesVisitor,
             $this->functionVisitor,
         );
