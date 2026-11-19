@@ -70,3 +70,13 @@ $this
     ->should(fn(ExprScript $expr) => $expr->toUseInclude(IncludeType::Require, '*/vendor/autoload.php'));
 ```
 
+## Baseline
+
+Tolerate the violations recorded in a baseline file, so that only new violations fail the analysis.
+The path is relative to the configuration file:
+
+```php
+$config->baseline('structura-baseline.php');
+```
+
+Generate the file with `structura analyze --generate-baseline`. See [Baseline](./baseline.md).

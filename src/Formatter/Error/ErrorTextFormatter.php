@@ -123,6 +123,7 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         $data = [
             '<green>%d passed</green>' => $analyseDto->countPass,
             '<fire>%d failed</fire>' => $analyseDto->countViolation,
+            '<yellow>%d tolerated by baseline</yellow>' => (int) $analyseDto->countTolerated,
             '<yellow>%d warning</yellow>' => $analyseDto->countWarning,
             '<orange>%d notice</orange>' => $analyseDto->countNotice,
         ];

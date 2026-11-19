@@ -71,6 +71,10 @@ final class ErrorPrettyJsonFormatter implements ErrorFormatterInterface
             'duration_ms' => (int) ((microtime(true) - $analyseValueObject->timeStart) * 1000),
         ];
 
+        if ($analyseValueObject->countTolerated !== null) {
+            $json['assertion_detail']['tolerated'] = $analyseValueObject->countTolerated;
+        }
+
         if ($errors !== []) {
             $json['errors'] = $errors;
         }

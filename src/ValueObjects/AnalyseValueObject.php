@@ -13,6 +13,8 @@ final readonly class AnalyseValueObject
 {
     /**
      * @param array<int,AnalyseTestValueObject> $analyseTestValueObjects
+     * @param null|int $countTolerated violations tolerated by the baseline, null without baseline
+     * @param array<int, string> $baselineWarnings baseline entries that no longer match any violation
      */
     public function __construct(
         public float $timeStart,
@@ -21,6 +23,8 @@ final readonly class AnalyseValueObject
         public int $countWarning,
         public int $countNotice,
         public array $analyseTestValueObjects,
+        public ?int $countTolerated = null,
+        public array $baselineWarnings = [],
     ) {}
 
     public static function merge(float $timeStart, self ...$results): self
@@ -32,6 +36,23 @@ final readonly class AnalyseValueObject
             countWarning: array_sum(array_column($results, 'countWarning')),
             countNotice: array_sum(array_column($results, 'countNotice')),
             analyseTestValueObjects: array_merge(...array_column($results, 'analyseTestValueObjects')),
+        );
+    }
+
+    /**
+     * @param array<int, string> $baselineWarnings
+     */
+    public function withBaseline(int $countTolerated, array $baselineWarnings): self
+    {
+        return new self(
+            timeStart: $this->timeStart,
+            countPass: $this->countPass,
+            countViolation: $this->countViolation,
+            countWarning: $this->countWarning,
+            countNotice: $this->countNotice,
+            analyseTestValueObjects: $this->analyseTestValueObjects,
+            countTolerated: $countTolerated,
+            baselineWarnings: $baselineWarnings,
         );
     }
 
@@ -60,6 +81,10 @@ final readonly class AnalyseValueObject
             foreach ($testResult->assertValueObject->warnings as $key => $warnings) {
                 $result[$key] = array_merge($result[$key] ?? [], $warnings);
             }
+        }
+
+        if ($this->baselineWarnings !== []) {
+            $result['baseline'] = $this->baselineWarnings;
         }
 
         return $result;

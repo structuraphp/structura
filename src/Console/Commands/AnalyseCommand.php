@@ -26,6 +26,8 @@ use StructuraPhp\Structura\Formatter\Progress\ProgressNoneFormatter;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseOrchestrator;
 use StructuraPhp\Structura\Services\AutoloadService;
+use StructuraPhp\Structura\Services\BaselineGenerator;
+use StructuraPhp\Structura\Services\BaselineService;
 use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\ConfigValueObject;
@@ -35,6 +37,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 #[AsCommand(
     name: AnalyseCommand::NAME,
@@ -71,6 +75,24 @@ final class AnalyseCommand extends Command
         $this->configValueObject = $this->getConfigValueObject();
 
         $this->autoload($io);
+
+        // the baseline paths are relative to the configuration file
+        $baseDirectory = \dirname((string) realpath($this->analyseDto->configPath));
+        $baselinePath = Path::makeAbsolute(
+            $this->configValueObject->baseline ?? 'structura-baseline.php',
+            $baseDirectory,
+        );
+
+        if ($this->analyseDto->generateBaseline && $this->isPartialRun()) {
+            $io->error('--generate-baseline cannot be combined with --filter, --testsuite or --stop-on-* options');
+
+            return self::INVALID;
+        }
+
+        $baseline = !$this->analyseDto->generateBaseline && $this->configValueObject->baseline !== null
+            ? BaselineService::fromFile($baselinePath, $baseDirectory)
+            : null;
+
         $errorFormatter = $this->getErrorFormatter();
         $progressFormatter = $this->getProgressFormatter();
 
@@ -87,6 +109,7 @@ final class AnalyseCommand extends Command
             stopOnNotice: $this->analyseDto->stopOnNotice,
             filter: $this->analyseDto->filter,
             pathResolvers: $this->configValueObject->pathResolvers,
+            baseline: $baseline,
         );
 
         try {
@@ -99,10 +122,30 @@ final class AnalyseCommand extends Command
         } catch (StopOnException $stopOnException) {
             $progressFormatter->progressStopOn($io);
 
-            return $errorFormatter->formatErrors($stopOnException->analyseValueObject, $output);
+            $stopped = $stopOnException->analyseValueObject;
+            if ($baseline instanceof BaselineService) {
+                // the run stopped early: unmatched entries may belong to tests that did not run
+                $stopped = $stopped->withBaseline($baseline->countTolerated(), []);
+            }
+
+            return $errorFormatter->formatErrors($stopped, $output);
         }
 
         $progressFormatter->progressFinish($io);
+
+        if ($this->analyseDto->generateBaseline) {
+            (new Filesystem())->dumpFile($baselinePath, BaselineGenerator::generate($result, $baseDirectory));
+            $io->success(\sprintf('Baseline generated in %s', $baselinePath));
+
+            return self::SUCCESS;
+        }
+
+        if ($baseline instanceof BaselineService) {
+            $result = $result->withBaseline(
+                $baseline->countTolerated(),
+                $this->isPartialRun() ? [] : $baseline->getStaleWarnings(),
+            );
+        }
 
         return $errorFormatter->formatErrors($result, $output);
     }
@@ -160,6 +203,18 @@ final class AnalyseCommand extends Command
         };
     }
 
+    /**
+     * A partial run may not execute every test: its baseline entries cannot be judged stale.
+     */
+    private function isPartialRun(): bool
+    {
+        return $this->analyseDto->filter !== null
+            || $this->analyseDto->testSuite !== null
+            || $this->analyseDto->stopOnError
+            || $this->analyseDto->stopOnWarning
+            || $this->analyseDto->stopOnNotice;
+    }
+
     private function autoload(SymfonyStyle $output): void
     {
         if (!str_starts_with(__FILE__, 'phar://')) {
@@ -171,15 +226,7 @@ final class AnalyseCommand extends Command
 
     private function getAnalyseDto(InputInterface $input): AnalyseDto
     {
-        /** @var array<string,null|scalar> $data */
-        $data = array_filter(
-            array: $input->getOptions(),
-            callback: static fn (mixed $value, int|string $key): bool => (\is_scalar($value) || is_null($value))
-                && \is_string($key),
-            mode: ARRAY_FILTER_USE_BOTH,
-        );
-
-        return AnalyseDto::fromArray($data);
+        return AnalyseDto::fromArray($input->getOptions());
     }
 
     private function getConfigValueObject(): ConfigValueObject

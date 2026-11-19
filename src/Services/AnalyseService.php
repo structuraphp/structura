@@ -31,6 +31,7 @@ final class AnalyseService
         private readonly bool $stopOnNotice = false,
         private readonly ?string $filter = null,
         private readonly array $pathResolvers = [],
+        private readonly ?BaselineService $baseline = null,
     ) {}
 
     /**
@@ -135,7 +136,7 @@ final class AnalyseService
             $ruleValueObject = $expectationFilter->getRuleBuilder()->getRuleObject();
             $ruleValueObjects[] = $ruleValueObject;
 
-            $executeService = new ExecuteService($this->dispatcher, $ruleValueObject, $sourceTest);
+            $executeService = new ExecuteService($this->dispatcher, $ruleValueObject, $sourceTest, $this->baseline);
             $executeService->assert();
         }
 

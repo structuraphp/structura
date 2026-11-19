@@ -34,6 +34,7 @@ final class ExecuteService
         private readonly EventDispatcherInterface $dispatcher,
         private readonly RuleValueObject $ruleValueObject,
         private readonly ?SourceTestValueObject $sourceTest = null,
+        private readonly ?BaselineService $baseline = null,
     ) {
         $this->parseService = new ParseService(
             $this->ruleValueObject->getDescriptorType(),
@@ -156,10 +157,16 @@ final class ExecuteService
             }
 
             if (!$predicate) {
-                $this->dispatcher->dispatch(new ViolationEvent(
-                    key: (string) $assert,
-                    violations: $this->computeViolations($assert, $description),
-                ));
+                $computed = $this->computeViolations($assert, $description);
+                $violations = $this->withoutTolerated($computed);
+
+                // only a rule whose violations are all tolerated is skipped
+                if ($computed === [] || $violations !== []) {
+                    $this->dispatcher->dispatch(new ViolationEvent(
+                        key: (string) $assert,
+                        violations: $violations,
+                    ));
+                }
             }
         }
     }
@@ -258,6 +265,23 @@ final class ExecuteService
         }
 
         throw new InvalidArgumentException();
+    }
+
+    /**
+     * Drops the violations recorded in the baseline: a rule whose violations
+     * are all tolerated keeps the pass status dispatched before its evaluation.
+     *
+     * @param array<int, ViolationValueObject> $violations
+     *
+     * @return array<int, ViolationValueObject>
+     */
+    private function withoutTolerated(array $violations): array
+    {
+        return array_filter(
+            $violations,
+            fn (ViolationValueObject $violation): bool => !$this->baseline instanceof BaselineService
+                || !$this->baseline->isTolerated($violation),
+        );
     }
 
     /**

@@ -22,10 +22,11 @@ final readonly class AnalyseDto
         public bool $noError,
         public ?string $filter,
         public ?string $testSuite,
+        public bool $generateBaseline,
     ) {}
 
     /**
-     * @param array<string,null|scalar>|ArrayAccess<string,null|scalar> $data
+     * @param array<mixed>|ArrayAccess<string,mixed> $data mixed: raw Symfony console options, validated below
      */
     public static function fromArray(array|ArrayAccess $data): self
     {
@@ -60,6 +61,9 @@ final readonly class AnalyseDto
             testSuite: \is_string($data[AnalyseOption::Testsuite->value]) || is_null($data[AnalyseOption::Testsuite->value])
                 ? $data[AnalyseOption::Testsuite->value]
                 : throw new InvalidArgumentException('testsuite must be a string or null'),
+            generateBaseline: \is_bool($data[AnalyseOption::GenerateBaseline->value])
+                ? $data[AnalyseOption::GenerateBaseline->value]
+                : throw new InvalidArgumentException('generate baseline must be a bool'),
         );
     }
 }

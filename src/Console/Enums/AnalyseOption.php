@@ -19,6 +19,7 @@ enum AnalyseOption: string
     case StopOnNotice = 'stop-on-notice';
     case NoProgress = 'no-progress';
     case NoError = 'no-error';
+    case GenerateBaseline = 'generate-baseline';
 
     public function description(): string
     {
@@ -32,6 +33,7 @@ enum AnalyseOption: string
             self::StopOnNotice => 'Stop execution after the first notice.',
             self::NoProgress => 'Disable progress output.',
             self::NoError => 'Disable error output.',
+            self::GenerateBaseline => 'Generate the baseline file with the current violations.',
         };
     }
 

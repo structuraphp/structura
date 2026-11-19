@@ -11,6 +11,8 @@ use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Formatter\Progress\ProgressTextFormatter;
 use StructuraPhp\Structura\Services\AnalyseOrchestrator;
+use StructuraPhp\Structura\Services\BaselineGenerator;
+use StructuraPhp\Structura\Services\BaselineService;
 use StructuraPhp\Structura\Services\FinderService;
 use StructuraPhp\Structura\Tests\Helper\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -101,7 +103,7 @@ final class AnalyseOrchestratorTest extends TestCase
              & to extend <promote>BadMethodCallException</promote>
 
         <pass> PASS </pass> Asserts architecture rules in StructuraPhp\Structura\Tests\Feature\TestVoid
-        173 classe(s) from
+        176 classe(s) from
          - dirs
         That
         Should
@@ -115,6 +117,29 @@ final class AnalyseOrchestratorTest extends TestCase
         foreach ($expected as $key => $line) {
             self::assertSame($line, $fetch[$key]);
         }
+    }
+
+    public function testBaselinePreventsStopOnError(): void
+    {
+        $baseDirectory = (string) getcwd();
+        $file = tempnam(sys_get_temp_dir(), 'structura_baseline_');
+        self::assertIsString($file);
+
+        try {
+            file_put_contents(
+                $file,
+                BaselineGenerator::generate((new AnalyseOrchestrator())->run($this->finder), $baseDirectory),
+            );
+            $baseline = BaselineService::fromFile($file, $baseDirectory);
+
+            $result = (new AnalyseOrchestrator(stopOnError: true, baseline: $baseline))->run($this->finder);
+        } finally {
+            unlink($file);
+        }
+
+        self::assertSame(0, $result->countViolation);
+        self::assertSame(62, $baseline->countTolerated());
+        self::assertSame([], $baseline->getStaleWarnings());
     }
 
     public function testStopOnError(): void
