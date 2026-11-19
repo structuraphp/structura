@@ -26,7 +26,7 @@ final readonly class AnalyseDto
     ) {}
 
     /**
-     * @param array<mixed>|ArrayAccess<string,mixed> $data mixed: raw Symfony console options, validated below
+     * @param array<mixed>|ArrayAccess<string,mixed> $data raw console options
      */
     public static function fromArray(array|ArrayAccess $data): self
     {

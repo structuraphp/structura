@@ -160,7 +160,7 @@ final class ExecuteService
                 $computed = $this->computeViolations($assert, $description);
                 $violations = $this->withoutTolerated($computed);
 
-                // only a rule whose violations are all tolerated is skipped
+                // a failing rule without violations stays a failure, a fully tolerated one keeps its pass
                 if ($computed === [] || $violations !== []) {
                     $this->dispatcher->dispatch(new ViolationEvent(
                         key: (string) $assert,
@@ -268,9 +268,6 @@ final class ExecuteService
     }
 
     /**
-     * Drops the violations recorded in the baseline: a rule whose violations
-     * are all tolerated keeps the pass status dispatched before its evaluation.
-     *
      * @param array<int, ViolationValueObject> $violations
      *
      * @return array<int, ViolationValueObject>

@@ -8,8 +8,7 @@ use StructuraPhp\Structura\ValueObjects\AnalyseValueObject;
 use StructuraPhp\Structura\ValueObjects\BaselineEntryValueObject;
 
 /**
- * Writes the baseline file: test => path => rule => identifiers, sorted at every level
- * so that the file stays readable and its diffs stay small in code review.
+ * Writes test => path => rule => identifiers, sorted at every level to keep review diffs small.
  */
 final readonly class BaselineGenerator
 {

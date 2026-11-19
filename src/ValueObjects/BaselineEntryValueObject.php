@@ -8,10 +8,7 @@ use StructuraPhp\Structura\Console\Enums\StyleCustom;
 use Symfony\Component\Filesystem\Path;
 
 /**
- * Identifies a violation in a baseline, independently of its line,
- * its custom message and the configuration of its rule.
- * The test is part of the key: a violation recorded for one test never tolerates
- * the same violation reported by another test.
+ * Baseline key of a violation, per test: never its line, custom message or rule configuration.
  */
 final readonly class BaselineEntryValueObject
 {
@@ -23,7 +20,7 @@ final readonly class BaselineEntryValueObject
     ) {}
 
     /**
-     * Unique among entries: no part contains a NUL byte (anonymous rules are never baselined).
+     * No part contains a NUL byte: anonymous rules, whose names do, are never baselined.
      */
     public function key(): string
     {
@@ -31,9 +28,8 @@ final readonly class BaselineEntryValueObject
     }
 
     /**
-     * Returns null for what can never match across runs, and is never baselined:
-     * a source without a real file (fromRaw) and a rule written as an anonymous class,
-     * whose name holds a NUL byte and the absolute path of its file.
+     * Null for what cannot match across runs: a fromRaw source (no real file)
+     * and an anonymous rule (its name holds a NUL byte and an absolute path).
      */
     public static function fromViolation(
         SourceTestValueObject $source,
@@ -52,15 +48,14 @@ final readonly class BaselineEntryValueObject
         return new self(
             $source->testClassname . '::' . $source->methodName,
             Path::makeRelative($pathname, $baseDirectory),
-            // the short name of the rule: its namespace only makes the file harder to read
+            // short name: the namespace only adds noise to the file
             basename(strtr($violation->assertClassname, '\\', '/')),
             self::identifier($violation->messageViolation, $baseDirectory),
         );
     }
 
     /**
-     * The faulty element (<fire> tags) when the message names one: it does not
-     * contain the rule configuration. Otherwise the whole message without tags.
+     * The <fire> element, free of rule configuration, otherwise the untagged message.
      */
     private static function identifier(string $message, string $baseDirectory): string
     {
@@ -68,12 +63,12 @@ final readonly class BaselineEntryValueObject
             ? implode(', ', $matches[1])
             : self::withoutStyleTags($message);
 
-        // paths in a message (includes, corresponding files) must not depend on the checkout directory
+        // paths in messages (includes, corresponding files) must not depend on the checkout directory
         return str_replace($baseDirectory . '/', '', $identifier);
     }
 
     /**
-     * Only the console style tags: strip_tags() would also eat generic types such as array<string, int>.
+     * strip_tags() would also remove generic types such as array<string, int>.
      */
     private static function withoutStyleTags(string $message): string
     {

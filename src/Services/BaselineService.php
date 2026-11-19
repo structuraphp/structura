@@ -10,13 +10,9 @@ use StructuraPhp\Structura\ValueObjects\BaselineEntryValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 
-/**
- * Tolerates the violations recorded in a baseline file and reports the
- * entries that no longer match any violation.
- */
 final class BaselineService
 {
-    /** @var array<string, BaselineEntryValueObject> key => entry */
+    /** @var array<string, BaselineEntryValueObject> */
     private array $entries = [];
 
     /** @var array<string, BaselineEntryValueObject> entries no violation has matched yet */
@@ -52,7 +48,6 @@ final class BaselineService
         }
 
         try {
-            // a PHP file returns an untyped value: validated below
             $entries = require $path;
         } catch (ParseError $parseError) {
             throw new InvalidArgumentException(

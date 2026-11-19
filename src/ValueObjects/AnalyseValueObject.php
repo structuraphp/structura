@@ -14,7 +14,7 @@ final readonly class AnalyseValueObject
     /**
      * @param array<int,AnalyseTestValueObject> $analyseTestValueObjects
      * @param null|int $countTolerated violations tolerated by the baseline, null without baseline
-     * @param array<int, string> $baselineWarnings baseline entries that no longer match any violation
+     * @param array<int, string> $baselineWarnings stale baseline entries
      */
     public function __construct(
         public float $timeStart,

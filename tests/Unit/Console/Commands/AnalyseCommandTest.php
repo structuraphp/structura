@@ -16,10 +16,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Runs the real `tests/Feature` suite. Its rules analyse paths relative to the repository root:
- * the working directory stays there, only the configuration and the baseline go to a unique temp directory.
- * A full analysis is the costly part, so the baseline is generated once for the class, and the tests that
- * do not need the whole suite only run `TestController`.
+ * Runs the real `tests/Feature` suite from the repository root, its paths being relative;
+ * config and baseline go to a temp directory. A full analysis is costly: the baseline is
+ * generated once per class, and other tests only run `TestController`.
  */
 #[CoversClass(AnalyseCommand::class)]
 final class AnalyseCommandTest extends TestCase

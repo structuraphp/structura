@@ -124,7 +124,7 @@ final class AnalyseCommand extends Command
 
             $stopped = $stopOnException->analyseValueObject;
             if ($baseline instanceof BaselineService) {
-                // the run stopped early: unmatched entries may belong to tests that did not run
+                // stopped early: unmatched entries may belong to tests that did not run
                 $stopped = $stopped->withBaseline($baseline->countTolerated(), []);
             }
 
@@ -204,7 +204,7 @@ final class AnalyseCommand extends Command
     }
 
     /**
-     * A partial run may not execute every test: its baseline entries cannot be judged stale.
+     * Some tests may not run: stale entries cannot be judged, and a generated baseline would lose theirs.
      */
     private function isPartialRun(): bool
     {

@@ -59,7 +59,7 @@ interface StructuraConfigInterface
     public function addPathResolver(string $functionName, string $path): self;
 
     /**
-     * Declares the baseline file: violations recorded in it are tolerated, only new ones fail the analysis.
+     * Violations recorded in this file are tolerated, only new ones fail.
      * Generate it with `structura analyze --generate-baseline`.
      *
      * @param string $path path relative to the configuration file (e.g. "structura-baseline.php")

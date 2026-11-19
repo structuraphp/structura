@@ -214,7 +214,7 @@ final class BaselineServiceTest extends TestCase
     {
         $service = new BaselineService(
             [
-                // the used entry (Mailer) comes first, and the stale ones are inserted unsorted (Zip before Mailer)
+                // unsorted on purpose: used entry first, Zip before Mailer
                 self::TEST => [
                     'src/Foo.php' => ['ToNotDependOn' => ['Legacy\Mailer', 'Legacy\Zip']],
                     'src/Zed.php' => ['ToNotDependOn' => ['Legacy\Mailer']],
