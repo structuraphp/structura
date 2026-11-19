@@ -31,6 +31,17 @@ use StructuraPhp\Structura\ValueObjects\PropertyValueObject;
 
 final class ClassDescriptionVisitor extends NodeVisitorAbstract
 {
+    /** The only node classes enterNode() acts on: a lookup skips the others */
+    private const HANDLED_NODES = [
+        Class_::class => true,
+        Declare_::class => true,
+        Enum_::class => true,
+        Include_::class => true,
+        Interface_::class => true,
+        Return_::class => true,
+        Trait_::class => true,
+    ];
+
     protected ?Return_ $rootReturn = null;
 
     private ?string $namespace = null;
@@ -114,6 +125,42 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): ?int
     {
+        if (isset(self::HANDLED_NODES[$node::class])) {
+            $this->collect($node);
+        }
+
+        return null;
+    }
+
+    public function afterTraverse(array $nodes): null
+    {
+        if (!$this->class instanceof ClassDescription) {
+            $this->class = new ClassDescription(
+                namespace: $this->namespace,
+                declare: $this->declare,
+                includes: $this->includes,
+                anonymousClasses: $this->anonymousClasses,
+                rootReturn: $this->rootReturn,
+                name: $this->name,
+                attrGroups: $this->attrGroups,
+                lines: $this->lines,
+                scalarType: $this->scalarType,
+                interfaces: $this->interfaces,
+                extends: $this->extends,
+                traits: $this->traits,
+                flags: $this->flags,
+                classType: $this->classType,
+                methods: $this->methods,
+                constants: $this->constants,
+                properties: $this->properties,
+            );
+        }
+
+        return null;
+    }
+
+    private function collect(Node $node): void
+    {
         if ($node instanceof Declare_) {
             $this->declare = $node;
         }
@@ -163,35 +210,6 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
                 }
             }
         }
-
-        return null;
-    }
-
-    public function afterTraverse(array $nodes): null
-    {
-        if (!$this->class instanceof ClassDescription) {
-            $this->class = new ClassDescription(
-                namespace: $this->namespace,
-                declare: $this->declare,
-                includes: $this->includes,
-                anonymousClasses: $this->anonymousClasses,
-                rootReturn: $this->rootReturn,
-                name: $this->name,
-                attrGroups: $this->attrGroups,
-                lines: $this->lines,
-                scalarType: $this->scalarType,
-                interfaces: $this->interfaces,
-                extends: $this->extends,
-                traits: $this->traits,
-                flags: $this->flags,
-                classType: $this->classType,
-                methods: $this->methods,
-                constants: $this->constants,
-                properties: $this->properties,
-            );
-        }
-
-        return null;
     }
 
     /**

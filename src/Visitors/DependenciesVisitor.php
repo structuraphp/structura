@@ -26,6 +26,7 @@ use PhpParser\Node\Stmt\GroupUse;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\Trait_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
@@ -33,6 +34,32 @@ use StructuraPhp\Structura\Services\DocBlockParser;
 
 final class DependenciesVisitor extends NodeVisitorAbstract
 {
+    /**
+     * The only node classes enterNode() acts on: a lookup skips the others,
+     * most of the tree, without evaluating each instanceof.
+     */
+    private const HANDLED_NODES = [
+        Attribute::class => true,
+        ArrowFunction::class => true,
+        Catch_::class => true,
+        Class_::class => true,
+        ClassConst::class => true,
+        ClassConstFetch::class => true,
+        ClassMethod::class => true,
+        Closure::class => true,
+        Enum_::class => true,
+        GroupUse::class => true,
+        Instanceof_::class => true,
+        Interface_::class => true,
+        Namespace_::class => true,
+        New_::class => true,
+        Param::class => true,
+        Property::class => true,
+        Trait_::class => true,
+        TraitUse::class => true,
+        Use_::class => true,
+    ];
+
     /** @var array<string,int> */
     private array $dependencies = [];
 
@@ -161,6 +188,15 @@ final class DependenciesVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
+        if (isset(self::HANDLED_NODES[$node::class])) {
+            $this->collect($node);
+        }
+
+        return null;
+    }
+
+    private function collect(Node $node): void
+    {
         if ($node instanceof Namespace_ && $node->name instanceof Name) {
             $this->currentNamespace = $node->name->toString();
         }
@@ -197,8 +233,6 @@ final class DependenciesVisitor extends NodeVisitorAbstract
         ) {
             $this->addDocBlockDependencies($node);
         }
-
-        return null;
     }
 
     private function addGroupUseDependency(GroupUse $node): void

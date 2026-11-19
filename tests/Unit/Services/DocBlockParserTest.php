@@ -163,6 +163,41 @@ final class DocBlockParserTest extends TestCase
         ];
     }
 
+    #[DataProvider('provideTagVariants')]
+    public function testParseReadsEveryTypedTagVariant(string $tag): void
+    {
+        self::assertSame(['Foo'], array_keys($this->parser->parse(\sprintf('/** %s Foo<Foo> $foo */', $tag))));
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function provideTagVariants(): iterable
+    {
+        $tags = [
+            '@param', '@phpstan-param', '@psalm-param', '@phan-param',
+            '@var', '@phpstan-var', '@psalm-var', '@phan-var',
+            '@return', '@phpstan-return', '@psalm-return', '@phan-return', '@phan-real-return',
+            '@throws', '@phpstan-throws',
+            '@mixin', '@phan-mixin',
+            '@property', '@property-read', '@property-write',
+            '@phpstan-property', '@phpstan-property-read', '@phpstan-property-write',
+            '@psalm-property', '@psalm-property-read', '@psalm-property-write',
+            '@phan-property', '@phan-property-read', '@phan-property-write',
+            '@extends', '@phpstan-extends', '@phan-extends', '@phan-inherits', '@template-extends',
+            '@implements', '@phpstan-implements', '@template-implements',
+        ];
+
+        foreach ($tags as $tag) {
+            yield $tag => [$tag];
+        }
+    }
+
+    public function testParseIgnoresDocBlockWithoutTypedTag(): void
+    {
+        self::assertSame([], $this->parser->parse("/**\n * Sends Foo.\n *\n * @since 1.0\n * @see Foo\n */"));
+    }
+
     public function testParseReturnsLineOfTagInDocBlock(): void
     {
         $docBlock = <<<'PHP'

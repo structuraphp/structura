@@ -33,6 +33,16 @@ use PHPStan\PhpDocParser\ParserConfig;
 
 final readonly class DocBlockParser
 {
+    /** Tags whose type is read below: a docblock without any of them is not parsed */
+    private const TYPED_TAG = '/
+        @(?:(?:phpstan|psalm|phan)-)?                                  # an optional @phpstan-, @psalm- or @phan- prefix
+        (?:param|var|return|throws|mixin|property|extends|implements)\b # a read tag, \b keeps @property-read and -write
+        |                                                              # or
+        @phan-(?:real-return|inherits)\b                               # Phan aliases of @return and @extends
+        |                                                              # or
+        @template-(?:extends|implements)\b                             # older aliases of @extends and @implements
+    /x';
+
     /** @var array<string, true> */
     private const BUILTIN_TYPES = [
         'int' => true,
@@ -95,10 +105,13 @@ final readonly class DocBlockParser
      */
     public function parse(string $docBlock): array
     {
-        $tokens = new TokenIterator($this->lexer->tokenize($docBlock));
-        $phpDocNode = $this->phpDocParser->parse($tokens);
+        if (preg_match(self::TYPED_TAG, $docBlock) === 1) {
+            $tokens = new TokenIterator($this->lexer->tokenize($docBlock));
 
-        return $this->extractClassNames($phpDocNode);
+            return $this->extractClassNames($this->phpDocParser->parse($tokens));
+        }
+
+        return [];
     }
 
     /**
