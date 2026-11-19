@@ -6,6 +6,7 @@ namespace StructuraPhp\Structura\Tests\Unit\Services;
 
 use Countable;
 use Exception;
+use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use StructuraPhp\Structura\Asserts\ToBeFinal;
 use StructuraPhp\Structura\Asserts\ToExtend;
 use StructuraPhp\Structura\Asserts\ToImplement;
 use StructuraPhp\Structura\Builder\AssertBuilder;
+use StructuraPhp\Structura\Builder\RuleBuilder;
 use StructuraPhp\Structura\Contracts\ExprInterface;
 use StructuraPhp\Structura\Enums\IncludeType;
 use StructuraPhp\Structura\Except;
@@ -22,16 +24,19 @@ use StructuraPhp\Structura\ExprScript;
 use StructuraPhp\Structura\Services\BaselineService;
 use StructuraPhp\Structura\Services\ExecuteService;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
+use StructuraPhp\Structura\Tests\Helper\Sandbox;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\SourceTestValueObject;
 use StructuraPhp\Structura\ValueObjects\ViolationValueObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Finder\Finder;
 
 #[CoversClass(ExecuteService::class)]
 final class ExecuteServiceTest extends TestCase
 {
     use ArchitectureAsserts;
+    use Sandbox;
 
     private const KEY = 'to extend <promote>Exception</promote>';
 
@@ -268,6 +273,65 @@ final class ExecuteServiceTest extends TestCase
         );
 
         self::assertSame([], $result->violations);
+    }
+
+    /**
+     * Listing a large directory is costly: it is walked once, to parse the files and to know whether it is empty.
+     */
+    public function testDirectoryIsWalkedOnce(): void
+    {
+        $finder = new class extends Finder {
+            public int $walks = 0;
+
+            public function getIterator(): Iterator
+            {
+                $this->walks++;
+
+                return parent::getIterator();
+            }
+        };
+        $finder->files()->name('*.php')->in(\dirname(__DIR__, 2) . '/Fixture/Contract');
+
+        $rule = (new RuleBuilder())
+            ->setFinder($finder)
+            ->setShould((new Expr())->toBeFinal())
+            ->getRuleObject();
+
+        (new ExecuteService($this->dispatcher, $rule))->assert();
+
+        self::assertSame(1, $finder->walks);
+        self::assertNotSame([], $this->builder->getAssertValueObject()->pass);
+    }
+
+    /**
+     * The directory is listed in disk order: every file is analysed, sorted by path as Finder::sortByName() does.
+     */
+    public function testEveryFileIsAnalysedInPathOrder(): void
+    {
+        $this->enterSandbox();
+
+        try {
+            $names = array_map(static fn (int $i): string => \sprintf('Foo%02d', $i), range(1, 20));
+            foreach ($names as $name) {
+                file_put_contents($name . '.php', \sprintf('<?php class %s {}', $name));
+            }
+
+            $rule = $this
+                ->allClasses()
+                ->fromDir($this->sandbox)
+                ->should(static fn (Expr $assert): Expr => $assert->toBeFinal())
+                ->getRuleObject();
+
+            (new ExecuteService($this->dispatcher, $rule))->assert();
+
+            $violations = array_merge(...array_values($this->builder->getAssertValueObject()->violations));
+            self::assertSame(
+                array_map(fn (string $name): string => $this->sandbox . '/' . $name . '.php', $names),
+                array_column($violations, 'pathname'),
+            );
+        } finally {
+            $this->leaveSandbox();
+        }
     }
 
     public function testFullyToleratedRuleIsAPass(): void

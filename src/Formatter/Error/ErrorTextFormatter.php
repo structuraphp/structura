@@ -44,9 +44,8 @@ final class ErrorTextFormatter implements ErrorFormatterInterface
         $this->assertionsResumeOutput($analyseValueObject);
         $this->durationAndTimeOutput($analyseValueObject->timeStart);
 
-        foreach ($this->prints as $print) {
-            $this->styleCustom($output)->writeln($print);
-        }
+        // styles registered once for all the lines, not once per line
+        $this->styleCustom($output)->writeln($this->prints);
 
         return $violations === []
             ? self::SUCCESS

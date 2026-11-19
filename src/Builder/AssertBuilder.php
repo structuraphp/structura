@@ -52,10 +52,12 @@ class AssertBuilder implements AnalysisListenerInterface, EventSubscriberInterfa
     public function onViolation(ViolationEvent $event): void
     {
         $this->pass[$event->key] = 0;
-        $this->violations[$event->key] = array_merge(
-            $this->violations[$event->key] ?? [],
-            $event->violations,
-        );
+
+        // appended one by one: array_merge() would copy all the violations already collected, on each file
+        $this->violations[$event->key] ??= [];
+        foreach ($event->violations as $violation) {
+            $this->violations[$event->key][] = $violation;
+        }
     }
 
     public function onWarning(WarningEvent $event): void
