@@ -128,7 +128,10 @@ final class AnalyseCommand extends Command
                 $stopped = $stopped->withBaseline($baseline->countTolerated(), []);
             }
 
-            return $errorFormatter->formatErrors($stopped, $output);
+            $errorFormatter->formatErrors($stopped, $output);
+
+            // the run is incomplete: the tests that did not run may hold violations, so it never succeeds
+            return self::FAILURE;
         }
 
         $progressFormatter->progressFinish($io);
