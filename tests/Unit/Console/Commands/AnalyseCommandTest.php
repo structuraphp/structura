@@ -221,6 +221,19 @@ final class AnalyseCommandTest extends TestCase
         self::assertStringContainsString('classe(s) from', $tester->getDisplay());
     }
 
+    /**
+     * A stopped run is incomplete: the tests that did not run may hold violations, so it never succeeds.
+     * TestEmpty only raises notices, the same path as a run stopped on a warning.
+     */
+    public function testRunStoppedWithoutViolationFails(): void
+    {
+        $tester = self::execute($this->directory, ['--stop-on-notice' => true, '--filter' => 'TestEmpty'], null);
+
+        self::assertSame(Command::FAILURE, $tester->getStatusCode());
+        self::assertArrayNotHasKey('errors', $this->json($tester));
+        self::assertStringContainsString('"notices"', $tester->getDisplay());
+    }
+
     public function testProgressBarIsClosedWhenTheRunStops(): void
     {
         $tester = self::execute(
