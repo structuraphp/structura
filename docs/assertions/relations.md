@@ -150,3 +150,4 @@ $this
   ->should(fn(Expr $expr) => $expr->toHaveOnlyAttribute(Deprecated::class));
 ```
 
+Passes when the given attribute is the only attribute of the class: `#[A, B]` counts as two attributes.
