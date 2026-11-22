@@ -117,6 +117,30 @@ final class ClassDescriptionVisitorTest extends TestCase
         self::assertSame([], $class->properties);
     }
 
+    public function testAnonymousClassesAreResetBetweenFiles(): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, '<?php class Foo { public function bar() { return new class {}; } }');
+
+        $this->traverse($visitor, '<?php class Bar {}');
+        $class = $visitor->getClass();
+
+        self::assertInstanceOf(ClassDescription::class, $class);
+        self::assertSame([], $class->anonymousClasses);
+    }
+
+    public function testNamespaceIsResetBetweenFiles(): void
+    {
+        $visitor = new ClassDescriptionVisitor();
+        $this->traverse($visitor, '<?php namespace App; class Foo {}');
+
+        $this->traverse($visitor, '<?php function helper() {}');
+        $class = $visitor->getClass();
+
+        self::assertInstanceOf(ClassDescription::class, $class);
+        self::assertNull($class->namespace);
+    }
+
     #[DataProvider('getClassTypeProvider')]
     public function testClassType(string $raw, ClassType $expected): void
     {
