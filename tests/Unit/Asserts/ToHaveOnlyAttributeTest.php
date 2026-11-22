@@ -16,7 +16,7 @@ use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\Tests\Helper\ArchitectureAsserts;
 
 #[CoversClass(ToHaveOnlyAttribute::class)]
-#[CoversMethod(RelationAssert::class, 'toHaveNoAttribute')]
+#[CoversMethod(RelationAssert::class, 'toHaveOnlyAttribute')]
 final class ToHaveOnlyAttributeTest extends TestCase
 {
     use ArchitectureAsserts;
@@ -98,6 +98,32 @@ final class ToHaveOnlyAttributeTest extends TestCase
                 Attribute::class,
                 'SomeOtherAttr',
             ),
+        );
+    }
+
+    /**
+     * Several attributes in one group, #[A, B], are several attributes.
+     */
+    public function testShouldFailToHaveMultipleAttributesInOneGroup(): void
+    {
+        $rules = $this
+            ->allClasses()
+            ->fromRaw(
+                <<<'PHP'
+                <?php
+                #[Attribute, Error1]
+                class Foo {}
+                PHP
+            )
+            ->should(
+                static fn (Expr $assert): Expr => $assert
+                    ->toHaveOnlyAttribute(Attribute::class),
+            );
+
+        self::assertRulesViolation(
+            $rules,
+            'Resource <promote>Foo</promote> must have only attribute <promote>Attribute</promote> but has attribute <fire>Error1</fire>',
+            [2],
         );
     }
 

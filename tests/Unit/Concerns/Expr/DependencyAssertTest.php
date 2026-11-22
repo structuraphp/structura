@@ -19,6 +19,7 @@ use StructuraPhp\Structura\Expr;
 #[CoversMethod(DependencyAssert::class, 'toOnlyDependOnInheritance')]
 #[CoversMethod(DependencyAssert::class, 'toOnlyDependOnUseTrait')]
 #[CoversMethod(RelationAssert::class, 'toHaveAttribute')]
+#[CoversMethod(RelationAssert::class, 'toHaveOnlyAttribute')]
 #[CoversMethod(RelationAssert::class, 'toOnlyImplement')]
 #[CoversMethod(RelationAssert::class, 'toExtend')]
 #[CoversMethod(RelationAssert::class, 'toOnlyUseTrait')]
@@ -52,6 +53,13 @@ final class DependencyAssertTest extends TestCase
             static fn (Expr $expr): Expr => $expr
                 ->toHaveAttribute(Stringable::class)
                 ->toOnlyDependOnAttribute(Stringable::class),
+            'attribute',
+        ];
+
+        yield 'only attribute from relation' => [
+            static fn (Expr $expr): Expr => $expr
+                ->toHaveOnlyAttribute(Stringable::class)
+                ->toOnlyDependOnAttribute(),
             'attribute',
         ];
 

@@ -26,9 +26,10 @@ final readonly class ToHaveOnlyAttribute implements ExprInterface
 
     public function assert(ClassDescription $class): bool
     {
-        return $class->attrGroups !== []
-            && $class->hasAttribute($this->name)
-            && count($class->attrGroups) === 1;
+        // a single attribute is a single group holding a single attribute: #[A, B] is one group of two
+        return \count($class->attrGroups) === 1
+            && \count($class->attrGroups[0]->attrs) === 1
+            && $class->hasAttribute($this->name);
     }
 
     /**
