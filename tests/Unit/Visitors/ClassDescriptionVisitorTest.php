@@ -105,16 +105,60 @@ final class ClassDescriptionVisitorTest extends TestCase
         );
     }
 
-    public function testPropertiesAreResetBetweenFiles(): void
+    /**
+     * The same visitor parses every file of a rule: nothing from the previous
+     * file may leak into the description of the next one.
+     */
+    #[DataProvider('getFilesInSequenceProvider')]
+    public function testStateIsResetBetweenFiles(string $previous, string $next): void
     {
         $visitor = new ClassDescriptionVisitor();
-        $this->traverse($visitor, '<?php class Foo { public int $a = 0; }');
+        $this->traverse($visitor, $previous);
+        $this->traverse($visitor, $next);
 
-        $this->traverse($visitor, '<?php class Bar {}');
-        $class = $visitor->getClass();
+        $fresh = new ClassDescriptionVisitor();
+        $this->traverse($fresh, $next);
 
-        self::assertInstanceOf(ClassDescription::class, $class);
-        self::assertSame([], $class->properties);
+        self::assertInstanceOf(ClassDescription::class, $visitor->getClass());
+        self::assertEquals($fresh->getClass(), $visitor->getClass());
+    }
+
+    /**
+     * @return Generator<string, array{string, string}>
+     */
+    public static function getFilesInSequenceProvider(): Generator
+    {
+        $previous = [
+            'full class' => <<<'PHP'
+                <?php
+                declare(strict_types=1);
+                namespace App;
+                require 'bootstrap.php';
+                #[Attr]
+                final class Foo extends Base implements \Countable {
+                    use Bar;
+                    public const A = 1;
+                    public int $a = 0;
+                    public function __construct(private int $b) {}
+                    public function f() { return new class {}; }
+                }
+                PHP,
+            'backed enum' => '<?php namespace App; enum Status: string implements \JsonSerializable { case A = \'a\'; }',
+            'interface' => '<?php namespace App; interface Foo extends Bar, Baz {}',
+            'returned anonymous class' => '<?php return new class {};',
+        ];
+
+        $next = [
+            'script' => '<?php echo 1;',
+            'class' => '<?php class Bar {}',
+            'assigned anonymous class' => '<?php $foo = new class {};',
+        ];
+
+        foreach ($previous as $previousKey => $previousRaw) {
+            foreach ($next as $nextKey => $nextRaw) {
+                yield sprintf('%s then %s', $previousKey, $nextKey) => [$previousRaw, $nextRaw];
+            }
+        }
     }
 
     #[DataProvider('getClassTypeProvider')]

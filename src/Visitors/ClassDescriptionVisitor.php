@@ -101,6 +101,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
      */
     public function beforeTraverse(array $nodes): null
     {
+        $this->anonymousClasses = [];
         $this->attrGroups = [];
         $this->class = null;
         $this->classDeep = 0;
@@ -116,6 +117,7 @@ final class ClassDescriptionVisitor extends NodeVisitorAbstract
         $this->lines = 0;
         $this->methods = null;
         $this->name = null;
+        $this->namespace = null;
         $this->scalarType = null;
         $this->traits = [];
         $this->rootReturn = null;
