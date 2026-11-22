@@ -132,14 +132,15 @@ Test multiple PHP code snippets. You can provide file names as array keys. If nu
 
 ### `that()`
 
-Specifies rules for targeting class analysis (optional):
+Specifies rules for targeting the classes or scripts to analyse (optional).
+Only the files that satisfy every `that()` rule are checked by `should()`:
 
 ```php
 // with allClasses()
 ->that(static fn(Expr $expr): Expr => $expr->toBeClasses())
 
 // with allScripts()
-->that(static fn(ExprScript $expr): ExprScript => $expr->toBeClasses())
+->that(static fn(ExprScript $expr): ExprScript => $expr->toUseDeclare('strict_types', '1'))
 ```
 
 ## Exceptions

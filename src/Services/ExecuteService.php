@@ -18,7 +18,6 @@ use StructuraPhp\Structura\Events\PassEvent;
 use StructuraPhp\Structura\Events\ViolationEvent;
 use StructuraPhp\Structura\Events\WarningEvent;
 use StructuraPhp\Structura\Exception\Console\EventException;
-use StructuraPhp\Structura\Expr;
 use StructuraPhp\Structura\ValueObjects\ClassDescription;
 use StructuraPhp\Structura\ValueObjects\RuleValueObject;
 use StructuraPhp\Structura\ValueObjects\ScriptDescription;
@@ -136,7 +135,7 @@ final class ExecuteService
 
     private function executeThat(ClassDescription|ScriptDescription $description): bool
     {
-        if (!$this->ruleValueObject->that instanceof Expr) {
+        if (!$this->ruleValueObject->that instanceof AbstractExpr) {
             return false;
         }
 
