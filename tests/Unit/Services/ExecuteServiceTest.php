@@ -433,6 +433,40 @@ final class ExecuteServiceTest extends TestCase
         self::assertSame(1, $baseline->countTolerated());
     }
 
+    public function testThatFiltersClasses(): void
+    {
+        $rulesBuilder = $this
+            ->allClasses()
+            ->fromRawMultiple([
+                'a.php' => '<?php final class A extends \Exception {}',
+                'b.php' => '<?php class B {}',
+                'c.php' => '<?php final class C {}',
+            ])
+            ->that(static fn (Expr $assert): Expr => $assert->toBeFinal())
+            ->should(static fn (Expr $assert): Expr => $assert->toExtend(Exception::class));
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame(['c.php'], $this->violationPathnames());
+    }
+
+    public function testThatFiltersScripts(): void
+    {
+        $rulesBuilder = $this
+            ->allScripts()
+            ->fromRawMultiple([
+                'a.php' => '<?php declare(strict_types=1); new \App\Mailer();',
+                'b.php' => '<?php new \Legacy\Mailer();',
+                'c.php' => '<?php declare(strict_types=1); new \Legacy\Mailer();',
+            ])
+            ->that(static fn (ExprScript $assert): ExprScript => $assert->toUseDeclare('strict_types', '1'))
+            ->should(static fn (ExprScript $assert): ExprScript => $assert->toNotDependOn(patterns: 'Legacy\.+'));
+
+        (new ExecuteService($this->dispatcher, $rulesBuilder->getRuleObject()))->assert();
+
+        self::assertSame(['c.php'], $this->violationPathnames());
+    }
+
     public function testOrGroupPassesWhenALaterBranchPasses(): void
     {
         $rulesBuilder = $this
@@ -519,6 +553,17 @@ final class ExecuteServiceTest extends TestCase
     private function baselineSource(): SourceTestValueObject
     {
         return new SourceTestValueObject('Tests\TestBaseline', '', 'testRule', 0, '');
+    }
+
+    /**
+     * @return array<int, ?string>
+     */
+    private function violationPathnames(): array
+    {
+        return array_column(
+            array_merge(...array_values($this->builder->getAssertValueObject()->violations)),
+            'pathname',
+        );
     }
 
     private function dependingRule(): RuleValueObject
