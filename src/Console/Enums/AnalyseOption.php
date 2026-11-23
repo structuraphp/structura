@@ -27,7 +27,7 @@ enum AnalyseOption: string
             self::ErrorFormat => 'Select output error format',
             self::ProgressFormat => 'Select output progress format',
             self::Testsuite => 'List available test suites as defined in the PHP configuration file.',
-            self::Filter => 'Filter which tests to run using pattern matching on the test name (class or method).',
+            self::Filter => 'Filter which tests to run by text in the test name (class or method). Separate several values with |.',
             self::StopOnError => 'Stop execution upon first that errored.',
             self::StopOnWarning => 'Stop execution after the first warning, and fail.',
             self::StopOnNotice => 'Stop execution after the first notice, and fail.',

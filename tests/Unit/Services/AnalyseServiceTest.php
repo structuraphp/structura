@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace StructuraPhp\Structura\Tests\Unit\Services;
 
+use Generator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use StructuraPhp\Structura\Configs\StructuraConfig;
 use StructuraPhp\Structura\Events\NoticeEvent;
@@ -13,6 +15,7 @@ use StructuraPhp\Structura\Exception\Console\StopOnException;
 use StructuraPhp\Structura\Services\AnalyseService;
 use StructuraPhp\Structura\Services\AnalysisDispatcher;
 use StructuraPhp\Structura\Services\FinderService;
+use StructuraPhp\Structura\Testing\TestBuilder;
 use StructuraPhp\Structura\Tests\Feature\TestAssert;
 use StructuraPhp\Structura\Tests\Feature\TestConfig;
 use StructuraPhp\Structura\Tests\Feature\TestController;
@@ -20,6 +23,7 @@ use StructuraPhp\Structura\Tests\Feature\TestEmpty;
 use StructuraPhp\Structura\Tests\Helper\OneViolationTestBuilder;
 use StructuraPhp\Structura\Tests\Helper\ThrowingTestBuilder;
 use StructuraPhp\Structura\Tests\Helper\TwoRulesTestBuilder;
+use StructuraPhp\Structura\ValueObjects\AnalyseTestValueObject;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use UnexpectedValueException;
 
@@ -133,6 +137,50 @@ final class AnalyseServiceTest extends TestCase
 
         self::assertCount(1, $result->analyseTestValueObjects);
         self::assertSame('testEmptyArchitecture', $result->analyseTestValueObjects[0]->source->methodName);
+    }
+
+    /**
+     * @param class-string<TestBuilder> $classname
+     * @param array<int, string> $methods
+     */
+    #[DataProvider('getFilterProvider')]
+    public function testFilterAlternatives(string $filter, string $classname, array $methods): void
+    {
+        $service = new AnalyseService(new AnalysisDispatcher(), filter: $filter);
+        $result = $service->analyse(microtime(true), $classname);
+
+        self::assertSame(
+            $methods,
+            array_map(
+                static fn (AnalyseTestValueObject $test): string => $test->source->methodName,
+                $result->analyseTestValueObjects,
+            ),
+        );
+    }
+
+    /**
+     * @return Generator<string, array{string, class-string<TestBuilder>, array<int, string>}>
+     */
+    public static function getFilterProvider(): Generator
+    {
+        $config = ['testAssertArchitectureRules'];
+        $empty = ['testVoidArchitecture', 'testEmptyArchitecture'];
+
+        yield 'alternatives matching the class' => ['TestController|TestConfig', TestConfig::class, $config];
+
+        yield 'alternatives matching another class' => ['TestController|TestConfig', TestEmpty::class, []];
+
+        yield 'alternatives of methods' => ['testVoidArchitecture|testEmptyArchitecture', TestEmpty::class, $empty];
+
+        yield 'alternatives with spaces' => [' TestController | TestConfig ', TestConfig::class, $config];
+
+        yield 'empty alternative does not run every test' => ['TestController|', TestEmpty::class, []];
+
+        yield 'parentheses are plain text' => ['(TestController|TestConfig)', TestConfig::class, []];
+
+        yield 'class name with namespace' => ['Tests\Feature\TestConfig', TestConfig::class, $config];
+
+        yield 'regex characters are plain text' => ['^testVoid', TestEmpty::class, []];
     }
 
     public function testSkipsPublicMethodWithoutTestDoxAndKeepsAllRules(): void

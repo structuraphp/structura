@@ -21,6 +21,9 @@ final class AnalyseService
     /** @var array<int,AnalyseTestValueObject> */
     private array $analyseTestValueObjects = [];
 
+    /** @var array<int, string> lowercase alternatives of the filter, empty to run every test */
+    private readonly array $filters;
+
     /**
      * @param array<string, string> $pathResolvers
      */
@@ -32,7 +35,9 @@ final class AnalyseService
         private readonly ?string $filter = null,
         private readonly array $pathResolvers = [],
         private readonly ?BaselineService $baseline = null,
-    ) {}
+    ) {
+        $this->filters = $this->splitFilter($this->filter);
+    }
 
     /**
      * @param class-string<TestBuilder> $ruleClassname
@@ -167,13 +172,42 @@ final class AnalyseService
         );
     }
 
+    /**
+     * A name matches when it contains one of the alternatives of the filter, whatever the case.
+     */
     private function match(string $str): bool
     {
-        return $this->filter === null
-            || str_contains(
-                strtolower($str),
-                strtolower(trim($this->filter)),
-            );
+        if ($this->filters === []) {
+            return true;
+        }
+
+        $name = strtolower($str);
+        foreach ($this->filters as $filter) {
+            if (str_contains($name, $filter)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * "A|B" gives ["a", "b"]: no regex, each alternative is plain text. Empty ones are dropped,
+     * so that "A|" does not run every test.
+     *
+     * @return array<int, string>
+     */
+    private function splitFilter(?string $filter): array
+    {
+        $filters = [];
+        foreach (explode('|', $filter ?? '') as $alternative) {
+            $alternative = strtolower(trim($alternative));
+            if ($alternative !== '') {
+                $filters[] = $alternative;
+            }
+        }
+
+        return $filters;
     }
 
     private function isStopOn(AssertBuilder $assertBuilder): bool
